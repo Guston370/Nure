@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">api.nal.usda.gov</domain>
+        <domain includeSubdomains="true">trackapi.nutritionix.com</domain>
+        <domain includeSubdomains="true">api.upcitemdb.com</domain>
+        <domain includeSubdomains="true">world.openfoodfacts.org</domain>
+        <domain includeSubdomains="true">in.openfoodfacts.org</domain>
+        <domain includeSubdomains="true">world.openbeautyfacts.org</domain>
+    </domain-config>
+</network-security-config>

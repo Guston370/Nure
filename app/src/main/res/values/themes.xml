@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme -->
+    <style name="Base.Theme.HealthScanner" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- Primary colors -->
+        <item name="colorPrimary">@color/primary_color</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorPrimaryContainer">@color/primary_light_color</item>
+        <item name="colorOnPrimaryContainer">@color/primary_text_color</item>
+
+        <!-- Secondary colors -->
+        <item name="colorSecondary">@color/accent_color</item>
+        <item name="colorOnSecondary">@android:color/white</item>
+        <item name="colorSecondaryContainer">@color/accent_color</item>
+        <item name="colorOnSecondaryContainer">@color/primary_text_color</item>
+
+        <!-- Tertiary colors -->
+        <item name="colorTertiary">@color/primary_light_color</item>
+        <item name="colorOnTertiary">@android:color/white</item>
+
+        <!-- Surface colors -->
+        <item name="colorSurface">@color/card_background</item>
+        <item name="colorOnSurface">@color/primary_text_color</item>
+        <item name="colorSurfaceVariant">@color/input_background</item>
+        <item name="colorOnSurfaceVariant">@color/secondary_text_color</item>
+
+        <!-- Background colors -->
+        <item name="android:colorBackground">@color/background_color</item>
+        <item name="colorOnBackground">@color/primary_text_color</item>
+
+        <!-- Error colors -->
+        <item name="colorError">@color/error_color</item>
+        <item name="colorOnError">@android:color/white</item>
+
+        <!-- Outline colors -->
+        <item name="colorOutline">@color/border_color</item>
+        <item name="colorOutlineVariant">@color/divider_color</item>
+
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <!-- Navigation bar -->
+        <item name="android:navigationBarColor">@color/card_background</item>
+        <item name="android:windowLightNavigationBar">true</item>
+
+        <!-- Window flags -->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        
+        <!-- Smooth theme transitions -->
+        <item name="android:windowAnimationStyle">@style/ThemeTransition</item>
+    </style>
+
+    <style name="Theme.HealthScanner" parent="Base.Theme.HealthScanner" />
+
+    <!-- Splash Screen Theme -->
+    <style name="Theme.HealthScanner.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/primary_color</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/app_icon</item>
+        <item name="postSplashScreenTheme">@style/Theme.HealthScanner</item>
+    </style>
+
+    <!-- Login Theme with transparent status bar -->
+    <style name="Theme.HealthScanner.Login" parent="Theme.HealthScanner">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+    
+    <!-- Smooth theme transition animations -->
+    <style name="ThemeTransition" parent="android:Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:activityOpenExitAnimation">@android:anim/fade_out</item>
+        <item name="android:activityCloseEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:activityCloseExitAnimation">@android:anim/fade_out</item>
+    </style>
+</resources>
