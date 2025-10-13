@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nure Health Scanner - Professional Health-Tech Styles -->
+    
+    <!-- Material 3 Button Styles with Health Theme -->
+    <style name="Widget.HealthScanner.Button" parent="Widget.Material3.Button">
+        <item name="cornerRadius">12dp</item>
+        <item name="backgroundTint">@color/md_theme_light_primary</item>
+        <item name="android:textColor">@color/md_theme_light_onPrimary</item>
+        <item name="rippleColor">@color/ripple_light</item>
+        <item name="android:elevation">4dp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+    
+    <style name="Widget.HealthScanner.Button.Text" parent="Widget.Material3.Button.TextButton">
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textColor">@color/md_theme_light_primary</item>
+        <item name="rippleColor">@color/ripple_light</item>
+    </style>
+    
+    <style name="Widget.HealthScanner.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="cornerRadius">12dp</item>
+        <item name="strokeColor">@color/md_theme_light_primary</item>
+        <item name="android:textColor">@color/md_theme_light_primary</item>
+        <item name="rippleColor">@color/ripple_light</item>
+    </style>
+    
+    <style name="Widget.HealthScanner.Button.Gradient">
+        <item name="backgroundTint">@null</item>
+        <item name="android:background">@drawable/button_primary_gradient</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="rippleColor">@color/ripple_light</item>
+        <item name="android:elevation">6dp</item>
+    </style>
+
+    <style name="Widget.HealthScanner.Button.Secondary" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="cornerRadius">12dp</item>
+        <item name="strokeColor">@color/md_theme_light_secondary</item>
+        <item name="android:textColor">@color/md_theme_light_secondary</item>
+        <item name="rippleColor">@color/ripple_light</item>
+    </style>
+
+    <style name="Widget.HealthScanner.Button.Primary" parent="Widget.HealthScanner.Button">
+        <item name="backgroundTint">@color/md_theme_light_primary</item>
+        <item name="android:textColor">@color/md_theme_light_onPrimary</item>
+    </style>
+
+    <style name="Widget.HealthScanner.Button.Accent" parent="Widget.Material3.Button">
+        <item name="cornerRadius">12dp</item>
+        <item name="backgroundTint">@color/md_theme_light_tertiary</item>
+        <item name="android:textColor">@color/md_theme_light_onTertiary</item>
+        <item name="rippleColor">@color/ripple_light</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+
+    <!-- Text Input Styles -->
+    <style name="Widget.HealthScanner.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="boxStrokeColor">@color/md_theme_light_primary</item>
+        <item name="hintTextColor">@color/md_theme_light_onSurfaceVariant</item>
+        <item name="android:textColorHint">@color/md_theme_light_onSurfaceVariant</item>
+    </style>
+
+    <!-- Card Styles with Health Theme -->
+    <style name="Widget.HealthScanner.CardView" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">4dp</item>
+        <item name="cardBackgroundColor">@color/md_theme_light_surface</item>
+        <item name="android:layout_margin">@dimen/margin_normal</item>
+    </style>
+    
+    <style name="Widget.HealthScanner.CardView.Large" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">20dp</item>
+        <item name="cardElevation">8dp</item>
+        <item name="cardBackgroundColor">@color/md_theme_light_surface</item>
+        <item name="android:layout_margin">@dimen/margin_large</item>
+    </style>
+
+    <style name="Widget.HealthScanner.CardView.Nutrition" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="cardBackgroundColor">@color/md_theme_light_surface</item>
+        <item name="android:layout_margin">@dimen/margin_small</item>
+    </style>
+
+    <style name="Widget.HealthScanner.CardView.Health" parent="Widget.HealthScanner.CardView">
+        <item name="cardCornerRadius">24dp</item>
+        <item name="cardElevation">6dp</item>
+        <item name="android:background">@drawable/card_background_elevated</item>
+    </style>
+
+    <!-- Divider Style -->
+    <style name="Widget.HealthScanner.Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/md_theme_light_outline</item>
+        <item name="android:alpha">0.6</item>
+    </style>
+
+    <!-- Navigation Styles -->
+    <style name="Widget.HealthScanner.BottomNavigation" parent="Widget.Material3.BottomNavigationView">
+        <item name="elevation">8dp</item>
+        <item name="android:background">@color/md_theme_light_surface</item>
+        <item name="itemIconTint">@color/md_theme_light_primary</item>
+        <item name="itemTextColor">@color/md_theme_light_primary</item>
+        <item name="itemRippleColor">@color/ripple_light</item>
+    </style>
+    
+    <style name="ThemeOverlay.HealthScanner.BottomNavigation" parent="">
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorSurface">@color/md_theme_light_surface</item>
+    </style>
+
+    <!-- FAB Styles with Gradient -->
+    <style name="Widget.HealthScanner.FloatingActionButton.Scan" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="android:layout_width">@dimen/fab_size_large</item>
+        <item name="android:layout_height">@dimen/fab_size_large</item>
+        <item name="backgroundTint">@null</item>
+        <item name="android:background">@drawable/fab_scan_background</item>
+        <item name="tint">@color/white</item>
+        <item name="elevation">12dp</item>
+        <item name="rippleColor">@color/ripple_light</item>
+    </style>
+
+    <style name="Widget.HealthScanner.FloatingActionButton" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="backgroundTint">@color/md_theme_light_primary</item>
+        <item name="tint">@color/md_theme_light_onPrimary</item>
+        <item name="elevation">8dp</item>
+        <item name="rippleColor">@color/ripple_light</item>
+    </style>
+
+    <!-- Avatar Styles -->
+    <style name="Widget.HealthScanner.Avatar">
+        <item name="android:layout_width">@dimen/avatar_size_large</item>
+        <item name="android:layout_height">@dimen/avatar_size_large</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="cornerRadius">@dimen/avatar_size_large</item>
+        <item name="strokeColor">@color/md_theme_light_primary</item>
+        <item name="strokeWidth">2dp</item>
+    </style>
+
+    <!-- Empty State Styles -->
+    <style name="Widget.HealthScanner.EmptyState">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/padding_xlarge</item>
+        <item name="android:alpha">0.7</item>
+    </style>
+
+    <!-- Shimmer Styles -->
+    <style name="Widget.HealthScanner.Shimmer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">16dp</item>
+        <item name="android:background">@drawable/shimmer_placeholder</item>
+        <item name="android:layout_marginBottom">@dimen/margin_small</item>
+    </style>
+
+    <style name="Widget.HealthScanner.Shimmer.Title">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:background">@drawable/shimmer_placeholder</item>
+        <item name="android:layout_marginBottom">@dimen/margin_normal</item>
+    </style>
+
+    <style name="Widget.HealthScanner.Shimmer.Text">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">14dp</item>
+        <item name="android:background">@drawable/shimmer_placeholder</item>
+        <item name="android:layout_marginBottom">@dimen/margin_tiny</item>
+    </style>
+
+    <!-- Typography Styles with Health Theme -->
+    <style name="TextAppearance.HealthScanner.Headline1" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:textSize">32sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/md_theme_light_onBackground</item>
+    </style>
+    
+    <style name="TextAppearance.HealthScanner.Headline2" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:textSize">24sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/md_theme_light_onBackground</item>
+    </style>
+    
+    <style name="TextAppearance.HealthScanner.Body1" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/md_theme_light_onBackground</item>
+    </style>
+    
+    <style name="TextAppearance.HealthScanner.Body2" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/md_theme_light_onSurfaceVariant</item>
+    </style>
+    
+    <style name="TextAppearance.HealthScanner.Caption" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/md_theme_light_onSurfaceVariant</item>
+    </style>
+
+    <style name="TextAppearance.HealthScanner.Primary" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textColor">@color/md_theme_light_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <!-- Animation Styles -->
+    <style name="WindowAnimation.HealthScanner" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/slide_in_right</item>
+        <item name="android:activityOpenExitAnimation">@anim/slide_out_left</item>
+        <item name="android:activityCloseEnterAnimation">@anim/slide_in_left</item>
+        <item name="android:activityCloseExitAnimation">@anim/slide_out_right</item>
+    </style>
+
+    <!-- Layout Base Styles -->
+    <style name="Layout.HealthScanner.SafeScroll">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:fillViewport">true</item>
+        <item name="android:background">@color/md_theme_light_background</item>
+    </style>
+    
+    <style name="Layout.HealthScanner">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    
+    <style name="Widget.HealthScanner">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <!-- Progress Indicator Styles -->
+    <style name="Widget.HealthScanner.ProgressBar" parent="Widget.Material3.CircularProgressIndicator">
+        <item name="android:layout_width">32dp</item>
+        <item name="android:layout_height">32dp</item>
+        <item name="indicatorColor">@color/md_theme_light_primary</item>
+        <item name="trackColor">@color/md_theme_light_surfaceVariant</item>
+    </style>
+
+    <style name="Widget.HealthScanner.ProgressBar.Large" parent="Widget.Material3.CircularProgressIndicator">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="indicatorColor">@color/md_theme_light_primary</item>
+        <item name="trackColor">@color/md_theme_light_surfaceVariant</item>
+        <item name="indicatorSize">48dp</item>
+    </style>
+
+    <!-- Health Score Styles -->
+    <style name="Widget.HealthScanner.HealthScore">
+        <item name="android:layout_width">@dimen/health_score_size</item>
+        <item name="android:layout_height">@dimen/health_score_size</item>
+        <item name="android:background">@drawable/health_score_background</item>
+    </style>
+
+    <!-- Toolbar Styles -->
+    <style name="Widget.HealthScanner.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@drawable/health_gradient_background</item>
+        <item name="titleTextColor">@color/white</item>
+        <item name="subtitleTextColor">@color/white</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+
+    <!-- Generic Base Styles -->
+    <style name="Layout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    
+    <style name="Widget">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+</resources>

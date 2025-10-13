@@ -1,77 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
-    android:oneshot="false">
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
     
-    <item android:duration="100">
-        <rotate
-            android:drawable="@drawable/scanning_ring"
-            android:pivotX="50%"
-            android:pivotY="50%"
-            android:fromDegrees="0"
-            android:toDegrees="45" />
-    </item>
+    <path
+        android:fillColor="@color/md_theme_light_primary"
+        android:pathData="M24,4C35.05,4 44,12.95 44,24C44,35.05 35.05,44 24,44C12.95,44 4,35.05 4,24C4,12.95 12.95,4 24,4ZM24,8C15.16,8 8,15.16 8,24C8,32.84 15.16,40 24,40C32.84,40 40,32.84 40,24C40,15.16 32.84,8 24,8Z"/>
     
-    <item android:duration="100">
-        <rotate
-            android:drawable="@drawable/scanning_ring"
-            android:pivotX="50%"
-            android:pivotY="50%"
-            android:fromDegrees="45"
-            android:toDegrees="90" />
-    </item>
+    <path
+        android:fillColor="@color/md_theme_light_primary"
+        android:pathData="M20,16L28,16L28,20L20,20Z"/>
     
-    <item android:duration="100">
-        <rotate
-            android:drawable="@drawable/scanning_ring"
-            android:pivotX="50%"
-            android:pivotY="50%"
-            android:fromDegrees="90"
-            android:toDegrees="135" />
-    </item>
-    
-    <item android:duration="100">
-        <rotate
-            android:drawable="@drawable/scanning_ring"
-            android:pivotX="50%"
-            android:pivotY="50%"
-            android:fromDegrees="135"
-            android:toDegrees="180" />
-    </item>
-    
-    <item android:duration="100">
-        <rotate
-            android:drawable="@drawable/scanning_ring"
-            android:pivotX="50%"
-            android:pivotY="50%"
-            android:fromDegrees="180"
-            android:toDegrees="225" />
-    </item>
-    
-    <item android:duration="100">
-        <rotate
-            android:drawable="@drawable/scanning_ring"
-            android:pivotX="50%"
-            android:pivotY="50%"
-            android:fromDegrees="225"
-            android:toDegrees="270" />
-    </item>
-    
-    <item android:duration="100">
-        <rotate
-            android:drawable="@drawable/scanning_ring"
-            android:pivotX="50%"
-            android:pivotY="50%"
-            android:fromDegrees="270"
-            android:toDegrees="315" />
-    </item>
-    
-    <item android:duration="100">
-        <rotate
-            android:drawable="@drawable/scanning_ring"
-            android:pivotX="50%"
-            android:pivotY="50%"
-            android:fromDegrees="315"
-            android:toDegrees="360" />
-    </item>
-    
-</animation-list>
+    <path
+        android:fillColor="@color/md_theme_light_primary"
+        android:pathData="M20,28L28,28L28,32L20,32Z"/>
+</vector>

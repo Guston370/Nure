@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.healthscanner">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Permissions -->
     <uses-permission android:name="android.permission.CAMERA" />
@@ -72,13 +71,7 @@
             android:parentActivityName=".MainActivity"
             android:theme="@style/Theme.HealthScanner" />
 
-        <!-- Custom CaptureActivity for vertical barcode scanning -->
-        <activity
-            android:name=".VerticalCaptureActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
 
     </application>
 

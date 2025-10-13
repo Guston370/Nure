@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -27,8 +28,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
@@ -36,6 +37,9 @@ dependencies {
     // AndroidX Core + Material 3
     implementation(libs.appcompat)
     implementation(libs.material)
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.activity:activity-ktx:1.8.2")
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
 
     // CardView
     implementation("androidx.cardview:cardview:1.0.0")
@@ -68,6 +72,33 @@ dependencies {
 
     // Guava (for ListenableFuture used in CameraX)
     implementation("com.google.guava:guava:32.1.2-android")
+
+    // Firebase BOM - manages all Firebase library versions
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    
+    // Firebase Authentication
+    implementation("com.google.firebase:firebase-auth")
+    
+    // Google Sign-In
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    
+    // Firebase Analytics (optional but recommended)
+    implementation("com.google.firebase:firebase-analytics")
+
+    // Material Design Components
+    implementation("com.google.android.material:material:1.11.0")
+    
+    // ConstraintLayout
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    
+    // RecyclerView
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    
+    // ViewPager2 for smooth transitions
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
+    
+    // Lottie for animations
+    implementation("com.airbnb.android:lottie:6.2.0")
 
     // Testing
     testImplementation(libs.junit)

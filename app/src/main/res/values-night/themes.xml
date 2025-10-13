@@ -1,69 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme - DARK MODE -->
-    <style name="Base.Theme.HealthScanner" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Dark mode colors -->
-        <!-- Primary colors -->
-        <item name="colorPrimary">@color/primary_color_dark</item>
-        <item name="colorOnPrimary">@android:color/white</item>
-        <item name="colorPrimaryContainer">@color/primary_light_color_dark</item>
-        <item name="colorOnPrimaryContainer">@color/primary_text_color_dark</item>
-
-        <!-- Secondary colors -->
-        <item name="colorSecondary">@color/accent_color_dark</item>
-        <item name="colorOnSecondary">@android:color/white</item>
-        <item name="colorSecondaryContainer">@color/accent_color_dark</item>
-        <item name="colorOnSecondaryContainer">@color/primary_text_color_dark</item>
-
-        <!-- Tertiary colors -->
-        <item name="colorTertiary">@color/primary_light_color_dark</item>
-        <item name="colorOnTertiary">@android:color/white</item>
-
-        <!-- Surface colors -->
-        <item name="colorSurface">@color/card_background_dark</item>
-        <item name="colorOnSurface">@color/primary_text_color_dark</item>
-        <item name="colorSurfaceVariant">@color/input_background_dark</item>
-        <item name="colorOnSurfaceVariant">@color/secondary_text_color_dark</item>
-
-        <!-- Background colors -->
-        <item name="android:colorBackground">@color/background_color_dark</item>
-        <item name="colorOnBackground">@color/primary_text_color_dark</item>
-
-        <!-- Error colors -->
-        <item name="colorError">@color/error_color</item>
-        <item name="colorOnError">@android:color/white</item>
-
-        <!-- Outline colors -->
-        <item name="colorOutline">@color/border_color_dark</item>
-        <item name="colorOutlineVariant">@color/divider_color_dark</item>
-
-        <!-- Status bar -->
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">false</item>
-
-        <!-- Navigation bar -->
-        <item name="android:navigationBarColor">@color/card_background_dark</item>
-        <item name="android:windowLightNavigationBar">false</item>
-
-        <!-- Window flags -->
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    <!-- Nure Health Scanner - Dark Theme -->
+    
+    <!-- Base Dark Theme -->
+    <style name="Base.Theme.HealthScanner" parent="Theme.Material3.DayNight">
+        <!-- Primary Colors -->
+        <item name="colorPrimary">@color/md_theme_dark_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_dark_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_dark_onPrimaryContainer</item>
         
-        <!-- Smooth theme transitions -->
-        <item name="android:windowAnimationStyle">@style/ThemeTransition</item>
-    </style>
-
-    <style name="Theme.HealthScanner" parent="Base.Theme.HealthScanner" />
-
-    <!-- Splash Screen Theme -->
-    <style name="Theme.HealthScanner.Splash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/primary_color_dark</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/app_icon</item>
-        <item name="postSplashScreenTheme">@style/Theme.HealthScanner</item>
-    </style>
-
-    <!-- Login Theme with transparent status bar -->
-    <style name="Theme.HealthScanner.Login" parent="Theme.HealthScanner">
-        <item name="android:statusBarColor">@android:color/transparent</item>
+        <!-- Secondary Colors -->
+        <item name="colorSecondary">@color/md_theme_dark_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_dark_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_dark_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_dark_onSecondaryContainer</item>
+        
+        <!-- Tertiary Colors -->
+        <item name="colorTertiary">@color/md_theme_dark_tertiary</item>
+        <item name="colorOnTertiary">@color/md_theme_dark_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_dark_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_dark_onTertiaryContainer</item>
+        
+        <!-- Error Colors -->
+        <item name="colorError">@color/md_theme_dark_error</item>
+        <item name="colorOnError">@color/md_theme_dark_onError</item>
+        <item name="colorErrorContainer">@color/md_theme_dark_errorContainer</item>
+        <item name="colorOnErrorContainer">@color/md_theme_dark_onErrorContainer</item>
+        
+        <!-- Background Colors -->
+        <item name="android:colorBackground">@color/md_theme_dark_background</item>
+        <item name="colorOnBackground">@color/md_theme_dark_onBackground</item>
+        
+        <!-- Surface Colors -->
+        <item name="colorSurface">@color/md_theme_dark_surface</item>
+        <item name="colorOnSurface">@color/md_theme_dark_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_dark_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_dark_onSurfaceVariant</item>
+        
+        <!-- Outline Colors -->
+        <item name="colorOutline">@color/md_theme_dark_outline</item>
+        <item name="colorSurfaceInverse">@color/md_theme_dark_inverseSurface</item>
+        <item name="colorOnSurfaceInverse">@color/md_theme_dark_inverseOnSurface</item>
+        <item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
+        
+        <!-- Status Bar -->
+        <item name="android:statusBarColor">@color/status_bar_dark</item>
         <item name="android:windowLightStatusBar">false</item>
+        
+        <!-- Navigation Bar -->
+        <item name="android:navigationBarColor">@color/navigation_bar_dark</item>
+        
+        <!-- Window Background -->
+        <item name="android:windowBackground">@drawable/health_gradient_background_dark</item>
+        
+        <!-- Action Bar -->
+        <item name="colorControlNormal">@color/md_theme_dark_onSurfaceVariant</item>
+        <item name="colorControlActivated">@color/md_theme_dark_primary</item>
+        <item name="colorControlHighlight">@color/ripple_dark</item>
+    </style>
+
+    <!-- Login Theme Dark -->
+    <style name="Theme.HealthScanner.Login" parent="Theme.HealthScanner">
+        <item name="android:windowBackground">@drawable/health_gradient_background_dark</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <!-- Bottom Sheet Dark Theme -->
+    <style name="Theme.HealthScanner.BottomSheet" parent="Theme.Material3.DayNight.BottomSheetDialog">
+        <item name="colorPrimary">@color/md_theme_dark_primary</item>
+        <item name="colorSurface">@color/md_theme_dark_surface</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
+    <!-- Alert Dialog Dark Theme -->
+    <style name="Theme.HealthScanner.AlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorPrimary">@color/md_theme_dark_primary</item>
+        <item name="colorSurface">@color/md_theme_dark_surface</item>
+        <item name="android:background">@color/md_theme_dark_surface</item>
     </style>
 </resources>

@@ -41,6 +41,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class MainActivity extends AppCompatActivity {
 
     // UI Elements
@@ -53,39 +56,39 @@ public class MainActivity extends AppCompatActivity {
     private TextView caloriesValue, sugarValue, proteinValue, fatValue, carbsValue, saltValue;
     private TextView caloriesProgress, sugarProgress, proteinProgress;
     private ProgressBar caloriesProgressBar, sugarProgressBar, proteinProgressBar;
-    
+
     private BottomNavigationView bottomNavigation;
     private RequestQueue requestQueue;
-    
+
     // Navigation tracking
     private boolean isNavigationInitialized = false;
-    
+
     // Haptic feedback
     private Vibrator vibrator;
-    
+
     // SharedPreferences keys
     private static final String PREFS_NAME = "HealthScannerPrefs";
     private static final String KEY_DAILY_CALORIES = "daily_calories";
     private static final String KEY_DAILY_SUGAR = "daily_sugar";
     private static final String KEY_DAILY_PROTEIN = "daily_protein";
 
+    // Authentication Manager
+    private AuthManager authManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Apply theme before calling super.onCreate()
-        ThemeHelper.applyTheme(this);
-        
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Check if user is logged in - TEMPORARILY DISABLED FOR TESTING
-        SharedPreferences prefs = getSharedPreferences("HealthScannerPrefs", MODE_PRIVATE);
-        // Set logged in to true for testing
-        prefs.edit().putBoolean("is_logged_in", true).apply();
-        
-        if (!prefs.getBoolean("is_logged_in", false)) {
-            Intent loginIntent = new Intent(this, LoginActivity.class);
-            startActivity(loginIntent);
-            finish();
+        // Initialize Authentication Manager
+        authManager = AuthManager.getInstance(this);
+
+        // Check authentication state
+        if (!authManager.isUserAuthenticated()) {
+            Log.d("MainActivity", "User not authenticated, redirecting to login");
+            authManager.navigateToLogin(this);
             return;
         }
 
@@ -102,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
             updateDailyNutritionTracker();
             Log.d("MainActivity", "Daily nutrition tracker updated");
             Log.d("MainActivity", "Initialization completed successfully");
-            
+
             // Check if we should start scanner immediately
             if (getIntent().getBooleanExtra("start_scanner", false)) {
                 if (checkCameraPermission()) {
@@ -133,12 +136,12 @@ public class MainActivity extends AppCompatActivity {
         manualBarcodeInput = findViewById(R.id.manualBarcodeInput);
         resultCard = findViewById(R.id.resultCard);
         scanSectionCard = findViewById(R.id.scanSectionCard);
-        
+
         // Scan section
         scanIcon = findViewById(R.id.scanIcon);
         scanningIndicator = findViewById(R.id.scanningIndicator);
         scanStatusText = findViewById(R.id.scanStatusText);
-        
+
         // Nutrition tracker
         nutritionTrackerCard = findViewById(R.id.nutritionTrackerCard);
         caloriesProgress = findViewById(R.id.caloriesProgress);
@@ -147,13 +150,13 @@ public class MainActivity extends AppCompatActivity {
         caloriesProgressBar = findViewById(R.id.caloriesProgressBar);
         sugarProgressBar = findViewById(R.id.sugarProgressBar);
         proteinProgressBar = findViewById(R.id.proteinProgressBar);
-        
+
         // Product result
         productName = findViewById(R.id.productName);
         productBrand = findViewById(R.id.productBrand);
         productIngredients = findViewById(R.id.productIngredients);
         favoriteBtn = findViewById(R.id.favoriteBtn);
-        
+
         // Nutrition values
         caloriesValue = findViewById(R.id.caloriesValue);
         sugarValue = findViewById(R.id.sugarValue);
@@ -161,23 +164,23 @@ public class MainActivity extends AppCompatActivity {
         fatValue = findViewById(R.id.fatValue);
         carbsValue = findViewById(R.id.carbsValue);
         saltValue = findViewById(R.id.saltValue);
-        
+
         // Bottom navigation
         bottomNavigation = findViewById(R.id.bottom_navigation);
-        
+
         // Request queue
         requestQueue = Volley.newRequestQueue(this);
-        
+
         // Check critical views
         if (scanBtn == null || resultCard == null) {
             Log.e("MainActivity", "Critical views not found in layout");
             return;
         }
-        
+
         // Start scan icon pulse animation
         startScanIconAnimation();
     }
-    
+
     private void initializeHapticFeedback() {
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
     }
@@ -202,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                 searchProduct(barcode);
             }
         });
-        
+
         // Add card press animations for interactive elements
         setupCardInteractions();
 
@@ -246,18 +249,18 @@ public class MainActivity extends AppCompatActivity {
 
         // Mark navigation as initialized
         isNavigationInitialized = true;
-        
+
         // Set the correct item as selected
         bottomNavigation.setSelectedItemId(R.id.nav_scan);
     }
 
     private void updateDailyNutritionTracker() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        
+
         int dailyCalories = prefs.getInt(KEY_DAILY_CALORIES, 0);
         int dailySugar = prefs.getInt(KEY_DAILY_SUGAR, 0);
         int dailyProtein = prefs.getInt(KEY_DAILY_PROTEIN, 0);
-        
+
         // Update progress text
         if (caloriesProgress != null) {
             caloriesProgress.setText(dailyCalories + " / 2,000");
@@ -268,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
         if (proteinProgress != null) {
             proteinProgress.setText(dailyProtein + "g / 100g");
         }
-        
+
         // Update progress bars
         if (caloriesProgressBar != null) {
             caloriesProgressBar.setProgress((dailyCalories * 100) / 2000);
@@ -284,11 +287,11 @@ public class MainActivity extends AppCompatActivity {
     private void searchProduct(String barcode) {
         // Show scanning animation
         showScanningAnimation();
-        
+
         // Show loading state
         resultCard.setVisibility(View.VISIBLE);
         productName.setText("🔍 Analyzing product...");
-        
+
         // Call real API for product information
         fetchProductFromAPI(barcode);
     }
@@ -297,10 +300,10 @@ public class MainActivity extends AppCompatActivity {
         // Try APIs in priority order with fallback logic
         tryOpenFoodFactsAPI(barcode);
     }
-    
+
     private void tryOpenFoodFactsAPI(String barcode) {
-        String url = ApiConfig.Endpoints.getOpenFoodFactsUrl(barcode);
-        
+        String url = "https://world.openfoodfacts.org/api/v0/product/" + barcode + ".json";
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 url,
@@ -329,15 +332,14 @@ public class MainActivity extends AppCompatActivity {
                         Log.e("MainActivity", "Open Food Facts API Error: " + error.getMessage());
                         tryNutritionixAPI(barcode);
                     }
-                }
-        );
-        
+                });
+
         requestQueue.add(jsonObjectRequest);
     }
-    
+
     private void tryNutritionixAPI(String barcode) {
-        String url = ApiConfig.Endpoints.getNutritionixUrl() + barcode;
-        
+        String url = "https://trackapi.nutritionix.com/v2/search/item?upc=" + barcode;
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 url,
@@ -366,23 +368,23 @@ public class MainActivity extends AppCompatActivity {
                         Log.e("MainActivity", "Nutritionix API Error: " + error.getMessage());
                         tryUPCItemDBAPI(barcode);
                     }
-                }
-        ) {
-            @Override
-            public java.util.Map<String, String> getHeaders() {
-                java.util.Map<String, String> headers = new java.util.HashMap<>();
-                headers.put("x-app-id", ApiConfig.Headers.getNutritionixAppId());
-                headers.put("x-app-key", ApiConfig.Headers.getNutritionixApiKey());
-                return headers;
-            }
-        };
-        
-        requestQueue.add(jsonObjectRequest);
+                }) {
+
+    @Override
+    public java.util.Map<String, String> getHeaders() {
+        java.util.Map<String, String> headers = new java.util.HashMap<>();
+        headers.put("x-app-id", "your_nutritionix_app_id");
+        headers.put("x-app-key", "your_nutritionix_api_key");
+        return headers;
     }
-    
+
+    };
+
+    requestQueue.add(jsonObjectRequest);}
+
     private void tryUPCItemDBAPI(String barcode) {
-        String url = ApiConfig.Endpoints.getUPCItemDBUrl(barcode);
-        
+        String url = "https://api.upcitemdb.com/prod/trial/lookup?upc=" + barcode;
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 url,
@@ -411,15 +413,14 @@ public class MainActivity extends AppCompatActivity {
                         Log.e("MainActivity", "UPCItemDB API Error: " + error.getMessage());
                         tryUSDAAPI(barcode);
                     }
-                }
-        );
-        
+                });
+
         requestQueue.add(jsonObjectRequest);
     }
-    
+
     private void tryUSDAAPI(String barcode) {
-        String url = ApiConfig.Endpoints.getUSDAUrl(barcode);
-        
+        String url = "https://api.nal.usda.gov/fdc/v1/foods/search?query=" + barcode + "&api_key=DEMO_KEY";
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 url,
@@ -448,15 +449,14 @@ public class MainActivity extends AppCompatActivity {
                         Log.e("MainActivity", "USDA API Error: " + error.getMessage());
                         trySpoonacularAPI(barcode);
                     }
-                }
-        );
-        
+                });
+
         requestQueue.add(jsonObjectRequest);
     }
-    
+
     private void trySpoonacularAPI(String barcode) {
-        String url = ApiConfig.Endpoints.getSpoonacularUrl(barcode);
-        
+        String url = "https://api.spoonacular.com/food/products/upc/" + barcode + "?apiKey=your_spoonacular_api_key";
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 url,
@@ -485,27 +485,26 @@ public class MainActivity extends AppCompatActivity {
                         Log.e("MainActivity", "Spoonacular API Error: " + error.getMessage());
                         showErrorState("Product not found in any database");
                     }
-                }
-        );
-        
+                });
+
         requestQueue.add(jsonObjectRequest);
     }
 
     // Open Food Facts API Parser
     private void parseOpenFoodFactsResponse(JSONObject response, String barcode) throws JSONException {
         hideScanningAnimation();
-        
+
         JSONObject product = response.getJSONObject("product");
-        
+
         // Extract product information
         String productName = product.optString("product_name", "Unknown Product");
         String brand = product.optString("brands", "Unknown Brand");
         String ingredients = product.optString("ingredients_text", "Ingredients not available");
-        
+
         // Extract nutritional information
         JSONObject nutriments = product.optJSONObject("nutriments");
         int calories = 0, sugar = 0, protein = 0, fat = 0, carbs = 0, salt = 0;
-        
+
         if (nutriments != null) {
             calories = nutriments.optInt("energy-kcal_100g", 0);
             sugar = nutriments.optInt("sugars_100g", 0);
@@ -514,105 +513,115 @@ public class MainActivity extends AppCompatActivity {
             carbs = nutriments.optInt("carbohydrates_100g", 0);
             salt = nutriments.optInt("sodium_100g", 0);
         }
-        
-        displayProductResult(productName, brand, calories, sugar, protein, fat, carbs, salt, ingredients, barcode, "Open Food Facts");
+
+        displayProductResult(productName, brand, calories, sugar, protein, fat, carbs, salt, ingredients, barcode,
+                "Open Food Facts");
     }
-    
+
     // Nutritionix API Parser
     private void parseNutritionixResponse(JSONObject response, String barcode) throws JSONException {
         hideScanningAnimation();
-        
+
         org.json.JSONArray foods = response.getJSONArray("foods");
         if (foods.length() > 0) {
             JSONObject food = foods.getJSONObject(0);
-            
+
             String productName = food.optString("food_name", "Unknown Product");
             String brand = food.optString("brand_name", "Unknown Brand");
-            
+
             // Extract nutritional information
             JSONObject fullNutrients = food.optJSONObject("full_nutrients");
             int calories = 0, sugar = 0, protein = 0, fat = 0, carbs = 0, salt = 0;
-            
+
             if (fullNutrients != null) {
                 calories = fullNutrients.optInt("208", 0); // Energy (kcal)
-                sugar = fullNutrients.optInt("269", 0);    // Sugars
+                sugar = fullNutrients.optInt("269", 0); // Sugars
                 protein = fullNutrients.optInt("203", 0); // Protein
-                fat = fullNutrients.optInt("204", 0);      // Fat
-                carbs = fullNutrients.optInt("205", 0);   // Carbohydrates
-                salt = fullNutrients.optInt("307", 0);    // Sodium
+                fat = fullNutrients.optInt("204", 0); // Fat
+                carbs = fullNutrients.optInt("205", 0); // Carbohydrates
+                salt = fullNutrients.optInt("307", 0); // Sodium
             }
-            
+
             String ingredients = food.optString("ingredients", "Ingredients not available");
-            displayProductResult(productName, brand, calories, sugar, protein, fat, carbs, salt, ingredients, barcode, "Nutritionix");
+            displayProductResult(productName, brand, calories, sugar, protein, fat, carbs, salt, ingredients, barcode,
+                    "Nutritionix");
         }
     }
-    
+
     // UPCItemDB API Parser
     private void parseUPCItemDBResponse(JSONObject response, String barcode) throws JSONException {
         hideScanningAnimation();
-        
+
         org.json.JSONArray items = response.getJSONArray("items");
         if (items.length() > 0) {
             JSONObject item = items.getJSONObject(0);
-            
+
             String productName = item.optString("title", "Unknown Product");
             String brand = item.optString("brand", "Unknown Brand");
             String ingredients = item.optString("description", "Ingredients not available");
-            
+
             // UPCItemDB doesn't provide detailed nutrition, use defaults
             int calories = 0, sugar = 0, protein = 0, fat = 0, carbs = 0, salt = 0;
-            
-            displayProductResult(productName, brand, calories, sugar, protein, fat, carbs, salt, ingredients, barcode, "UPCItemDB");
+
+            displayProductResult(productName, brand, calories, sugar, protein, fat, carbs, salt, ingredients, barcode,
+                    "UPCItemDB");
         }
     }
-    
+
     // USDA API Parser
     private void parseUSDAResponse(JSONObject response, String barcode) throws JSONException {
         hideScanningAnimation();
-        
+
         org.json.JSONArray foods = response.getJSONArray("foods");
         if (foods.length() > 0) {
             JSONObject food = foods.getJSONObject(0);
-            
+
             String productName = food.optString("description", "Unknown Product");
             String brand = "USDA Database";
-            
+
             // Extract nutritional information
             org.json.JSONArray nutrients = food.optJSONArray("foodNutrients");
             int calories = 0, sugar = 0, protein = 0, fat = 0, carbs = 0, salt = 0;
-            
+
             if (nutrients != null) {
                 for (int i = 0; i < nutrients.length(); i++) {
                     JSONObject nutrient = nutrients.getJSONObject(i);
                     String nutrientName = nutrient.optString("nutrientName", "").toLowerCase();
                     double amount = nutrient.optDouble("amount", 0);
-                    
-                    if (nutrientName.contains("energy")) calories = (int) amount;
-                    else if (nutrientName.contains("sugar")) sugar = (int) amount;
-                    else if (nutrientName.contains("protein")) protein = (int) amount;
-                    else if (nutrientName.contains("fat")) fat = (int) amount;
-                    else if (nutrientName.contains("carbohydrate")) carbs = (int) amount;
-                    else if (nutrientName.contains("sodium")) salt = (int) amount;
+
+                    if (nutrientName.contains("energy"))
+                        calories = (int) amount;
+                    else if (nutrientName.contains("sugar"))
+                        sugar = (int) amount;
+                    else if (nutrientName.contains("protein"))
+                        protein = (int) amount;
+                    else if (nutrientName.contains("fat"))
+                        fat = (int) amount;
+                    else if (nutrientName.contains("carbohydrate"))
+                        carbs = (int) amount;
+                    else if (nutrientName.contains("sodium"))
+                        salt = (int) amount;
                 }
             }
-            
+
             String ingredients = "Nutritional data from USDA database";
-            displayProductResult(productName, brand, calories, sugar, protein, fat, carbs, salt, ingredients, barcode, "USDA");
+            displayProductResult(productName, brand, calories, sugar, protein, fat, carbs, salt, ingredients, barcode,
+                    "USDA");
         }
     }
-    
+
     // Spoonacular API Parser
     private void parseSpoonacularResponse(JSONObject response, String barcode) throws JSONException {
         hideScanningAnimation();
-        
+
         String productName = response.optString("title", "Unknown Product");
         String brand = response.optString("brand", "Unknown Brand");
         String ingredients = response.optString("ingredients", "Ingredients not available");
-        
+
         // Extract nutritional information
         JSONObject nutrition = response.optJSONObject("nutrition");
         int calories = 0, sugar = 0, protein = 0, fat = 0, carbs = 0, salt = 0;
-        
+
         if (nutrition != null) {
             org.json.JSONArray nutrients = nutrition.optJSONArray("nutrients");
             if (nutrients != null) {
@@ -620,73 +629,95 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject nutrient = nutrients.getJSONObject(i);
                     String name = nutrient.optString("name", "").toLowerCase();
                     double amount = nutrient.optDouble("amount", 0);
-                    
-                    if (name.contains("calories")) calories = (int) amount;
-                    else if (name.contains("sugar")) sugar = (int) amount;
-                    else if (name.contains("protein")) protein = (int) amount;
-                    else if (name.contains("fat")) fat = (int) amount;
-                    else if (name.contains("carbohydrate")) carbs = (int) amount;
-                    else if (name.contains("sodium")) salt = (int) amount;
+
+                    if (name.contains("calories"))
+                        calories = (int) amount;
+                    else if (name.contains("sugar"))
+                        sugar = (int) amount;
+                    else if (name.contains("protein"))
+                        protein = (int) amount;
+                    else if (name.contains("fat"))
+                        fat = (int) amount;
+                    else if (name.contains("carbohydrate"))
+                        carbs = (int) amount;
+                    else if (name.contains("sodium"))
+                        salt = (int) amount;
                 }
             }
         }
-        
-        displayProductResult(productName, brand, calories, sugar, protein, fat, carbs, salt, ingredients, barcode, "Spoonacular");
+
+        displayProductResult(productName, brand, calories, sugar, protein, fat, carbs, salt, ingredients, barcode,
+                "Spoonacular");
     }
-    
+
     // Common method to display product results
-    private void displayProductResult(String productName, String brand, int calories, int sugar, 
-                                    int protein, int fat, int carbs, int salt, String ingredients, 
-                                    String barcode, String source) {
+    private void displayProductResult(String productName, String brand, int calories, int sugar,
+            int protein, int fat, int carbs, int salt, String ingredients,
+            String barcode, String source) {
         // Determine health rating based on nutrition
         String healthRating = determineHealthRating(calories, sugar, protein, fat);
-        
+
         // Update UI with product data
         updateProductUI(productName, brand, calories, sugar, protein, fat, carbs, salt);
         updateProductIngredients(ingredients);
-        
+
         // Update nutrition bars
         updateNutritionBars(calories, sugar, protein);
-        
+
         // Show product result animation
         showProductResultAnimation();
-        
+
         // Success haptic feedback
         performSuccessHaptic();
-        
+
         // Add to history with real data
-        HistoryActivity.addScanToHistory(this, productName, brand, barcode, "Food & Beverages", 
+        HistoryActivity.addScanToHistory(this, productName, brand, barcode, "Food & Beverages",
                 healthRating, calories, sugar, protein, ingredients);
-        
+
     }
 
     private String determineHealthRating(int calories, int sugar, int protein, int fat) {
         int score = 0;
-        
+
         // Score based on calories (per 100g)
-        if (calories < 50) score += 3;
-        else if (calories < 150) score += 2;
-        else if (calories < 300) score += 1;
-        
+        if (calories < 50)
+            score += 3;
+        else if (calories < 150)
+            score += 2;
+        else if (calories < 300)
+            score += 1;
+
         // Score based on sugar (per 100g)
-        if (sugar < 5) score += 3;
-        else if (sugar < 15) score += 2;
-        else if (sugar < 25) score += 1;
-        
+        if (sugar < 5)
+            score += 3;
+        else if (sugar < 15)
+            score += 2;
+        else if (sugar < 25)
+            score += 1;
+
         // Score based on protein (per 100g)
-        if (protein > 15) score += 2;
-        else if (protein > 8) score += 1;
-        
+        if (protein > 15)
+            score += 2;
+        else if (protein > 8)
+            score += 1;
+
         // Score based on fat (per 100g)
-        if (fat < 3) score += 2;
-        else if (fat < 10) score += 1;
-        
+        if (fat < 3)
+            score += 2;
+        else if (fat < 10)
+            score += 1;
+
         // Determine rating
-        if (score >= 8) return "Excellent";
-        else if (score >= 6) return "Good";
-        else if (score >= 4) return "Moderate";
-        else if (score >= 2) return "Poor";
-        else return "Unhealthy";
+        if (score >= 8)
+            return "Excellent";
+        else if (score >= 6)
+            return "Good";
+        else if (score >= 4)
+            return "Moderate";
+        else if (score >= 2)
+            return "Poor";
+        else
+            return "Unhealthy";
     }
 
     private void showErrorState(String message) {
@@ -702,29 +733,44 @@ public class MainActivity extends AppCompatActivity {
         if (productIngredients != null) {
             productIngredients.setText("Make sure the barcode is clear and try again");
         }
-        
+
         // Reset nutrition values
-        if (caloriesValue != null) caloriesValue.setText("--");
-        if (sugarValue != null) sugarValue.setText("--");
-        if (proteinValue != null) proteinValue.setText("--");
-        if (fatValue != null) fatValue.setText("--");
-        if (carbsValue != null) carbsValue.setText("--");
-        if (saltValue != null) saltValue.setText("--");
-        
+        if (caloriesValue != null)
+            caloriesValue.setText("--");
+        if (sugarValue != null)
+            sugarValue.setText("--");
+        if (proteinValue != null)
+            proteinValue.setText("--");
+        if (fatValue != null)
+            fatValue.setText("--");
+        if (carbsValue != null)
+            carbsValue.setText("--");
+        if (saltValue != null)
+            saltValue.setText("--");
+
     }
 
-    private void updateProductUI(String name, String brand, int calories, int sugar, int protein, int fat, int carbs, int salt) {
-        if (productName != null) productName.setText(name);
-        if (productBrand != null) productBrand.setText(brand);
-        
+    private void updateProductUI(String name, String brand, int calories, int sugar, int protein, int fat, int carbs,
+            int salt) {
+        if (productName != null)
+            productName.setText(name);
+        if (productBrand != null)
+            productBrand.setText(brand);
+
         // Update nutrition values with icons
-        if (caloriesValue != null) caloriesValue.setText("🔥 " + calories + " kcal");
-        if (sugarValue != null) sugarValue.setText("🍯 " + sugar + "g");
-        if (proteinValue != null) proteinValue.setText("🥩 " + protein + "g");
-        if (fatValue != null) fatValue.setText("🧈 " + fat + "g");
-        if (carbsValue != null) carbsValue.setText("🍞 " + carbs + "g");
-        if (saltValue != null) saltValue.setText("🧂 " + salt + "mg");
-        
+        if (caloriesValue != null)
+            caloriesValue.setText("🔥 " + calories + " kcal");
+        if (sugarValue != null)
+            sugarValue.setText("🍯 " + sugar + "g");
+        if (proteinValue != null)
+            proteinValue.setText("🥩 " + protein + "g");
+        if (fatValue != null)
+            fatValue.setText("🧈 " + fat + "g");
+        if (carbsValue != null)
+            carbsValue.setText("🍞 " + carbs + "g");
+        if (saltValue != null)
+            saltValue.setText("🧂 " + salt + "mg");
+
         // Update daily tracker
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -732,7 +778,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putInt(KEY_DAILY_SUGAR, prefs.getInt(KEY_DAILY_SUGAR, 0) + sugar);
         editor.putInt(KEY_DAILY_PROTEIN, prefs.getInt(KEY_DAILY_PROTEIN, 0) + protein);
         editor.apply();
-        
+
         // Refresh the tracker display
         updateDailyNutritionTracker();
     }
@@ -748,9 +794,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateNutritionBars(int calories, int sugar, int protein) {
-        // This method is simplified since we don't have the bar elements in the current layout
+        // This method is simplified since we don't have the bar elements in the current
+        // layout
         // The nutrition values are displayed in the product result card
-        Log.d("MainActivity", "Nutrition updated: " + calories + " cal, " + sugar + "g sugar, " + protein + "g protein");
+        Log.d("MainActivity",
+                "Nutrition updated: " + calories + " cal, " + sugar + "g sugar, " + protein + "g protein");
     }
 
     private void toggleFavorite() {
@@ -759,7 +807,7 @@ public class MainActivity extends AppCompatActivity {
             boolean isFavorite = favoriteBtn.getTag() != null && (Boolean) favoriteBtn.getTag();
             isFavorite = !isFavorite;
             favoriteBtn.setTag(isFavorite);
-            
+
             // Update icon color
             if (isFavorite) {
                 favoriteBtn.setColorFilter(getResources().getColor(R.color.accent_color));
@@ -774,8 +822,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void requestCameraPermission() {
-        ActivityCompat.requestPermissions(this, 
-                new String[]{Manifest.permission.CAMERA}, 100);
+        ActivityCompat.requestPermissions(this,
+                new String[] { Manifest.permission.CAMERA }, 100);
     }
 
     private void startBarcodeScanner() {
@@ -785,11 +833,10 @@ public class MainActivity extends AppCompatActivity {
         integrator.setCameraId(0);
         integrator.setBeepEnabled(false);
         integrator.setBarcodeImageEnabled(true);
-        
+
         // Force vertical (portrait) orientation
         integrator.setOrientationLocked(true);
-        integrator.setCaptureActivity(VerticalCaptureActivity.class);
-        
+
         integrator.initiateScan();
     }
 
@@ -808,8 +855,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, 
-                                         @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 100) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -818,51 +865,56 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    
+
     // Animation Methods
     private void startScanIconAnimation() {
         if (scanIcon != null) {
-            android.view.animation.Animation pulseAnim = android.view.animation.AnimationUtils.loadAnimation(this, R.anim.pulse_animation);
+            android.view.animation.Animation pulseAnim = android.view.animation.AnimationUtils.loadAnimation(this,
+                    R.anim.pulse_animation);
             scanIcon.startAnimation(pulseAnim);
         }
     }
-    
+
     private void showScanningAnimation() {
         if (scanningIndicator != null && scanStatusText != null) {
             scanningIndicator.setVisibility(View.VISIBLE);
             scanStatusText.setText("🔍 Scanning product...");
-            
+
             // Start the scanning animation
-            android.graphics.drawable.AnimationDrawable scanningDrawable = (android.graphics.drawable.AnimationDrawable) scanningIndicator.getDrawable();
+            android.graphics.drawable.AnimationDrawable scanningDrawable = (android.graphics.drawable.AnimationDrawable) scanningIndicator
+                    .getDrawable();
             scanningDrawable.start();
         }
     }
-    
+
     private void hideScanningAnimation() {
         if (scanningIndicator != null && scanStatusText != null) {
             scanningIndicator.setVisibility(View.GONE);
             scanStatusText.setText("✅ Product analyzed successfully!");
-            
+
             // Stop the scanning animation
-            android.graphics.drawable.AnimationDrawable scanningDrawable = (android.graphics.drawable.AnimationDrawable) scanningIndicator.getDrawable();
+            android.graphics.drawable.AnimationDrawable scanningDrawable = (android.graphics.drawable.AnimationDrawable) scanningIndicator
+                    .getDrawable();
             scanningDrawable.stop();
         }
     }
-    
+
     private void showProductResultAnimation() {
         if (resultCard != null) {
-            android.view.animation.Animation enterAnim = android.view.animation.AnimationUtils.loadAnimation(this, R.anim.product_result_enter);
+            android.view.animation.Animation enterAnim = android.view.animation.AnimationUtils.loadAnimation(this,
+                    R.anim.product_result_enter);
             resultCard.startAnimation(enterAnim);
         }
     }
-    
+
     private void animateScanButtonPress() {
         if (scanBtn != null) {
-            android.view.animation.Animation pressAnim = android.view.animation.AnimationUtils.loadAnimation(this, R.anim.scan_button_press);
+            android.view.animation.Animation pressAnim = android.view.animation.AnimationUtils.loadAnimation(this,
+                    R.anim.scan_button_press);
             scanBtn.startAnimation(pressAnim);
         }
     }
-    
+
     // Haptic Feedback Methods
     private void performHapticFeedback() {
         try {
@@ -881,7 +933,7 @@ public class MainActivity extends AppCompatActivity {
             // Silently fail - haptic feedback is optional
         }
     }
-    
+
     private void performSuccessHaptic() {
         try {
             if (vibrator != null && vibrator.hasVibrator()) {
@@ -899,37 +951,31 @@ public class MainActivity extends AppCompatActivity {
             // Silently fail - haptic feedback is optional
         }
     }
-    
+
     // Card Interaction Methods
     private void setupCardInteractions() {
         // Add press animations to interactive cards
-        if (nutritionTrackerCard != null) {
-            nutritionTrackerCard.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, android.view.MotionEvent event) {
-                    switch (event.getAction()) {
-                        case android.view.MotionEvent.ACTION_DOWN:
-                            animateCardPress(v);
-                            break;
-                        case android.view.MotionEvent.ACTION_UP:
-                        case android.view.MotionEvent.ACTION_CANCEL:
-                            animateCardRelease(v);
-                            break;
-                    }
-                    return false;
-                }
-            });
+        // Nutrition tracker card touch animations removed during cleanup
+    }
+
+
+
+    /**
+     * Sign out the current user and redirect to login
+     */
+    public void signOutUser() {
+        if (authManager != null) {
+            authManager.signOut(this);
         }
     }
-    
-    private void animateCardPress(View card) {
-        Animation pressAnim = AnimationUtils.loadAnimation(this, R.anim.card_press);
-        card.startAnimation(pressAnim);
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Check authentication state when activity starts
+        if (authManager != null && !authManager.isUserAuthenticated()) {
+            authManager.navigateToLogin(this);
+            return;
+        }
     }
-    
-    private void animateCardRelease(View card) {
-        Animation releaseAnim = AnimationUtils.loadAnimation(this, R.anim.card_release);
-        card.startAnimation(releaseAnim);
-    }
-    
 }

@@ -8,7 +8,7 @@ public class ScannerActivity extends CaptureActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Apply theme before calling super.onCreate()
-        ThemeHelper.applyTheme(this);
+
         
         super.onCreate(savedInstanceState);
     }

@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/health_gradient_background"
+    android:animateLayoutChanges="true"
+    tools:context=".ProfileActivity">
+
+    <!-- Top App Bar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/md_theme_light_surface"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="Profile"
+        app:titleTextColor="@color/md_theme_light_onSurface"
+        app:navigationIcon="@drawable/ic_arrow_back" />
+
+    <!-- Main Content ScrollView -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
+        style="@style/Layout.HealthScanner.SafeScroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_md">
+
+            <!-- Profile Header Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/profile_header_card"
+                style="@style/Widget.HealthScanner.CardView.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_lg">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_xl">
+
+                    <!-- Profile Avatar -->
+                    <FrameLayout
+                        android:layout_width="@dimen/avatar_size_xlarge"
+                        android:layout_height="@dimen/avatar_size_xlarge"
+                        android:layout_marginBottom="@dimen/spacing_md">
+
+                        <ImageView
+                            android:id="@+id/profile_avatar"
+                            style="@style/Widget.HealthScanner.Avatar"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/card_background_elevated"
+                            android:contentDescription="Profile Picture"
+                            android:src="@drawable/ic_person" />
+
+                        <!-- Edit Avatar Button -->
+                        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                            android:id="@+id/fab_edit_avatar"
+                            android:layout_width="@dimen/fab_size_normal"
+                            android:layout_height="@dimen/fab_size_normal"
+                            android:layout_gravity="bottom|end"
+                            android:contentDescription="Edit Profile Picture"
+                            android:src="@drawable/ic_edit"
+                            app:backgroundTint="@color/md_theme_light_primary"
+                            app:fabSize="mini"
+                            app:tint="@color/md_theme_light_onPrimary" />
+
+                    </FrameLayout> 
+                   <!-- User Name -->
+                    <TextView
+                        android:id="@+id/user_name"
+                        style="@style/TextAppearance.HealthScanner.Headline2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/spacing_sm"
+                        android:textAlignment="center"
+                        tools:text="John Doe" />
+
+                    <!-- User Email -->
+                    <TextView
+                        android:id="@+id/user_email"
+                        style="@style/TextAppearance.HealthScanner.Body2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        tools:text="john.doe@example.com" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Health Stats Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/health_stats_card"
+                style="@style/Widget.HealthScanner.CardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_lg">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_lg">
+
+                    <TextView
+                        style="@style/TextAppearance.HealthScanner.Headline2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/spacing_md"
+                        android:text="Health Stats" />
+
+                    <!-- Stats Row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="3">
+
+                        <!-- Total Scans -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/total_scans"
+                                style="@style/TextAppearance.HealthScanner.Headline2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/md_theme_light_primary"
+                                tools:text="42" />
+
+                            <TextView
+                                style="@style/TextAppearance.HealthScanner.Caption"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Total Scans" />
+
+                        </LinearLayout>
+
+                        <!-- Healthy Choices -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/healthy_choices"
+                                style="@style/TextAppearance.HealthScanner.Headline2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/health_excellent"
+                                tools:text="28" />
+
+                            <TextView
+                                style="@style/TextAppearance.HealthScanner.Caption"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Healthy Choices" />
+
+                        </LinearLayout>
+
+                        <!-- Avg Health Score -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/avg_health_score"
+                                style="@style/TextAppearance.HealthScanner.Headline2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/health_good"
+                                tools:text="B+" />
+
+                            <TextView
+                                style="@style/TextAppearance.HealthScanner.Caption"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Avg Score" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>     
+       <!-- Saved Items Section -->
+            <TextView
+                style="@style/TextAppearance.HealthScanner.Headline2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_md"
+                android:text="Saved Items" />
+
+            <!-- Saved Items RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/saved_items_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_lg"
+                android:nestedScrollingEnabled="false"
+                android:visibility="gone"
+                tools:itemCount="2"
+                tools:listitem="@layout/item_recent_scan" />
+
+            <!-- Empty State for Saved Items -->
+            <LinearLayout
+                android:id="@+id/empty_state_saved"
+                style="@style/Widget.HealthScanner.EmptyState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_lg"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size_xxlarge"
+                    android:layout_height="@dimen/icon_size_xxlarge"
+                    android:layout_marginBottom="@dimen/spacing_md"
+                    android:alpha="0.6"
+                    android:contentDescription="No saved items"
+                    android:src="@drawable/ic_favorite"
+                    app:tint="@color/md_theme_light_onSurfaceVariant" />
+
+                <TextView
+                    style="@style/TextAppearance.HealthScanner.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/spacing_sm"
+                    android:text="No saved items yet"
+                    android:textStyle="bold" />
+
+                <TextView
+                    style="@style/TextAppearance.HealthScanner.Body2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Save products you want to remember"
+                    android:textAlignment="center" />
+
+            </LinearLayout>
+
+            <!-- Settings Section -->
+            <TextView
+                style="@style/TextAppearance.HealthScanner.Headline2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_md"
+                android:text="Settings" />
+
+            <!-- Settings Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/settings_card"
+                style="@style/Widget.HealthScanner.CardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_lg">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <!-- Notifications Setting -->
+                    <LinearLayout
+                        android:id="@+id/notifications_setting"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/list_item_height_medium"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/spacing_md">
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_size_medium"
+                            android:layout_height="@dimen/icon_size_medium"
+                            android:layout_marginEnd="@dimen/spacing_md"
+                            android:contentDescription="Notifications"
+                            android:src="@drawable/ic_notifications"
+                            app:tint="@color/md_theme_light_onSurfaceVariant" />
+
+                        <TextView
+                            style="@style/TextAppearance.HealthScanner.Body1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Notifications" />
+
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/switch_notifications"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true" />
+
+                    </LinearLayout>
+
+                    <View style="@style/Widget.HealthScanner.Divider" />
+
+                    <!-- Dark Mode Setting -->
+                    <LinearLayout
+                        android:id="@+id/dark_mode_setting"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/list_item_height_medium"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/spacing_md">
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_size_medium"
+                            android:layout_height="@dimen/icon_size_medium"
+                            android:layout_marginEnd="@dimen/spacing_md"
+                            android:contentDescription="Dark Mode"
+                            android:src="@drawable/ic_dark_mode"
+                            app:tint="@color/md_theme_light_onSurfaceVariant" />
+
+                        <TextView
+                            style="@style/TextAppearance.HealthScanner.Body1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Dark Mode" />
+
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/switch_dark_mode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView> 
+           <!-- Sign Out Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_sign_out"
+                style="@style/Widget.HealthScanner.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height_medium"
+                android:layout_marginBottom="@dimen/spacing_xxxl"
+                android:text="Sign Out"
+                android:textColor="@color/md_theme_light_error"
+                app:strokeColor="@color/md_theme_light_error" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        style="@style/Widget.HealthScanner.BottomNavigation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_navigation_menu" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/health_gradient_background"
+    android:animateLayoutChanges="true"
+    tools:context=".MainActivity">
+
+    <!-- Top App Bar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/md_theme_light_surface"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="Nure Health Scanner"
+        app:titleTextColor="@color/md_theme_light_onSurface" />
+
+    <!-- Main Content ScrollView for crash safety -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
+        style="@style/Layout.HealthScanner.SafeScroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_md">
+
+            <!-- Welcome Header Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/welcome_card"
+                style="@style/Widget.HealthScanner.CardView.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_lg">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_xl">
+
+                    <ImageView
+                        android:id="@+id/app_logo"
+                        android:layout_width="@dimen/icon_size_xxlarge"
+                        android:layout_height="@dimen/icon_size_xxlarge"
+                        android:layout_marginBottom="@dimen/spacing_md"
+                        android:contentDescription="@string/app_name"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/app_icon" />
+
+                    <TextView
+                        android:id="@+id/welcome_title"
+                        style="@style/TextAppearance.HealthScanner.Headline2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/spacing_sm"
+                        android:text="Welcome to Nure Health"
+                        android:textAlignment="center" />
+
+                    <TextView
+                        android:id="@+id/welcome_subtitle"
+                        style="@style/TextAppearance.HealthScanner.Body2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Scan products to discover their health impact"
+                        android:textAlignment="center" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Quick Actions Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_lg"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <!-- Scan Product Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/scan_card"
+                    style="@style/Widget.HealthScanner.CardView"
+                    android:layout_width="0dp"
+                    android:layout_height="120dp"
+                    android:layout_marginEnd="@dimen/spacing_sm"
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md">
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_size_large"
+                            android:layout_height="@dimen/icon_size_large"
+                            android:layout_marginBottom="@dimen/spacing_sm"
+                            android:contentDescription="Scan Product"
+                            android:src="@drawable/ic_scan_qr"
+                            app:tint="@color/md_theme_light_primary" />
+
+                        <TextView
+                            style="@style/TextAppearance.HealthScanner.Body1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Scan Product"
+                            android:textAlignment="center"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Manual Search Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/search_card"
+                    style="@style/Widget.HealthScanner.CardView"
+                    android:layout_width="0dp"
+                    android:layout_height="120dp"
+                    android:layout_marginStart="@dimen/spacing_sm"
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md">
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_size_large"
+                            android:layout_height="@dimen/icon_size_large"
+                            android:layout_marginBottom="@dimen/spacing_sm"
+                            android:contentDescription="Manual Search"
+                            android:src="@drawable/ic_search"
+                            app:tint="@color/md_theme_light_secondary" />
+
+                        <TextView
+                            style="@style/TextAppearance.HealthScanner.Body1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Manual Search"
+                            android:textAlignment="center"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+            <!-- Recent Scans Section -->
+            <TextView
+                style="@style/TextAppearance.HealthScanner.Headline2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_md"
+                android:text="Recent Scans" />
+
+            <!-- Recent Scans RecyclerView (Crash-safe) -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recent_scans_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_lg"
+                android:nestedScrollingEnabled="false"
+                android:visibility="gone"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_recent_scan" />
+
+            <!-- Empty State for Recent Scans -->
+            <LinearLayout
+                android:id="@+id/empty_state_recent"
+                style="@style/Widget.HealthScanner.EmptyState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_lg"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size_xxlarge"
+                    android:layout_height="@dimen/icon_size_xxlarge"
+                    android:layout_marginBottom="@dimen/spacing_md"
+                    android:alpha="0.6"
+                    android:contentDescription="No scans yet"
+                    android:src="@drawable/ic_barcode_scan"
+                    app:tint="@color/md_theme_light_onSurfaceVariant" />
+
+                <TextView
+                    style="@style/TextAppearance.HealthScanner.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/spacing_sm"
+                    android:text="No scans yet"
+                    android:textStyle="bold" />
+
+                <TextView
+                    style="@style/TextAppearance.HealthScanner.Body2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Start scanning products to see your history here"
+                    android:textAlignment="center" />
+
+            </LinearLayout>
+
+            <!-- Health Tips Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/health_tips_card"
+                style="@style/Widget.HealthScanner.CardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_lg">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_lg">
+
+                    <TextView
+                        style="@style/TextAppearance.HealthScanner.Headline2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/spacing_sm"
+                        android:drawablePadding="@dimen/spacing_sm"
+                        android:text="💡 Health Tip"
+                        app:drawableStartCompat="@drawable/ic_health_score" />
+
+                    <TextView
+                        android:id="@+id/health_tip_text"
+                        style="@style/TextAppearance.HealthScanner.Body1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Look for products with less than 5g of sugar per serving for better health outcomes." />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Spacer for FAB -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/spacing_xxxl" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Floating Action Button for Quick Scan -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_scan"
+        style="@style/Widget.HealthScanner.FloatingActionButton.Scan"
+        android:layout_width="@dimen/fab_size_large"
+        android:layout_height="@dimen/fab_size_large"
+        android:layout_margin="@dimen/fab_margin"
+        android:contentDescription="Quick Scan"
+        android:src="@drawable/ic_scan_qr"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        style="@style/Widget.HealthScanner.BottomNavigation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_navigation_menu" />
+
+    <!-- Loading Overlay (Initially hidden) -->
+    <FrameLayout
+        android:id="@+id/loading_overlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/semi_transparent"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progress_indicator"
+            style="@style/Widget.HealthScanner.ProgressBar"
+            android:layout_width="@dimen/progress_size_large"
+            android:layout_height="@dimen/progress_size_large"
+            android:layout_gravity="center"
+            android:indeterminate="true" />
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

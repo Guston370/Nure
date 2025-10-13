@@ -1,41 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Override adaptive colors for dark mode -->
-    <color name="adaptive_text_primary">@color/primary_text_color_dark</color>
-    <color name="adaptive_text_secondary">@color/secondary_text_color_dark</color>
-    <color name="adaptive_background">@color/background_color_dark</color>
-    <color name="adaptive_surface">@color/surface_dark</color>
-    <color name="adaptive_border">@color/border_color_dark</color>
+    <!-- Nure Health Scanner - Dark Theme Colors -->
+    
+    <!-- Adaptive Colors for Dark Theme -->
+    <color name="adaptive_primary">@color/md_theme_dark_primary</color>
+    <color name="adaptive_background">@color/md_theme_dark_background</color>
+    <color name="adaptive_surface">@color/md_theme_dark_surface</color>
+    <color name="adaptive_text_primary">@color/md_theme_dark_onBackground</color>
+    <color name="adaptive_text_secondary">@color/md_theme_dark_onSurfaceVariant</color>
 
-    <!-- Override primary adaptive colors for dark mode -->
-    <color name="primary_color">@color/primary_color_dark</color>
-    <color name="primary_dark_color">@color/primary_dark_color_dark</color>
-    <color name="primary_light_color">@color/primary_light_color_dark</color>
-    <color name="accent_color">@color/accent_color_dark</color>
+    <!-- Shimmer Colors for Dark Theme -->
+    <color name="shimmer_base">@color/shimmer_base_dark</color>
+    <color name="shimmer_highlight">@color/shimmer_highlight_dark</color>
 
-    <!-- Override background colors for dark mode -->
-    <color name="background_color">@color/background_color_dark</color>
-    <color name="card_background">@color/card_background_dark</color>
-    <color name="input_background">@color/input_background_dark</color>
-
-    <!-- Override text colors for dark mode -->
-    <color name="primary_text_color">@color/primary_text_color_dark</color>
-    <color name="secondary_text_color">@color/secondary_text_color_dark</color>
-    <color name="white_text">@color/white_text_dark</color>
-
-    <!-- Override UI element colors for dark mode -->
-    <color name="border_color">@color/border_color_dark</color>
-    <color name="divider_color">@color/divider_color_dark</color>
-    <color name="icon_tint_color">@color/icon_tint_color_dark</color>
-
-    <!-- Override shadow colors for dark mode -->
-    <color name="shadow_color">@color/shadow_color_dark</color>
-
-    <!-- Override bottom nav colors for dark mode -->
-    <color name="bottom_nav_color">@color/bottom_nav_color_dark</color>
-
-    <!-- High emphasis text for dark mode -->
-    <color name="text_high_emphasis">@color/text_high_emphasis_dark</color>
-    <color name="text_medium_emphasis">@color/text_medium_emphasis_dark</color>
-    <color name="text_disabled">@color/text_disabled_dark</color>
+    <!-- Legacy Support Colors for Dark Theme -->
+    <color name="primary_color">@color/md_theme_dark_primary</color>
+    <color name="primary_dark_color">@color/md_theme_dark_onPrimaryContainer</color>
+    <color name="accent_color">@color/md_theme_dark_tertiary</color>
+    <color name="background_color">@color/md_theme_dark_background</color>
+    <color name="surface_color">@color/md_theme_dark_surface</color>
 </resources>

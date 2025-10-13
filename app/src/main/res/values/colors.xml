@@ -1,129 +1,200 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+    <!-- Nure Health Scanner - Professional Health-Tech Color Palette -->
+    
+    <!-- Primary Colors - Mint Green to Teal Gradient -->
+    <color name="md_theme_light_primary">#0FB8AD</color>
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_primaryContainer">#B2F2EF</color>
+    <color name="md_theme_light_onPrimaryContainer">#003A36</color>
+    
+    <color name="md_theme_dark_primary">#3CCF91</color>
+    <color name="md_theme_dark_onPrimary">#003A36</color>
+    <color name="md_theme_dark_primaryContainer">#005B54</color>
+    <color name="md_theme_dark_onPrimaryContainer">#B2F2EF</color>
+
+    <!-- Secondary Colors - Soft Blue -->
+    <color name="md_theme_light_secondary">#4DB6E3</color>
+    <color name="md_theme_light_onSecondary">#FFFFFF</color>
+    <color name="md_theme_light_secondaryContainer">#D1ECFF</color>
+    <color name="md_theme_light_onSecondaryContainer">#001D33</color>
+    
+    <color name="md_theme_dark_secondary">#9CCCFF</color>
+    <color name="md_theme_dark_onSecondary">#003258</color>
+    <color name="md_theme_dark_secondaryContainer">#00497D</color>
+    <color name="md_theme_dark_onSecondaryContainer">#D1ECFF</color>
+
+    <!-- Tertiary Colors - Warm Accent -->
+    <color name="md_theme_light_tertiary">#FFB74D</color>
+    <color name="md_theme_light_onTertiary">#FFFFFF</color>
+    <color name="md_theme_light_tertiaryContainer">#FFECB3</color>
+    <color name="md_theme_light_onTertiaryContainer">#2E1B00</color>
+    
+    <color name="md_theme_dark_tertiary">#FFD166</color>
+    <color name="md_theme_dark_onTertiary">#3E2723</color>
+    <color name="md_theme_dark_tertiaryContainer">#5D4037</color>
+    <color name="md_theme_dark_onTertiaryContainer">#FFECB3</color>
+
+    <!-- Error Colors -->
+    <color name="md_theme_light_error">#E53935</color>
+    <color name="md_theme_light_errorContainer">#FFEBEE</color>
+    <color name="md_theme_light_onError">#FFFFFF</color>
+    <color name="md_theme_light_onErrorContainer">#B71C1C</color>
+    
+    <color name="md_theme_dark_error">#FF6B6B</color>
+    <color name="md_theme_dark_errorContainer">#C62828</color>
+    <color name="md_theme_dark_onError">#FFFFFF</color>
+    <color name="md_theme_dark_onErrorContainer">#FFEBEE</color>
+
+    <!-- Background Colors -->
+    <color name="md_theme_light_background">#FAFAFA</color>
+    <color name="md_theme_light_onBackground">#212121</color>
+    
+    <color name="md_theme_dark_background">#121212</color>
+    <color name="md_theme_dark_onBackground">#E0E0E0</color>
+
+    <!-- Surface Colors -->
+    <color name="md_theme_light_surface">#FFFFFF</color>
+    <color name="md_theme_light_onSurface">#212121</color>
+    <color name="md_theme_light_surfaceVariant">#F5F5F5</color>
+    <color name="md_theme_light_onSurfaceVariant">#616161</color>
+    
+    <color name="md_theme_dark_surface">#1E1E1E</color>
+    <color name="md_theme_dark_onSurface">#E0E0E0</color>
+    <color name="md_theme_dark_surfaceVariant">#2C2C2C</color>
+    <color name="md_theme_dark_onSurfaceVariant">#BDBDBD</color>
+
+    <!-- Outline Colors -->
+    <color name="md_theme_light_outline">#E0E0E0</color>
+    <color name="md_theme_light_inverseOnSurface">#F5F5F5</color>
+    <color name="md_theme_light_inverseSurface">#2C2C2C</color>
+    <color name="md_theme_light_inversePrimary">#3CCF91</color>
+    
+    <color name="md_theme_dark_outline">#424242</color>
+    <color name="md_theme_dark_inverseOnSurface">#121212</color>
+    <color name="md_theme_dark_inverseSurface">#E0E0E0</color>
+    <color name="md_theme_dark_inversePrimary">#0FB8AD</color>
+
+    <!-- State Colors for Health Indicators -->
+    <color name="health_excellent">#4CAF50</color>
+    <color name="health_good">#8BC34A</color>
+    <color name="health_moderate">#FFC107</color>
+    <color name="health_poor">#FF9800</color>
+    <color name="health_unhealthy">#E53935</color>
+
+    <!-- Nutrition Colors -->
+    <color name="calories_color">#FF7043</color>
+    <color name="protein_color">#66BB6A</color>
+    <color name="carbs_color">#42A5F5</color>
+    <color name="fat_color">#FFA726</color>
+    <color name="sugar_color">#EC407A</color>
+    <color name="sodium_color">#AB47BC</color>
+    <color name="fiber_color">#8D6E63</color>
+    <color name="vitamin_color">#26C6DA</color>
+
+    <!-- Gradient Colors -->
+    <color name="gradient_primary_start">#3CCF91</color>
+    <color name="gradient_primary_end">#0FB8AD</color>
+    <color name="gradient_secondary_start">#4DB6E3</color>
+    <color name="gradient_secondary_end">#2196F3</color>
+    <color name="gradient_accent_start">#FFD166</color>
+    <color name="gradient_accent_end">#FFB74D</color>
+
+    <!-- Background Gradients -->
+    <color name="background_gradient_start">#F0FDFC</color>
+    <color name="background_gradient_end">#FFFFFF</color>
+    <color name="background_gradient_dark_start">#0D1B1A</color>
+    <color name="background_gradient_dark_end">#121212</color>
+
+    <!-- Card and Component Colors -->
+    <color name="card_background_light">#FFFFFF</color>
+    <color name="card_background_dark">#1E1E1E</color>
+    <color name="card_shadow_light">#B2DFDB</color>
+    <color name="card_shadow_dark">#0A0A0A</color>
+
+    <!-- Text Colors -->
+    <color name="text_primary_light">#212121</color>
+    <color name="text_secondary_light">#616161</color>
+    <color name="text_hint_light">#9E9E9E</color>
+    <color name="text_primary_dark">#E0E0E0</color>
+    <color name="text_secondary_dark">#BDBDBD</color>
+    <color name="text_hint_dark">#757575</color>
+
+    <!-- Interactive States -->
+    <color name="ripple_light">#1A0FB8AD</color>
+    <color name="ripple_dark">#1A3CCF91</color>
+    <color name="pressed_light">#0D0FB8AD</color>
+    <color name="pressed_dark">#0D3CCF91</color>
+
+    <!-- Status Bar and Navigation -->
+    <color name="status_bar_light">#0FB8AD</color>
+    <color name="status_bar_dark">#003A36</color>
+    <color name="navigation_bar_light">#FFFFFF</color>
+    <color name="navigation_bar_dark">#121212</color>
+
+    <!-- Scan Theme Colors -->
+    <color name="scan_active">#3CCF91</color>
+    <color name="scan_inactive">#E0E0E0</color>
+    <color name="scan_success">#4CAF50</color>
+    <color name="scan_error">#E53935</color>
+    <color name="scan_overlay">#80000000</color>
+
+    <!-- Shimmer Colors -->
+    <color name="shimmer_base_light">#F0F0F0</color>
+    <color name="shimmer_highlight_light">#FFFFFF</color>
+    <color name="shimmer_base_dark">#2C2C2C</color>
+    <color name="shimmer_highlight_dark">#3A3A3A</color>
+
+    <!-- Legacy Support Colors -->
+    <color name="primary_color">@color/md_theme_light_primary</color>
+    <color name="primary_dark_color">@color/md_theme_light_onPrimaryContainer</color>
+    <color name="accent_color">@color/md_theme_light_tertiary</color>
+    <color name="background_color">@color/md_theme_light_background</color>
+    <color name="surface_color">@color/md_theme_light_surface</color>
+
+    <!-- Standard Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
 
-    <!-- Light Mode Primary Colors -->
-    <color name="primary_color_light">#6C63FF</color>
-    <color name="primary_dark_color_light">#5A52D5</color>
-    <color name="primary_light_color_light">#8A84FF</color>
-    <color name="accent_color_light">#FF6B9D</color>
+    <!-- Adaptive Colors (will switch based on theme) -->
+    <color name="adaptive_primary">@color/md_theme_light_primary</color>
+    <color name="adaptive_background">@color/md_theme_light_background</color>
+    <color name="adaptive_surface">@color/md_theme_light_surface</color>
+    <color name="adaptive_text_primary">@color/md_theme_light_onBackground</color>
+    <color name="adaptive_text_secondary">@color/md_theme_light_onSurfaceVariant</color>
 
-    <!-- Dark Mode Primary Colors -->
-    <color name="primary_color_dark">#8A84FF</color>
-    <color name="primary_dark_color_dark">#7B75FF</color>
-    <color name="primary_light_color_dark">#9B95FF</color>
-    <color name="accent_color_dark">#FF8BB5</color>
+    <!-- Google Sign-In Colors -->
+    <color name="google_blue">#4285F4</color>
+    <color name="google_red">#EA4335</color>
+    <color name="google_yellow">#FBBC05</color>
+    <color name="google_green">#34A853</color>
 
-    <!-- Adaptive Colors (use these in layouts) -->
-    <color name="primary_color">@color/primary_color_light</color>
-    <color name="primary_dark_color">@color/primary_dark_color_light</color>
-    <color name="primary_light_color">@color/primary_light_color_light</color>
-    <color name="accent_color">@color/accent_color_light</color>
+    <!-- Nure Brand Colors (Health-focused) -->
+    <color name="nure_primary">@color/md_theme_light_primary</color>
+    <color name="nure_primary_variant">@color/md_theme_light_onPrimaryContainer</color>
+    <color name="nure_secondary">@color/md_theme_light_secondary</color>
+    <color name="nure_secondary_variant">@color/md_theme_light_secondaryContainer</color>
+    <color name="nure_accent">@color/md_theme_light_tertiary</color>
 
-    <!-- Light Mode Background Colors -->
-    <color name="background_color_light">#F8F9FF</color>
-    <color name="card_background_light">#FFFFFF</color>
-    <color name="input_background_light">#F5F6FA</color>
+    <!-- Health UI Colors -->
+    <color name="health_bg_light">@color/md_theme_light_background</color>
+    <color name="health_bg_card">@color/md_theme_light_surface</color>
+    <color name="health_text_primary">@color/md_theme_light_onBackground</color>
+    <color name="health_text_secondary">@color/md_theme_light_onSurfaceVariant</color>
+    <color name="health_text_hint">@color/text_hint_light</color>
 
-    <!-- Dark Mode Background Colors - Enhanced for better appearance -->
-    <color name="background_color_dark">#0F0F0F</color>
-    <color name="card_background_dark">#1A1A1A</color>
-    <color name="input_background_dark">#2A2A2A</color>
+    <!-- Status Colors for Java Code -->
+    <color name="error_color">@color/md_theme_light_error</color>
+    <color name="success_color">@color/health_excellent</color>
+    <color name="warning_color">@color/health_moderate</color>
+    <color name="info_color">@color/md_theme_light_secondary</color>
 
-    <!-- Adaptive Background Colors -->
-    <color name="background_color">@color/background_color_light</color>
-    <color name="card_background">@color/card_background_light</color>
-    <color name="input_background">@color/input_background_light</color>
+    <!-- Semi-transparent overlays -->
+    <color name="semi_transparent">#80000000</color>
+    <color name="semi_transparent_white">#80FFFFFF</color>
 
-    <!-- Light Mode Text Colors - Enhanced contrast -->
-    <color name="primary_text_color_light">#1A202C</color>
-    <color name="secondary_text_color_light">#4A5568</color>
-    <color name="white_text_light">#FFFFFF</color>
-
-    <!-- Dark Mode Text Colors - Enhanced for better visibility -->
-    <color name="primary_text_color_dark">#FFFFFF</color>
-    <color name="secondary_text_color_dark">#B8BCC8</color>
-    <color name="white_text_dark">#FFFFFF</color>
-
-    <!-- Adaptive Text Colors -->
-    <color name="primary_text_color">@color/primary_text_color_light</color>
-    <color name="secondary_text_color">@color/secondary_text_color_light</color>
-    <color name="white_text">@color/white_text_light</color>
-
-    <!-- Light Mode UI Element Colors -->
-    <color name="border_color_light">#E2E8F0</color>
-    <color name="divider_color_light">#CBD5E0</color>
-    <color name="icon_tint_color_light">#718096</color>
-
-    <!-- Dark Mode UI Element Colors - Enhanced visibility -->
-    <color name="border_color_dark">#404040</color>
-    <color name="divider_color_dark">#333333</color>
-    <color name="icon_tint_color_dark">#CCCCCC</color>
-
-    <!-- Adaptive UI Element Colors -->
-    <color name="border_color">@color/border_color_light</color>
-    <color name="divider_color">@color/divider_color_light</color>
-    <color name="icon_tint_color">@color/icon_tint_color_light</color>
-
-    <!-- Gradient Colors (work well in both modes) -->
-    <color name="gradient_start">#667EEA</color>
-    <color name="gradient_end">#764BA2</color>
-    <color name="gradient_secondary_start">#FF6B9D</color>
-    <color name="gradient_secondary_end">#C44569</color>
-
-    <!-- Status Colors (same for both modes) -->
-    <color name="error_color">#E53E3E</color>
-    <color name="success_color">#38A169</color>
-    <color name="warning_color">#D69E2E</color>
-
-    <!-- Shadow and Elevation -->
-    <color name="shadow_color_light">#1A202C</color>
-    <color name="shadow_color_dark">#000000</color>
-    <color name="shadow_color">@color/shadow_color_light</color>
-
-    <!-- Bottom Navigation Colors -->
-    <color name="bottom_nav_color_light">@android:color/darker_gray</color>
-    <color name="bottom_nav_color_dark">#2A2A2A</color>
-    <color name="bottom_nav_color">@color/bottom_nav_color_light</color>
-
-    <!-- Material Design Colors -->
-    <color name="colorPrimary">@color/primary_color</color>
-    <color name="colorAccent">@color/accent_color</color>
-
-    <!-- Ripple Effect Colors -->
-    <color name="ripple_light">#20000000</color>
-    <color name="ripple_dark">#20FFFFFF</color>
-
-    <!-- Surface Colors for better dark mode support -->
-    <color name="surface_light">#FFFFFF</color>
-    <color name="surface_dark">#1A1A1A</color>
-    <color name="surface_variant_light">#F5F6FA</color>
-    <color name="surface_variant_dark">#2A2A2A</color>
-
-    <!-- Adaptive Colors that respond to system theme -->
-    <color name="adaptive_text_primary">@color/primary_text_color_light</color>
-    <color name="adaptive_text_secondary">@color/secondary_text_color_light</color>
-    <color name="adaptive_background">@color/background_color_light</color>
-    <color name="adaptive_surface">@color/surface_light</color>
-    <color name="adaptive_border">@color/border_color_light</color>
-
-    <!-- High contrast colors for critical text -->
-    <color name="text_high_emphasis_light">#000000</color>
-    <color name="text_high_emphasis_dark">#FFFFFF</color>
-    <color name="text_medium_emphasis_light">#3C4043</color>
-    <color name="text_medium_emphasis_dark">#E8EAED</color>
-    <color name="text_disabled_light">#80868B</color>
-    <color name="text_disabled_dark">#9AA0A6</color>
-
-    <!-- Adaptive high emphasis text (defaults to light theme) -->
-    <color name="text_high_emphasis">@color/text_high_emphasis_light</color>
-    <color name="text_medium_emphasis">@color/text_medium_emphasis_light</color>
-    <color name="text_disabled">@color/text_disabled_light</color>
-
+    <!-- Backwards compatibility -->
+    <color name="shimmer_base">@color/shimmer_base_light</color>
+    <color name="shimmer_highlight">@color/shimmer_highlight_light</color>
 </resources>
