@@ -276,15 +276,7 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Bottom Navigation -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        style="@style/Widget.HealthScanner.BottomNavigation"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_navigation_menu" />
+    <include layout="@layout/bottom_nav_common" />
 
     <!-- Loading Overlay (Initially hidden) -->
     <FrameLayout

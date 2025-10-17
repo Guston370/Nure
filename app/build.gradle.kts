@@ -54,10 +54,8 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.okhttp)
 
-    // ZXing Barcode Scanner - use version catalog
-    implementation(libs.zxing) {
-        isTransitive = false // avoid duplicate AndroidX libs
-    }
+    // ZXing Barcode Scanner
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.google.zxing:core:3.4.1")
 
     // ML Kit Barcode Scanning

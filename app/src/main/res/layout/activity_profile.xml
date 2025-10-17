@@ -7,15 +7,8 @@
     android:background="@color/adaptive_background">
 
     <!-- Bottom Navigation Bar -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        style="@style/Widget.HealthScanner.BottomNavigation"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/bottom_nav_height"
-        app:menu="@menu/bottom_nav_menu"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+    <!-- Bottom Navigation -->
+    <include layout="@layout/bottom_nav_common" />
 
     <!-- Main Content Area -->
     <ScrollView

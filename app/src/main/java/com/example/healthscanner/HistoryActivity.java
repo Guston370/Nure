@@ -13,7 +13,7 @@ import android.util.Log;
  * History Activity for displaying scan history
  * Shows previously scanned products and their nutritional information
  */
-public class HistoryActivity extends AppCompatActivity {
+public class HistoryActivity extends BaseActivity {
     
     private static final String TAG = "HistoryActivity";
     private static final String PREFS_NAME = "HealthScannerPrefs";
@@ -35,7 +35,7 @@ public class HistoryActivity extends AppCompatActivity {
         }
         
         initializeViews();
-        setupBottomNavigation();
+        initializeBottomNavigation();
         loadScanHistory();
     }
     
@@ -73,6 +73,11 @@ public class HistoryActivity extends AppCompatActivity {
         if (historyContent != null) {
             historyContent.setText("📊 Scan History\n\nYour scan history will appear here.\nStart scanning products to build your history!");
         }
+    }
+    
+    @Override
+    protected int getCurrentNavigationItemId() {
+        return R.id.nav_history;
     }
     
     /**

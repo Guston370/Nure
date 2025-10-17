@@ -58,5 +58,46 @@
     <string name="nav_history">History</string>
     <string name="nav_favorites">Favorites</string>
     <string name="nav_profile">Profile</string>
+    <string name="nav_stats">Stats</string>
+    <string name="nav_scan">Scan</string>
 
+    <!-- Profile Screen -->
+    <string name="guest_user">Guest User</string>
+    <string name="no_email">No email provided</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="total_scans">Total Scans</string>
+    <string name="healthy_products">Healthy Products</string>
+    <string name="unhealthy_products">Unhealthy Products</string>
+    <string name="your_saved_products">Your Saved Products</string>
+    <string name="no_saved_items_yet">No saved products yet</string>
+    <string name="start_scanning">Start scanning to save healthy products</string>
+    <string name="settings">Settings</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="notifications">Notifications</string>
+    <string name="contact_support">Contact Support</string>
+    <string name="logout">Logout</string>
+    <string name="copyright">Nure © 2025 — Eat Smart, Live Better</string>
+    
+    <!-- Profile Stats -->
+    <string name="caution_items">Caution Items</string>
+    <string name="health_score">Health Score</string>
+    <string name="membership_basic">Basic</string>
+    <string name="membership_pro">Pro</string>
+    <string name="edit_profile_dialog_title">Edit Profile</string>
+    <string name="edit_profile_dialog_message">Update your profile information</string>
+    <string name="change_photo">Change Photo</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="cancel">Cancel</string>
+    <string name="daily_calorie_goal">Daily Calorie Goal</string>
+    <string name="set_goal">Set Goal</string>
+    <string name="export_history">Export Scan History</string>
+    <string name="ai_health_tips">AI Health Tips</string>
+    <string name="daily_tip">Daily Health Tip</string>
+    <string name="achievements">Achievements</string>
+    <string name="achievement_scans_10">Scanning Pro</string>
+    <string name="achievement_scans_50">Health Explorer</string>
+    <string name="achievement_scans_100">Health Master</string>
+    <string name="achievement_desc_scans_10">Completed 10 product scans</string>
+    <string name="achievement_desc_scans_50">Completed 50 product scans</string>
+    <string name="achievement_desc_scans_100">Completed 100 product scans</string>
 </resources>

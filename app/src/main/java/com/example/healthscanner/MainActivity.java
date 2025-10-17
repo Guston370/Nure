@@ -44,7 +44,7 @@ import java.util.Locale;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     // UI Elements
     private Button scanBtn, manualSearchBtn;
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d("MainActivity", "Haptic feedback initialized");
             setupClickListeners();
             Log.d("MainActivity", "Click listeners setup");
-            setupBottomNavigation();
+            initializeBottomNavigation();
             Log.d("MainActivity", "Bottom navigation setup");
             updateDailyNutritionTracker();
             Log.d("MainActivity", "Daily nutrition tracker updated");
@@ -123,9 +123,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (bottomNavigation != null && isNavigationInitialized) {
-            bottomNavigation.setSelectedItemId(R.id.nav_scan);
-        }
         updateDailyNutritionTracker();
     }
 
@@ -218,40 +215,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setupBottomNavigation() {
-        if (bottomNavigation == null) {
-            Log.w("MainActivity", "Bottom navigation is null, skipping setup");
-            return;
+    @Override
+    protected int getCurrentNavigationItemId() {
+        // MainActivity represents both Home and Scan functionality
+        // Check if we should highlight scan or home based on intent
+        if (getIntent().getBooleanExtra("start_scanner", false)) {
+            return R.id.nav_scan;
         }
-
-        // Set up navigation item selected listener first
-        bottomNavigation.setOnItemSelectedListener(item -> {
-            // Don't trigger actions during initialization
-            if (!isNavigationInitialized) {
-                return false;
-            }
-
-            int itemId = item.getItemId();
-            if (itemId == R.id.nav_scan) {
-                // Already on scan page
-                return true;
-            } else if (itemId == R.id.nav_history) {
-                Intent historyIntent = new Intent(this, HistoryActivity.class);
-                startActivity(historyIntent);
-                return true;
-            } else if (itemId == R.id.nav_profile) {
-                Intent profileIntent = new Intent(this, ProfileActivity.class);
-                startActivity(profileIntent);
-                return true;
-            }
-            return false;
-        });
-
-        // Mark navigation as initialized
-        isNavigationInitialized = true;
-
-        // Set the correct item as selected
-        bottomNavigation.setSelectedItemId(R.id.nav_scan);
+        return R.id.nav_home;
     }
 
     private void updateDailyNutritionTracker() {
@@ -827,17 +798,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startBarcodeScanner() {
-        IntentIntegrator integrator = new IntentIntegrator(this);
-        integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
-        integrator.setPrompt("Scan a barcode");
-        integrator.setCameraId(0);
-        integrator.setBeepEnabled(false);
-        integrator.setBarcodeImageEnabled(true);
-
-        // Force vertical (portrait) orientation
-        integrator.setOrientationLocked(true);
-
-        integrator.initiateScan();
+        Intent intent = new Intent(this, ScannerActivity.class);
+        startActivity(intent);
     }
 
     @Override

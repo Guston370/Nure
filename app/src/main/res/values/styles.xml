@@ -105,14 +105,49 @@
     <style name="Widget.HealthScanner.BottomNavigation" parent="Widget.Material3.BottomNavigationView">
         <item name="elevation">8dp</item>
         <item name="android:background">@color/md_theme_light_surface</item>
-        <item name="itemIconTint">@color/md_theme_light_primary</item>
-        <item name="itemTextColor">@color/md_theme_light_primary</item>
+        <item name="itemIconTint">@color/bottom_nav_icon_selector</item>
+        <item name="itemTextColor">@color/bottom_nav_text_selector</item>
         <item name="itemRippleColor">@color/ripple_light</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.HealthScanner.BottomNavigation.ActiveIndicator</item>
+        <item name="labelVisibilityMode">labeled</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+    </style>
+
+    <!-- Enhanced Bottom Navigation Style -->
+    <style name="Widget.HealthScanner.BottomNavigation.Enhanced" parent="Widget.Material3.BottomNavigationView">
+        <item name="elevation">@dimen/elevation_lg</item>
+        <item name="android:background">@drawable/bottom_nav_background</item>
+        <item name="itemIconTint">@color/bottom_nav_icon_selector</item>
+        <item name="itemTextColor">@color/bottom_nav_text_selector</item>
+        <item name="itemRippleColor">@color/ripple_light</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.HealthScanner.BottomNavigation.ActiveIndicator</item>
+        <item name="labelVisibilityMode">labeled</item>
+        <item name="itemIconSize">24dp</item>
+        <item name="itemPaddingTop">8dp</item>
+        <item name="itemPaddingBottom">8dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
+    <style name="Widget.HealthScanner.BottomNavigation.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/md_theme_light_primaryContainer</item>
+        <item name="android:width">32dp</item>
+        <item name="android:height">32dp</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.HealthScanner.SmallComponent</item>
+    </style>
+
+    <!-- Shape Appearance for Active Indicator -->
+    <style name="ShapeAppearance.HealthScanner.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
     </style>
     
     <style name="ThemeOverlay.HealthScanner.BottomNavigation" parent="">
         <item name="colorPrimary">@color/md_theme_light_primary</item>
         <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
     </style>
 
     <!-- FAB Styles with Gradient -->

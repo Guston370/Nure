@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/spacing_md"
+    android:layout_marginVertical="@dimen/spacing_sm"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:strokeColor="@color/md_theme_light_outline"
+    app:strokeWidth="1dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/spacing_md">
+
+        <ImageView
+            android:id="@+id/product_image"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="Product Image"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:src="@drawable/ic_person" />
+
+        <TextView
+            android:id="@+id/product_name"
+            style="@style/TextAppearance.HealthScanner.Body1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_md"
+            android:layout_marginEnd="@dimen/spacing_md"
+            android:ellipsize="end"
+            android:maxLines="2"
+            app:layout_constraintEnd_toStartOf="@id/health_score"
+            app:layout_constraintStart_toEndOf="@id/product_image"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Product Name" />
+
+        <TextView
+            android:id="@+id/health_score"
+            style="@style/TextAppearance.HealthScanner.Body2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/spacing_md"
+            android:background="@drawable/health_score_background"
+            android:paddingHorizontal="@dimen/spacing_sm"
+            android:paddingVertical="4dp"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toStartOf="@id/favorite_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="85%" />
+
+        <ImageView
+            android:id="@+id/favorite_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="Remove from favorites"
+            android:src="@drawable/ic_favorite"
+            app:tint="@color/md_theme_light_primary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>
