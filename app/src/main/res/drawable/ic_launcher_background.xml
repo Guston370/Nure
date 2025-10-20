@@ -5,14 +5,19 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
     
-    <!-- Nure Health gradient background -->
+    <!-- Clean white background for better icon visibility -->
     <path
-        android:fillColor="#0FB8AD"
+        android:fillColor="#FFFFFF"
         android:pathData="M0,0h108v108h-108z" />
     
-    <!-- Subtle gradient overlay with Nure colors -->
+    <!-- Subtle health-themed accent circle -->
     <path
-        android:fillColor="#3CCF91"
-        android:pathData="M0,0 L108,0 L108,54 L0,108 Z" />
+        android:fillColor="#F0F9FF"
+        android:pathData="M54,54m-45,0a45,45 0,1 1,90 0a45,45 0,1 1,-90 0" />
+        
+    <!-- Very subtle gradient overlay -->
+    <path
+        android:fillColor="#E6F7FF"
+        android:pathData="M54,54m-35,0a35,35 0,1 1,70 0a35,35 0,1 1,-70 0" />
         
 </vector>

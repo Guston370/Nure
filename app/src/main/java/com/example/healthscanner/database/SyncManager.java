@@ -47,7 +47,9 @@ public class SyncManager {
         String userId = authManager.getCurrentUserId();
         if (userId == null || userId.isEmpty()) {
             Log.e(TAG, "❌ SYNC FAILED: No user ID available");
-            callback.onFailure("No user ID available");
+            if (callback != null) {
+                callback.onFailure("No user ID available");
+            }
             return;
         }
         
@@ -72,21 +74,27 @@ public class SyncManager {
                         Log.d(TAG, "📍 Data location: users/" + userId);
                         Log.d(TAG, "🔍 Check: https://console.firebase.google.com/project/nure-70d49/firestore/data/users/" + userId);
                         updateLastSyncTimestamp();
-                        callback.onSuccess();
+                        if (callback != null) {
+                            callback.onSuccess();
+                        }
                     }
                     
                     @Override
                     public void onFailure(String error) {
                         Log.e(TAG, "❌ FAILED TO SYNC DATA TO FIREBASE: " + error);
                         Log.e(TAG, "🔧 Check Firebase setup and internet connection");
-                        callback.onFailure(error);
+                        if (callback != null) {
+                            callback.onFailure(error);
+                        }
                     }
                 }
             );
             
         } catch (Exception e) {
             Log.e(TAG, "Error collecting user data for sync: " + e.getMessage(), e);
-            callback.onFailure("Error preparing data for sync: " + e.getMessage());
+            if (callback != null) {
+                callback.onFailure("Error preparing data for sync: " + e.getMessage());
+            }
         }
     }
     
@@ -96,7 +104,9 @@ public class SyncManager {
     public void restoreAllDataFromFirebase(SyncCallback callback) {
         String userId = authManager.getCurrentUserId();
         if (userId == null || userId.isEmpty()) {
-            callback.onFailure("No user ID available");
+            if (callback != null) {
+                callback.onFailure("No user ID available");
+            }
             return;
         }
         
@@ -107,17 +117,23 @@ public class SyncManager {
                     // Restore all data to local storage
                     restoreDataToLocal(userData);
                     Log.d(TAG, "All user data restored from Firebase successfully");
-                    callback.onSuccess();
+                    if (callback != null) {
+                        callback.onSuccess();
+                    }
                 } catch (Exception e) {
                     Log.e(TAG, "Error restoring data to local storage: " + e.getMessage(), e);
-                    callback.onFailure("Error restoring data: " + e.getMessage());
+                    if (callback != null) {
+                        callback.onFailure("Error restoring data: " + e.getMessage());
+                    }
                 }
             }
             
             @Override
             public void onFailure(String error) {
                 Log.e(TAG, "Failed to restore data from Firebase: " + error);
-                callback.onFailure(error);
+                if (callback != null) {
+                    callback.onFailure(error);
+                }
             }
         });
     }
@@ -128,7 +144,9 @@ public class SyncManager {
     public void syncScanHistoryToFirebase(SyncCallback callback) {
         String userId = authManager.getCurrentUserId();
         if (userId == null || userId.isEmpty()) {
-            callback.onFailure("No user ID available");
+            if (callback != null) {
+                callback.onFailure("No user ID available");
+            }
             return;
         }
         
@@ -138,13 +156,17 @@ public class SyncManager {
             @Override
             public void onSuccess() {
                 Log.d(TAG, "Scan history synced to Firebase");
-                callback.onSuccess();
+                if (callback != null) {
+                    callback.onSuccess();
+                }
             }
             
             @Override
             public void onFailure(String error) {
                 Log.e(TAG, "Failed to sync scan history: " + error);
-                callback.onFailure(error);
+                if (callback != null) {
+                    callback.onFailure(error);
+                }
             }
         });
     }
@@ -155,7 +177,9 @@ public class SyncManager {
     public void syncHealthPreferencesToFirebase(SyncCallback callback) {
         String userId = authManager.getCurrentUserId();
         if (userId == null || userId.isEmpty()) {
-            callback.onFailure("No user ID available");
+            if (callback != null) {
+                callback.onFailure("No user ID available");
+            }
             return;
         }
         
@@ -167,13 +191,17 @@ public class SyncManager {
                 @Override
                 public void onSuccess() {
                     Log.d(TAG, "Health preferences synced to Firebase");
-                    callback.onSuccess();
+                    if (callback != null) {
+                        callback.onSuccess();
+                    }
                 }
                 
                 @Override
                 public void onFailure(String error) {
                     Log.e(TAG, "Failed to sync health preferences: " + error);
-                    callback.onFailure(error);
+                    if (callback != null) {
+                        callback.onFailure(error);
+                    }
                 }
             });
     }
