@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    
+    <!-- Background -->
+    <path
+        android:fillColor="@color/health_light_gray"
+        android:pathData="M0,0h120v120h-120z" />
+    
+    <!-- Yogurt Container -->
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M35,30h50v60h-50z" />
+    
+    <!-- Container Rim -->
+    <path
+        android:fillColor="@color/health_soft_blue"
+        android:pathData="M30,30h60v8h-60z" />
+    
+    <!-- Yogurt -->
+    <path
+        android:fillColor="@color/health_mint_green"
+        android:fillAlpha="0.7"
+        android:pathData="M37,40h46v45h-46z" />
+    
+    <!-- Spoon -->
+    <path
+        android:fillColor="@color/health_text_secondary"
+        android:pathData="M70,25 Q75,25 75,30 L75,45 Q75,50 70,50 Q65,50 65,45 L65,30 Q65,25 70,25 Z" />
+    
+</vector>

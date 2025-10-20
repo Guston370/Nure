@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/spacing_md"
+    android:layout_marginEnd="@dimen/spacing_md"
+    android:layout_marginBottom="@dimen/spacing_sm"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="@color/white"
+    android:foreground="?attr/selectableItemBackground">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/spacing_md">
+
+        <!-- Product Image Placeholder -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/productImageCard"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/health_light_gray"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/productImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_product_placeholder"
+                android:contentDescription="Product Image" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Product Name -->
+        <TextView
+            android:id="@+id/productName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_md"
+            android:layout_marginEnd="@dimen/spacing_sm"
+            android:text="Product Name"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/health_text_primary"
+            android:maxLines="2"
+            android:ellipsize="end"
+            app:layout_constraintStart_toEndOf="@+id/productImageCard"
+            app:layout_constraintTop_toTopOf="@+id/productImageCard"
+            app:layout_constraintEnd_toStartOf="@+id/healthScoreCard"
+            tools:text="Organic Whole Grain Cereal" />
+
+        <!-- Brand Name -->
+        <TextView
+            android:id="@+id/brandName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:text="Brand Name"
+            android:textSize="14sp"
+            android:textColor="@color/health_text_secondary"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toStartOf="@+id/productName"
+            app:layout_constraintTop_toBottomOf="@+id/productName"
+            app:layout_constraintEnd_toEndOf="@+id/productName"
+            tools:text="HealthyChoice" />
+
+        <!-- Scan Time -->
+        <TextView
+            android:id="@+id/scanTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:text="2 hours ago"
+            android:textSize="12sp"
+            android:textColor="@color/health_text_secondary"
+            android:drawableStart="@drawable/ic_access_time"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
+            app:drawableTint="@color/health_text_secondary"
+            app:layout_constraintStart_toStartOf="@+id/productName"
+            app:layout_constraintTop_toBottomOf="@+id/brandName"
+            app:layout_constraintEnd_toEndOf="@+id/productName"
+            tools:text="2 hours ago" />
+
+        <!-- Health Score Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/healthScoreCard"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:cardCornerRadius="25dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/health_excellent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/productImageCard">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/healthScore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="8.5"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    tools:text="8.5" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Score"
+                    android:textSize="8sp"
+                    android:textColor="@color/white"
+                    android:alpha="0.9" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Nutrition Info Row -->
+        <LinearLayout
+            android:id="@+id/nutritionRow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintStart_toStartOf="@+id/productImageCard"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/productImageCard">
+
+            <!-- Calories -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_local_fire_department"
+                    android:contentDescription="Calories"
+                    app:tint="@color/calories_color" />
+
+                <TextView
+                    android:id="@+id/caloriesText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="350 cal"
+                    android:textSize="12sp"
+                    android:textColor="@color/health_text_secondary"
+                    tools:text="350 cal" />
+
+            </LinearLayout>
+
+            <!-- Protein -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_fitness_center"
+                    android:contentDescription="Protein"
+                    app:tint="@color/protein_color" />
+
+                <TextView
+                    android:id="@+id/proteinText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="12g protein"
+                    android:textSize="12sp"
+                    android:textColor="@color/health_text_secondary"
+                    tools:text="12g protein" />
+
+            </LinearLayout>
+
+            <!-- Sugar -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_cake"
+                    android:contentDescription="Sugar"
+                    app:tint="@color/sugar_color" />
+
+                <TextView
+                    android:id="@+id/sugarText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="8g sugar"
+                    android:textSize="12sp"
+                    android:textColor="@color/health_text_secondary"
+                    tools:text="8g sugar" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Health Insight -->
+        <TextView
+            android:id="@+id/healthInsight"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:text="Great choice! High in protein and fiber."
+            android:textSize="12sp"
+            android:textColor="@color/health_excellent"
+            android:textStyle="italic"
+            android:maxLines="2"
+            android:ellipsize="end"
+            app:layout_constraintStart_toStartOf="@+id/nutritionRow"
+            app:layout_constraintEnd_toEndOf="@+id/nutritionRow"
+            app:layout_constraintTop_toBottomOf="@+id/nutritionRow"
+            tools:text="Great choice! High in protein and fiber." />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

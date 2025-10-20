@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/health_gradient_background"
+    android:background="@drawable/home_background_gradient"
     android:animateLayoutChanges="true"
     tools:context=".ProfileActivity">
 
@@ -56,7 +56,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/spacing_xl"
-                    android:background="@drawable/header_gradient"
+                    android:background="@drawable/profile_header_gradient"
                     android:animateLayoutChanges="true">
 
                     <ImageView
@@ -356,6 +356,44 @@
 
                     <View style="@style/Widget.HealthScanner.Divider" />
 
+                    <!-- Settings -->
+                    <LinearLayout
+                        android:id="@+id/settings_option"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/list_item_height_medium"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/spacing_md">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="@dimen/spacing_md"
+                            android:contentDescription="Settings"
+                            android:src="@drawable/ic_settings"
+                            app:tint="@color/md_theme_light_onSurfaceVariant" />
+
+                        <TextView
+                            style="@style/TextAppearance.HealthScanner.Body1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Settings" />
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_arrow_forward"
+                            android:contentDescription="Go to Settings"
+                            app:tint="@color/health_text_secondary" />
+
+                    </LinearLayout>
+
+                    <View style="@style/Widget.HealthScanner.Divider" />
+
                     <!-- Contact Support -->
                     <LinearLayout
                         android:id="@+id/contact_support"
@@ -419,7 +457,26 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Bottom Navigation -->
-    <include layout="@layout/bottom_nav_common" />
+    <!-- Floating Action Button for Edit Profile -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/edit_profile_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_lg"
+        android:src="@drawable/ic_edit"
+        android:contentDescription="Edit Profile"
+        android:backgroundTint="@color/health_teal"
+        app:tint="@color/white"
+        app:elevation="@dimen/elevation_lg"
+        app:borderWidth="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:animation="@anim/scale_bounce" />
+
+    <!-- Enhanced Bottom Navigation -->
+    <include layout="@layout/bottom_nav_enhanced" />
+
+    <!-- Animation Overlay Container for Circular Reveal -->
+    <include layout="@layout/animation_overlay_container" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

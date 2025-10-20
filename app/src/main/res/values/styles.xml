@@ -109,7 +109,7 @@
         <item name="itemTextColor">@color/bottom_nav_text_selector</item>
         <item name="itemRippleColor">@color/ripple_light</item>
         <item name="itemActiveIndicatorStyle">@style/Widget.HealthScanner.BottomNavigation.ActiveIndicator</item>
-        <item name="labelVisibilityMode">labeled</item>
+        <item name="labelVisibilityMode">selected</item>
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingBottom">8dp</item>
     </style>
@@ -122,7 +122,7 @@
         <item name="itemTextColor">@color/bottom_nav_text_selector</item>
         <item name="itemRippleColor">@color/ripple_light</item>
         <item name="itemActiveIndicatorStyle">@style/Widget.HealthScanner.BottomNavigation.ActiveIndicator</item>
-        <item name="labelVisibilityMode">labeled</item>
+        <item name="labelVisibilityMode">selected</item>
         <item name="itemIconSize">24dp</item>
         <item name="itemPaddingTop">8dp</item>
         <item name="itemPaddingBottom">8dp</item>
@@ -130,11 +130,11 @@
         <item name="android:paddingBottom">4dp</item>
     </style>
 
+    <!-- Removed Active Indicator to eliminate bubble effect -->
     <style name="Widget.HealthScanner.BottomNavigation.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">@color/md_theme_light_primaryContainer</item>
-        <item name="android:width">32dp</item>
-        <item name="android:height">32dp</item>
-        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.HealthScanner.SmallComponent</item>
+        <item name="android:color">@android:color/transparent</item>
+        <item name="android:width">0dp</item>
+        <item name="android:height">0dp</item>
     </style>
 
     <!-- Shape Appearance for Active Indicator -->
@@ -300,6 +300,37 @@
         <item name="titleTextColor">@color/white</item>
         <item name="subtitleTextColor">@color/white</item>
         <item name="android:elevation">4dp</item>
+    </style>
+
+    <!-- Enhanced Bottom Navigation Text Styles with Vibrant Health Colors -->
+    <style name="BottomNavTextEnhancedActive" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/health_teal</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:alpha">1.0</item>
+    </style>
+
+    <style name="BottomNavTextEnhancedInactive" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/health_text_secondary</item>
+        <item name="android:alpha">0.8</item>
+    </style>
+
+    <!-- Bottom Navigation Active Indicator Style - Transparent (No Bubble) -->
+    <style name="BottomNavActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@android:color/transparent</item>
+        <item name="android:alpha">0.0</item>
+        <item name="android:width">0dp</item>
+        <item name="android:height">0dp</item>
+    </style>
+
+    <!-- Shape for Active Indicator -->
+    <style name="ShapeAppearance.BottomNav.ActiveIndicator" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
     </style>
 
     <!-- Generic Base Styles -->

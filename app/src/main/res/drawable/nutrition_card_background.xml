@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nutrition card background -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    
+    <!-- Light background -->
+    <solid android:color="@color/health_bg_card" />
+    
+    <!-- Rounded corners -->
+    <corners android:radius="12dp" />
+    
+    <!-- Border -->
+    <stroke 
+        android:width="1dp" 
+        android:color="@color/md_theme_light_outline" />
+    
+</shape>
+

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    
+    <!-- Background -->
+    <path
+        android:fillColor="@color/health_light_gray"
+        android:pathData="M0,0h120v120h-120z" />
+    
+    <!-- Chocolate Bar -->
+    <path
+        android:fillColor="#8B4513"
+        android:pathData="M25,35h70v50h-70z" />
+    
+    <!-- Chocolate Squares -->
+    <path
+        android:fillColor="#654321"
+        android:pathData="M30,40h15v15h-15z" />
+    <path
+        android:fillColor="#654321"
+        android:pathData="M50,40h15v15h-15z" />
+    <path
+        android:fillColor="#654321"
+        android:pathData="M70,40h15v15h-15z" />
+    <path
+        android:fillColor="#654321"
+        android:pathData="M30,60h15v15h-15z" />
+    <path
+        android:fillColor="#654321"
+        android:pathData="M50,60h15v15h-15z" />
+    <path
+        android:fillColor="#654321"
+        android:pathData="M70,60h15v15h-15z" />
+    
+</vector>

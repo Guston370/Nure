@@ -1,23 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="48dp"
-    android:height="48dp"
-    android:viewportWidth="48"
-    android:viewportHeight="48">
-    
-    <!-- Background Circle -->
-    <path
-        android:fillColor="?attr/colorPrimary"
-        android:pathData="M24,24m-22,0a22,22 0,1 1,44 0a22,22 0,1 1,-44 0" />
-    
-    <!-- Health Scanner Icon -->
-    <path
-        android:fillColor="?attr/colorOnPrimary"
-        android:pathData="M16,14h2v2h-2v-2zM20,14h2v2h-2v-2zM24,14h4v2h-4v-2zM30,14h2v2h-2v-2zM16,18h4v2h-4v-2zM22,18h2v2h-2v-2zM26,18h2v2h-2v-2zM30,18h2v2h-2v-2zM16,22h2v2h-2v-2zM20,22h4v2h-4v-2zM26,22h2v2h-2v-2zM30,22h2v2h-2v-2zM16,26h4v2h-4v-2zM22,26h2v2h-2v-2zM26,26h4v2h-4v-2zM32,26h2v2h-2v-2z" />
-    
-    <!-- Scanner Frame -->
-    <path
-        android:fillColor="?attr/colorOnPrimary"
-        android:pathData="M12,10h4v2h-4v-2zM12,30h4v2h-4v-2zM32,10h4v2h-4v-2zM32,30h4v2h-4v-2zM10,12h2v4h-2v-4zM10,32h2v4h-2v-4zM36,12h2v4h-2v-4zM36,32h2v4h-2v-4z" />
-    
-</vector>
+<!-- Health Scanner App Icon for Adaptive Icons -->
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="@drawable/nure_logo"
+    android:gravity="center"
+    android:scaleType="centerInside" />

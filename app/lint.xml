@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- Suppress experimental API usage warnings for CameraX -->
+    <issue id="UnsafeOptInUsageError">
+        <option name="opt-in" value="androidx.camera.core.ExperimentalGetImage" />
+    </issue>
+</lint>

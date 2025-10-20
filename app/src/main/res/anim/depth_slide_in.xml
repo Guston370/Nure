@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Forward depth transition - slide in with scale up -->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="500"
+    android:interpolator="@android:anim/accelerate_decelerate_interpolator">
+    
+    <!-- Fade in -->
+    <alpha
+        android:fromAlpha="0.0"
+        android:toAlpha="1.0" />
+    
+    <!-- Scale up from 95% to 100% -->
+    <scale
+        android:fromXScale="0.95"
+        android:fromYScale="0.95"
+        android:toXScale="1.0"
+        android:toYScale="1.0"
+        android:pivotX="50%"
+        android:pivotY="50%" />
+    
+    <!-- Slide in from slightly behind -->
+    <translate
+        android:fromYDelta="3%"
+        android:toYDelta="0%" />
+    
+</set>

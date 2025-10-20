@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/home_background_gradient"
+    android:animateLayoutChanges="true"
+    tools:context=".SettingsActivity">
+
+    <!-- Main Scrollable Content -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/spacing_xxxl">
+
+            <!-- Header Section with Gradient -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/headerSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/header_gradient_background"
+                android:paddingStart="@dimen/spacing_lg"
+                android:paddingEnd="@dimen/spacing_lg"
+                android:paddingTop="@dimen/spacing_xl"
+                android:paddingBottom="@dimen/spacing_lg">
+
+                <!-- Settings Title -->
+                <TextView
+                    android:id="@+id/settingsTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Settings ⚙️"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:alpha="0"
+                    android:translationY="-20dp"
+                    android:animation="@anim/fade_in_slide_down"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/helpIcon" />
+
+                <!-- Subtitle -->
+                <TextView
+                    android:id="@+id/settingsSubtitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Customize your health journey"
+                    android:textSize="16sp"
+                    android:textColor="@color/white"
+                    android:alpha="0.9"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    app:layout_constraintTop_toBottomOf="@+id/settingsTitle"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/helpIcon" />
+
+                <!-- Help Icon -->
+                <ImageView
+                    android:id="@+id/helpIcon"
+                    android:layout_width="@dimen/icon_size_large"
+                    android:layout_height="@dimen/icon_size_large"
+                    android:src="@drawable/ic_support"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Help"
+                    app:tint="@color/white"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Settings Options Section -->
+            <LinearLayout
+                android:id="@+id/settingsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="@dimen/spacing_md">
+
+                <!-- Notifications Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/notificationsCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/spacing_md"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="@dimen/elevation_sm"
+                    app:cardBackgroundColor="@color/white"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:animation="@anim/slide_up">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/spacing_lg">
+
+                        <!-- Notification Icon -->
+                        <ImageView
+                            android:id="@+id/notificationIcon"
+                            android:layout_width="@dimen/icon_size_medium"
+                            android:layout_height="@dimen/icon_size_medium"
+                            android:src="@drawable/ic_notifications"
+                            android:contentDescription="Notifications"
+                            app:tint="@color/health_teal"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                        <!-- Notification Text -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginStart="@dimen/spacing_md"
+                            android:layout_marginEnd="@dimen/spacing_md"
+                            app:layout_constraintStart_toEndOf="@+id/notificationIcon"
+                            app:layout_constraintEnd_toStartOf="@+id/notificationSwitch"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Notifications"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/health_text_primary" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Get alerts for health tips and reminders"
+                                android:textSize="14sp"
+                                android:textColor="@color/health_text_secondary"
+                                android:layout_marginTop="@dimen/spacing_xs" />
+
+                        </LinearLayout>
+
+                        <!-- Notification Switch -->
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/notificationSwitch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            app:thumbTint="@color/health_mint_green"
+                            app:trackTint="@color/health_teal"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Dark Mode Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/darkModeCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/spacing_md"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="@dimen/elevation_sm"
+                    app:cardBackgroundColor="@color/white"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:animation="@anim/slide_up">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/spacing_lg">
+
+                        <!-- Dark Mode Icon -->
+                        <ImageView
+                            android:id="@+id/darkModeIcon"
+                            android:layout_width="@dimen/icon_size_medium"
+                            android:layout_height="@dimen/icon_size_medium"
+                            android:src="@drawable/ic_dark_mode"
+                            android:contentDescription="Dark Mode"
+                            app:tint="@color/health_teal"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                        <!-- Dark Mode Text -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginStart="@dimen/spacing_md"
+                            android:layout_marginEnd="@dimen/spacing_md"
+                            app:layout_constraintStart_toEndOf="@+id/darkModeIcon"
+                            app:layout_constraintEnd_toStartOf="@+id/darkModeSwitch"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Dark Mode"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/health_text_primary" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Switch to dark theme for better night viewing"
+                                android:textSize="14sp"
+                                android:textColor="@color/health_text_secondary"
+                                android:layout_marginTop="@dimen/spacing_xs" />
+
+                        </LinearLayout>
+
+                        <!-- Dark Mode Switch -->
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/darkModeSwitch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="false"
+                            app:thumbTint="@color/health_mint_green"
+                            app:trackTint="@color/health_teal"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Privacy Policy Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/privacyPolicyCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/spacing_md"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="@dimen/elevation_sm"
+                    app:cardBackgroundColor="@color/white"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:animation="@anim/slide_up">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/spacing_lg">
+
+                        <!-- Privacy Icon -->
+                        <ImageView
+                            android:id="@+id/privacyIcon"
+                            android:layout_width="@dimen/icon_size_medium"
+                            android:layout_height="@dimen/icon_size_medium"
+                            android:src="@drawable/ic_lock"
+                            android:contentDescription="Privacy Policy"
+                            app:tint="@color/health_teal"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                        <!-- Privacy Text -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginStart="@dimen/spacing_md"
+                            android:layout_marginEnd="@dimen/spacing_md"
+                            app:layout_constraintStart_toEndOf="@+id/privacyIcon"
+                            app:layout_constraintEnd_toStartOf="@+id/privacyArrow"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Privacy Policy"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/health_text_primary" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Learn how we protect your data"
+                                android:textSize="14sp"
+                                android:textColor="@color/health_text_secondary"
+                                android:layout_marginTop="@dimen/spacing_xs" />
+
+                        </LinearLayout>
+
+                        <!-- Arrow Icon -->
+                        <ImageView
+                            android:id="@+id/privacyArrow"
+                            android:layout_width="@dimen/icon_size_small"
+                            android:layout_height="@dimen/icon_size_small"
+                            android:src="@drawable/ic_arrow_forward"
+                            android:contentDescription="View Privacy Policy"
+                            app:tint="@color/health_text_secondary"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Export Scan History Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/exportHistoryCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/spacing_md"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="@dimen/elevation_sm"
+                    app:cardBackgroundColor="@color/white"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:animation="@anim/slide_up">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/spacing_lg">
+
+                        <!-- Export Icon -->
+                        <ImageView
+                            android:id="@+id/exportIcon"
+                            android:layout_width="@dimen/icon_size_medium"
+                            android:layout_height="@dimen/icon_size_medium"
+                            android:src="@drawable/ic_download"
+                            android:contentDescription="Export History"
+                            app:tint="@color/health_teal"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                        <!-- Export Text -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginStart="@dimen/spacing_md"
+                            android:layout_marginEnd="@dimen/spacing_md"
+                            app:layout_constraintStart_toEndOf="@+id/exportIcon"
+                            app:layout_constraintEnd_toStartOf="@+id/exportArrow"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Export Scan History"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/health_text_primary" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Download your scan data as CSV"
+                                android:textSize="14sp"
+                                android:textColor="@color/health_text_secondary"
+                                android:layout_marginTop="@dimen/spacing_xs" />
+
+                        </LinearLayout>
+
+                        <!-- Arrow Icon -->
+                        <ImageView
+                            android:id="@+id/exportArrow"
+                            android:layout_width="@dimen/icon_size_small"
+                            android:layout_height="@dimen/icon_size_small"
+                            android:src="@drawable/ic_arrow_forward"
+                            android:contentDescription="Export Data"
+                            app:tint="@color/health_text_secondary"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Logout Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/logoutCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/spacing_md"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="@dimen/elevation_sm"
+                    app:cardBackgroundColor="@color/white"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:animation="@anim/fade_in">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/spacing_lg">
+
+                        <!-- Logout Icon -->
+                        <ImageView
+                            android:id="@+id/logoutIcon"
+                            android:layout_width="@dimen/icon_size_medium"
+                            android:layout_height="@dimen/icon_size_medium"
+                            android:src="@drawable/ic_logout"
+                            android:contentDescription="Logout"
+                            app:tint="@color/md_theme_light_error"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                        <!-- Logout Text -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginStart="@dimen/spacing_md"
+                            android:layout_marginEnd="@dimen/spacing_md"
+                            app:layout_constraintStart_toEndOf="@+id/logoutIcon"
+                            app:layout_constraintEnd_toStartOf="@+id/logoutArrow"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Logout"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/md_theme_light_error" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Sign out of your account"
+                                android:textSize="14sp"
+                                android:textColor="@color/health_text_secondary"
+                                android:layout_marginTop="@dimen/spacing_xs" />
+
+                        </LinearLayout>
+
+                        <!-- Arrow Icon -->
+                        <ImageView
+                            android:id="@+id/logoutArrow"
+                            android:layout_width="@dimen/icon_size_small"
+                            android:layout_height="@dimen/icon_size_small"
+                            android:src="@drawable/ic_arrow_forward"
+                            android:contentDescription="Logout"
+                            app:tint="@color/md_theme_light_error"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Enhanced Bottom Navigation -->
+    <include layout="@layout/bottom_nav_enhanced" />
+
+    <!-- Animation Overlay Container for Circular Reveal -->
+    <include layout="@layout/animation_overlay_container" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,22 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Nure Health Scanner - Dark Theme Colors -->
+    <!-- Dark Mode Color Overrides for Health Scanner -->
     
-    <!-- Adaptive Colors for Dark Theme -->
+    <!-- Primary Colors - Adjusted for dark mode -->
+    <color name="md_theme_dark_primary">#4DDBCF</color>
+    <color name="md_theme_dark_onPrimary">#003A36</color>
+    <color name="md_theme_dark_primaryContainer">#005B54</color>
+    <color name="md_theme_dark_onPrimaryContainer">#B2F2EF</color>
+
+    <!-- Secondary Colors - Adjusted for dark mode -->
+    <color name="md_theme_dark_secondary">#9CCCFF</color>
+    <color name="md_theme_dark_onSecondary">#003258</color>
+    <color name="md_theme_dark_secondaryContainer">#00497D</color>
+    <color name="md_theme_dark_onSecondaryContainer">#D1ECFF</color>
+
+    <!-- Tertiary Colors - Adjusted for dark mode -->
+    <color name="md_theme_dark_tertiary">#FFD166</color>
+    <color name="md_theme_dark_onTertiary">#3E2723</color>
+    <color name="md_theme_dark_tertiaryContainer">#5D4037</color>
+    <color name="md_theme_dark_onTertiaryContainer">#FFECB3</color>
+
+    <!-- Error Colors - Adjusted for dark mode -->
+    <color name="md_theme_dark_error">#FF6B6B</color>
+    <color name="md_theme_dark_errorContainer">#93000A</color>
+    <color name="md_theme_dark_onError">#690005</color>
+    <color name="md_theme_dark_onErrorContainer">#FFDAD6</color>
+
+    <!-- Background Colors - Dark mode -->
+    <color name="md_theme_dark_background">#0F1419</color>
+    <color name="md_theme_dark_onBackground">#E1E2E8</color>
+
+    <!-- Surface Colors - Dark mode -->
+    <color name="md_theme_dark_surface">#1A1F24</color>
+    <color name="md_theme_dark_onSurface">#E1E2E8</color>
+    <color name="md_theme_dark_surfaceVariant">#2A2F34</color>
+    <color name="md_theme_dark_onSurfaceVariant">#C4C7CF</color>
+    <color name="md_theme_dark_surfaceContainer">#1E2328</color>
+
+    <!-- Outline Colors - Dark mode -->
+    <color name="md_theme_dark_outline">#8E9199</color>
+    <color name="md_theme_dark_inverseOnSurface">#0F1419</color>
+    <color name="md_theme_dark_inverseSurface">#E1E2E8</color>
+    <color name="md_theme_dark_inversePrimary">#0FB8AD</color>
+
+    <!-- Health Colors - Dark mode adjusted -->
+    <color name="health_mint_green_dark">#4DDBCF</color>
+    <color name="health_teal_dark">#26C6DA</color>
+    <color name="health_soft_blue_dark">#64B5F6</color>
+    
+    <!-- Health Status Colors - Dark mode -->
+    <color name="health_excellent_dark">#66BB6A</color>
+    <color name="health_good_dark">#9CCC65</color>
+    <color name="health_moderate_dark">#FFCA28</color>
+    <color name="health_poor_dark">#FF8A65</color>
+    <color name="health_unhealthy_dark">#EF5350</color>
+
+    <!-- Background Gradients - Dark mode -->
+    <color name="background_gradient_dark_start">#0F1419</color>
+    <color name="background_gradient_dark_end">#1A1F24</color>
+    <color name="home_gradient_start_dark">#0F1419</color>
+    <color name="home_gradient_end_dark">#1A1F24</color>
+
+    <!-- Card Colors - Dark mode -->
+    <color name="card_background_dark">#1E2328</color>
+    <color name="card_shadow_dark">#0A0A0A</color>
+
+    <!-- Text Colors - Dark mode -->
+    <color name="text_primary_dark">#E1E2E8</color>
+    <color name="text_secondary_dark">#C4C7CF</color>
+    <color name="text_hint_dark">#8E9199</color>
+
+    <!-- Health UI Colors - Dark mode -->
+    <color name="health_bg_dark">#0F1419</color>
+    <color name="health_bg_card_dark">#1E2328</color>
+    <color name="health_text_primary_dark">#E1E2E8</color>
+    <color name="health_text_secondary_dark">#C4C7CF</color>
+    <color name="health_text_hint_dark">#8E9199</color>
+
+    <!-- Nutrition Colors - Dark mode adjusted -->
+    <color name="calories_color_dark">#FF8A65</color>
+    <color name="protein_color_dark">#81C784</color>
+    <color name="carbs_color_dark">#64B5F6</color>
+    <color name="fat_color_dark">#FFB74D</color>
+    <color name="sugar_color_dark">#F48FB1</color>
+    <color name="sodium_color_dark">#CE93D8</color>
+    <color name="fiber_color_dark">#A1887F</color>
+
+    <!-- Interactive States - Dark mode -->
+    <color name="ripple_dark">#1A4DDBCF</color>
+    <color name="pressed_dark">#0D4DDBCF</color>
+
+    <!-- Status Bar and Navigation - Dark mode -->
+    <color name="status_bar_dark">#0F1419</color>
+    <color name="navigation_bar_dark">#1A1F24</color>
+
+    <!-- Scan Theme Colors - Dark mode -->
+    <color name="scan_active_dark">#4DDBCF</color>
+    <color name="scan_inactive_dark">#8E9199</color>
+    <color name="scan_success_dark">#66BB6A</color>
+    <color name="scan_error_dark">#EF5350</color>
+
+    <!-- Shimmer Colors - Dark mode -->
+    <color name="shimmer_base_dark">#2A2F34</color>
+    <color name="shimmer_highlight_dark">#3A3F44</color>
+
+    <!-- Bottom Navigation Colors - Dark mode -->
+    <color name="bottom_nav_item_enhanced_dark">#4DDBCF</color>
+
+    <!-- Health Light Gray - Dark mode -->
+    <color name="health_light_gray_dark">#2A2F34</color>
+
+    <!-- Override adaptive colors for dark mode -->
     <color name="adaptive_primary">@color/md_theme_dark_primary</color>
     <color name="adaptive_background">@color/md_theme_dark_background</color>
     <color name="adaptive_surface">@color/md_theme_dark_surface</color>
     <color name="adaptive_text_primary">@color/md_theme_dark_onBackground</color>
     <color name="adaptive_text_secondary">@color/md_theme_dark_onSurfaceVariant</color>
+    
+    <!-- Bottom Navigation Dark Mode Colors -->
+    <color name="bottom_nav_background">@color/md_theme_dark_surface</color>
+    <color name="bottom_nav_icon_active">@color/md_theme_dark_primary</color>
+    <color name="bottom_nav_icon_inactive">@color/md_theme_dark_onSurfaceVariant</color>
+    <color name="bottom_nav_text_active">@color/md_theme_dark_primary</color>
+    <color name="bottom_nav_text_inactive">@color/md_theme_dark_onSurfaceVariant</color>
 
-    <!-- Shimmer Colors for Dark Theme -->
-    <color name="shimmer_base">@color/shimmer_base_dark</color>
-    <color name="shimmer_highlight">@color/shimmer_highlight_dark</color>
-
-    <!-- Legacy Support Colors for Dark Theme -->
-    <color name="primary_color">@color/md_theme_dark_primary</color>
-    <color name="primary_dark_color">@color/md_theme_dark_onPrimaryContainer</color>
-    <color name="accent_color">@color/md_theme_dark_tertiary</color>
-    <color name="background_color">@color/md_theme_dark_background</color>
-    <color name="surface_color">@color/md_theme_dark_surface</color>
+    <!-- Health concerns and preferences - Dark mode -->
+    <color name="health_concerns_bg_dark">#4A1A1A</color>
+    <color name="dietary_preferences_bg_dark">#1A2A4A</color>
 </resources>

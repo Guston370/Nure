@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Backward depth transition - fade out with scale down -->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="500"
+    android:interpolator="@android:anim/accelerate_decelerate_interpolator">
+    
+    <!-- Fade out -->
+    <alpha
+        android:fromAlpha="1.0"
+        android:toAlpha="0.0" />
+    
+    <!-- Scale down from 100% to 90% (more dramatic for back) -->
+    <scale
+        android:fromXScale="1.0"
+        android:fromYScale="1.0"
+        android:toXScale="0.9"
+        android:toYScale="0.9"
+        android:pivotX="50%"
+        android:pivotY="50%" />
+    
+    <!-- Slide back more dramatically -->
+    <translate
+        android:fromYDelta="0%"
+        android:toYDelta="5%" />
+    
+</set>

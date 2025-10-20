@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    tools:context=".VerticalScannerActivity">
+
+    <!-- Camera Preview (Full Screen) -->
+    <androidx.camera.view.PreviewView
+        android:id="@+id/camera_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Enhanced Overlay Container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparent">
+
+        <!-- Modern Top Bar with Gradient -->
+        <LinearLayout
+            android:id="@+id/top_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="24dp"
+            android:paddingTop="48dp"
+            android:background="@drawable/scanner_top_gradient_enhanced"
+            android:gravity="center_vertical"
+            android:elevation="12dp"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <!-- Enhanced Back Button -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="12dp"
+                app:cardBackgroundColor="#30FFFFFF">
+
+                <ImageView
+                    android:id="@+id/back_button"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_arrow_back"
+                    android:contentDescription="Back"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="@color/white" />
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Enhanced Title Section -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Health Scanner"
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Scan any product barcode"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:alpha="0.9"
+                    android:layout_marginTop="4dp" />
+
+            </LinearLayout>
+
+            <!-- Enhanced Flash Toggle -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="12dp"
+                app:cardBackgroundColor="#30FFFFFF">
+
+                <ImageView
+                    android:id="@+id/flash_toggle"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_flash_off"
+                    android:contentDescription="Toggle Flash"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:tint="@color/white" />
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+        <!-- Premium Scanning Frame -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/scanning_frame_card"
+            android:layout_width="340dp"
+            android:layout_height="520dp"
+            android:layout_marginTop="32dp"
+            app:cardCornerRadius="32dp"
+            app:cardElevation="20dp"
+            app:cardBackgroundColor="@color/transparent"
+            app:layout_constraintTop_toBottomOf="@+id/top_bar"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_controls"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/scanning_frame_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!-- Premium Scanning Frame Background -->
+                <View
+                    android:id="@+id/scanning_frame"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/premium_scanning_frame" />
+
+                <!-- Animated Corner Indicators -->
+                <ImageView
+                    android:id="@+id/corner_tl"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_scan_corner_premium"
+                    android:rotation="0"
+                    android:layout_margin="12dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:tint="@color/primary_teal" />
+
+                <ImageView
+                    android:id="@+id/corner_tr"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_scan_corner_premium"
+                    android:rotation="90"
+                    android:layout_margin="12dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:tint="@color/primary_teal" />
+
+                <ImageView
+                    android:id="@+id/corner_bl"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_scan_corner_premium"
+                    android:rotation="270"
+                    android:layout_margin="12dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:tint="@color/primary_teal" />
+
+                <ImageView
+                    android:id="@+id/corner_br"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_scan_corner_premium"
+                    android:rotation="180"
+                    android:layout_margin="12dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:tint="@color/primary_teal" />
+
+                <!-- Premium Scanning Line with Glow -->
+                <View
+                    android:id="@+id/scanning_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    android:background="@drawable/premium_scanning_line"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:elevation="8dp"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Enhanced Center Target -->
+                <View
+                    android:layout_width="80dp"
+                    android:layout_height="3dp"
+                    android:background="@drawable/center_target_line"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <View
+                    android:layout_width="3dp"
+                    android:layout_height="80dp"
+                    android:background="@drawable/center_target_line"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <!-- Barcode Icon Hint -->
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_barcode_hint"
+                    android:alpha="0.6"
+                    android:layout_marginTop="24dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:tint="@color/white" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Enhanced Instructions -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/instructions_card"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginTop="24dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="12dp"
+            app:cardBackgroundColor="#40000000"
+            app:layout_constraintTop_toBottomOf="@+id/scanning_frame_card"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/instructions_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Position barcode within the frame"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:gravity="center" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hold steady for automatic detection"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:alpha="0.9"
+                    android:gravity="center"
+                    android:layout_marginTop="6dp" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Premium Bottom Controls -->
+        <LinearLayout
+            android:id="@+id/bottom_controls"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="32dp"
+            android:gravity="center"
+            android:background="@drawable/scanner_bottom_gradient_enhanced"
+            android:elevation="12dp"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <!-- Enhanced Controls Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="20dp">
+
+                <!-- Gallery Button -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/gallery_button"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_marginEnd="24dp"
+                    app:cardCornerRadius="32dp"
+                    app:cardElevation="12dp"
+                    app:cardBackgroundColor="@color/white">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_gallery"
+                        android:contentDescription="Select from Gallery"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        app:tint="@color/primary_teal" />
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Manual Entry Button -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/manual_entry_button"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_marginStart="24dp"
+                    app:cardCornerRadius="32dp"
+                    app:cardElevation="12dp"
+                    app:cardBackgroundColor="#30FFFFFF">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_keyboard"
+                        android:contentDescription="Manual Entry"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        app:tint="@color/white" />
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+            <!-- Enhanced Help Text -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gallery • Manual Entry"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:alpha="0.8"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+        <!-- Enhanced Scan Status -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/scan_status_card"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginBottom="20dp"
+            android:visibility="gone"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="16dp"
+            app:cardBackgroundColor="@color/primary_teal"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_controls"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="20dp"
+                android:gravity="center_vertical">
+
+                <ProgressBar
+                    android:id="@+id/scan_progress"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:indeterminateTint="@color/white"
+                    android:layout_marginEnd="16dp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/scan_status_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Analyzing Product..."
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Getting health information"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:alpha="0.9"
+                        android:layout_marginTop="2dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Simplified - No overlay, direct navigation to product details -->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    
+    <!-- Background -->
+    <path
+        android:fillColor="@color/health_light_gray"
+        android:pathData="M0,0h120v120h-120z" />
+    
+    <!-- Product Box -->
+    <path
+        android:fillColor="@color/health_teal"
+        android:fillAlpha="0.3"
+        android:pathData="M30,25h60v70h-60z" />
+    
+    <!-- Product Icon -->
+    <path
+        android:fillColor="@color/health_teal"
+        android:pathData="M50,45h20v10h-20z" />
+    <path
+        android:fillColor="@color/health_teal"
+        android:pathData="M45,60h30v5h-30z" />
+    <path
+        android:fillColor="@color/health_teal"
+        android:pathData="M45,70h30v5h-30z" />
+    
+</vector>

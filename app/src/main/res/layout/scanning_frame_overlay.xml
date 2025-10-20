@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Scanning frame overlay for barcode positioning -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="false"
+    android:focusable="false">
+
+    <!-- Scanning Frame -->
+    <View
+        android:id="@+id/scanning_frame"
+        android:layout_width="320dp"
+        android:layout_height="240dp"
+        android:layout_gravity="center"
+        android:background="@drawable/scanning_frame_overlay"
+        android:elevation="4dp" />
+
+    <!-- Corner Indicators -->
+    <View
+        android:id="@+id/corner_top_left"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="-120dp"
+        android:layout_marginStart="-160dp"
+        android:background="@drawable/scanner_corner_top_left" />
+
+    <View
+        android:id="@+id/corner_top_right"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="-120dp"
+        android:layout_marginEnd="-160dp"
+        android:background="@drawable/scanner_corner_top_right" />
+
+    <View
+        android:id="@+id/corner_bottom_left"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="-120dp"
+        android:layout_marginStart="-160dp"
+        android:background="@drawable/scanner_corner_bottom_left" />
+
+    <View
+        android:id="@+id/corner_bottom_right"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="-120dp"
+        android:layout_marginEnd="-160dp"
+        android:background="@drawable/scanner_corner_bottom_right" />
+
+    <!-- Scanning Line Animation -->
+    <View
+        android:id="@+id/scanning_line"
+        android:layout_width="300dp"
+        android:layout_height="3dp"
+        android:layout_gravity="center"
+        android:background="@drawable/laser_line_gradient"
+        android:elevation="6dp" />
+
+    <!-- Status Text Overlay -->
+    <TextView
+        android:id="@+id/scan_status_overlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="120dp"
+        android:background="@drawable/status_text_background"
+        android:padding="@dimen/spacing_md"
+        android:text="Position barcode in frame"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:elevation="8dp" />
+
+    <!-- Scanning Instructions -->
+    <LinearLayout
+        android:id="@+id/scanning_instructions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="120dp"
+        android:orientation="vertical"
+        android:background="@drawable/instructions_background"
+        android:padding="@dimen/spacing_md"
+        android:elevation="6dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📱 Scanning Tips"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="@dimen/spacing_xs" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="• Keep barcode flat and straight"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:layout_marginBottom="@dimen/spacing_xs" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="• Ensure good lighting"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:layout_marginBottom="@dimen/spacing_xs" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="• Hold steady for 2-3 seconds"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+    <!-- Success Indicator -->
+    <ImageView
+        android:id="@+id/success_indicator"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_check_circle"
+        android:background="@drawable/success_circle_background"
+        android:visibility="gone"
+        android:elevation="10dp" />
+
+</FrameLayout>

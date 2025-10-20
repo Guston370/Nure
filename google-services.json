@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "690706949365",
+    "project_id": "nure-70d49",
+    "storage_bucket": "nure-70d49.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:690706949365:android:46efe6003ef8e01e8991bc",
+        "android_client_info": {
+          "package_name": "com.example.healthscanner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "690706949365-cd50855b03tmqhr8svnuuvfqacl7tuds.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.healthscanner",
+            "certificate_hash": "589de47d46bb980c88d854010a16fa46f2c139b9"
+          }
+        },
+        {
+          "client_id": "690706949365-6t9lr01t5ttpcba1c0lraqjo5449kjr3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDs96tWVq9FT-WdWOPGM8TvJwwGcps4uwU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "690706949365-6t9lr01t5ttpcba1c0lraqjo5449kjr3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

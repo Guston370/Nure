@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    
+    <!-- Background -->
+    <path
+        android:fillColor="@color/health_light_gray"
+        android:pathData="M0,0h120v120h-120z" />
+    
+    <!-- Cereal Bowl -->
+    <path
+        android:fillColor="@color/health_mint_green"
+        android:pathData="M30,50 Q30,40 40,40 L80,40 Q90,40 90,50 L90,80 Q90,90 80,90 L40,90 Q30,90 30,80 Z" />
+    
+    <!-- Cereal pieces -->
+    <path android:fillColor="@color/health_soft_blue" android:pathData="M45,55m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0" />
+    <path android:fillColor="@color/health_soft_blue" android:pathData="M55,60m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0" />
+    <path android:fillColor="@color/health_soft_blue" android:pathData="M65,55m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0" />
+    <path android:fillColor="@color/health_soft_blue" android:pathData="M75,65m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0" />
+    <path android:fillColor="@color/health_soft_blue" android:pathData="M50,70m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0" />
+    
+</vector>

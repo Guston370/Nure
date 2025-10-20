@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="160dp"
+    android:layout_height="200dp"
+    android:layout_margin="@dimen/spacing_sm"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="@dimen/elevation_sm"
+    app:cardBackgroundColor="@color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/spacing_md">
+
+        <!-- Shimmer Product Image -->
+        <View
+            android:id="@+id/shimmerImage"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/shimmer_placeholder"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Shimmer Product Name -->
+        <View
+            android:id="@+id/shimmerName"
+            android:layout_width="0dp"
+            android:layout_height="16dp"
+            android:background="@drawable/shimmer_placeholder"
+            android:layout_marginTop="@dimen/spacing_sm"
+            app:layout_constraintTop_toBottomOf="@+id/shimmerImage"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Shimmer Calories -->
+        <View
+            android:id="@+id/shimmerCalories"
+            android:layout_width="60dp"
+            android:layout_height="12dp"
+            android:background="@drawable/shimmer_placeholder"
+            android:layout_marginTop="@dimen/spacing_sm"
+            app:layout_constraintTop_toBottomOf="@+id/shimmerName"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Shimmer Health Score -->
+        <View
+            android:id="@+id/shimmerScore"
+            android:layout_width="0dp"
+            android:layout_height="12dp"
+            android:background="@drawable/shimmer_placeholder"
+            android:layout_marginTop="@dimen/spacing_sm"
+            app:layout_constraintTop_toBottomOf="@+id/shimmerCalories"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

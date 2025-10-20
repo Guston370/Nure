@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.example.healthscanner"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.healthscanner"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -28,10 +28,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
+
+// Remove Java toolchain configuration to use system default
 
 dependencies {
     // AndroidX Core + Material 3
@@ -60,6 +62,9 @@ dependencies {
 
     // ML Kit Barcode Scanning
     implementation("com.google.mlkit:barcode-scanning:17.2.0")
+    implementation(libs.credentials)
+    implementation(libs.credentials.play.services.auth)
+    implementation(libs.googleid)
 
     // CameraX
     val camerax_version = "1.3.4"
@@ -76,6 +81,9 @@ dependencies {
     
     // Firebase Authentication
     implementation("com.google.firebase:firebase-auth")
+    
+    // Firebase Firestore (for database storage)
+    implementation("com.google.firebase:firebase-firestore")
     
     // Google Sign-In
     implementation("com.google.android.gms:play-services-auth:20.7.0")

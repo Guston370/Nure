@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/spacing_sm"
+    android:layout_marginEnd="@dimen/spacing_sm"
+    android:layout_marginBottom="@dimen/spacing_md"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="@dimen/elevation_sm"
+    app:cardBackgroundColor="@color/white"
+    android:foreground="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/spacing_md">
+
+        <!-- Product Image/Icon -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/productImageCard"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/health_light_gray"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:id="@+id/productImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_nutrition_facts"
+                android:scaleType="centerCrop"
+                android:contentDescription="Product Image"
+                app:tint="@color/health_teal" />
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Product Name -->
+        <TextView
+            android:id="@+id/productName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_md"
+            android:layout_marginEnd="@dimen/spacing_sm"
+            android:text="Organic Granola Bar"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/health_text_primary"
+            android:maxLines="2"
+            android:ellipsize="end"
+            app:layout_constraintTop_toTopOf="@+id/productImageCard"
+            app:layout_constraintStart_toEndOf="@+id/productImageCard"
+            app:layout_constraintEnd_toStartOf="@+id/healthEmoji"
+            tools:text="Organic Granola Bar with Nuts" />
+
+        <!-- Brand Name -->
+        <TextView
+            android:id="@+id/brandName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_md"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:layout_marginEnd="@dimen/spacing_sm"
+            android:text="Nature's Path"
+            android:textSize="14sp"
+            android:textColor="@color/health_text_secondary"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintTop_toBottomOf="@+id/productName"
+            app:layout_constraintStart_toEndOf="@+id/productImageCard"
+            app:layout_constraintEnd_toStartOf="@+id/healthEmoji"
+            tools:text="Nature's Path" />
+
+        <!-- Health Emoji -->
+        <TextView
+            android:id="@+id/healthEmoji"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🥦"
+            android:textSize="24sp"
+            android:layout_marginEnd="@dimen/spacing_sm"
+            app:layout_constraintTop_toTopOf="@+id/productImageCard"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="🥦" />
+
+        <!-- Nutrition Summary -->
+        <LinearLayout
+            android:id="@+id/nutritionSummary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_md"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:layout_marginEnd="@dimen/spacing_sm"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/productImageCard"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Calories -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/caloriesValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="150"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/health_orange"
+                    tools:text="150" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="cal"
+                    android:textSize="10sp"
+                    android:textColor="@color/health_text_secondary" />
+
+            </LinearLayout>
+
+            <!-- Protein -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/proteinValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4g"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/health_mint_green"
+                    tools:text="4g" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="protein"
+                    android:textSize="10sp"
+                    android:textColor="@color/health_text_secondary" />
+
+            </LinearLayout>
+
+            <!-- Sugar -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/sugarValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="8g"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/health_unhealthy"
+                    tools:text="8g" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="sugar"
+                    android:textSize="10sp"
+                    android:textColor="@color/health_text_secondary" />
+
+            </LinearLayout>
+
+            <!-- Health Rating -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/healthRating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Healthy"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/health_excellent"
+                    android:background="@drawable/health_rating_background"
+                    android:paddingStart="@dimen/spacing_sm"
+                    android:paddingEnd="@dimen/spacing_sm"
+                    android:paddingTop="@dimen/spacing_xs"
+                    android:paddingBottom="@dimen/spacing_xs"
+                    tools:text="Healthy" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Scan Date & Time -->
+        <TextView
+            android:id="@+id/scanDateTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:text="Today, 2:30 PM"
+            android:textSize="12sp"
+            android:textColor="@color/health_text_secondary"
+            android:gravity="start"
+            app:layout_constraintTop_toBottomOf="@+id/nutritionSummary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/moreOptionsButton"
+            tools:text="Today, 2:30 PM" />
+
+        <!-- More Options Button -->
+        <ImageView
+            android:id="@+id/moreOptionsButton"
+            android:layout_width="@dimen/icon_size_medium"
+            android:layout_height="@dimen/icon_size_medium"
+            android:src="@drawable/ic_more_vert"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="More Options"
+            app:tint="@color/health_text_secondary"
+            app:layout_constraintTop_toBottomOf="@+id/nutritionSummary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/scanDateTime" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

@@ -101,6 +101,7 @@
     
     <!-- Bottom navigation -->
     <dimen name="bottom_nav_height">64dp</dimen>
+    <dimen name="bottom_nav_height_enhanced">110dp</dimen>
     <dimen name="bottom_nav_icon_size">24dp</dimen>
     
     <!-- App bar -->

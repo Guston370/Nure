@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    
+    <!-- Background Circle -->
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M24,24m-20,0a20,20 0,1 1,40 0a20,20 0,1 1,-40 0" />
+    
+    <!-- Health Cross -->
+    <path
+        android:fillColor="@color/health_teal"
+        android:pathData="M20,14h8v20h-8z" />
+    <path
+        android:fillColor="@color/health_teal"
+        android:pathData="M14,20h20v8h-20z" />
+    
+    <!-- Scanner Lines -->
+    <path
+        android:fillColor="@color/health_mint_green"
+        android:pathData="M12,16h2v2h-2z" />
+    <path
+        android:fillColor="@color/health_mint_green"
+        android:pathData="M34,16h2v2h-2z" />
+    <path
+        android:fillColor="@color/health_mint_green"
+        android:pathData="M12,30h2v2h-2z" />
+    <path
+        android:fillColor="@color/health_mint_green"
+        android:pathData="M34,30h2v2h-2z" />
+    
+    <!-- Scanning Beam -->
+    <path
+        android:fillColor="@color/health_soft_blue"
+        android:fillAlpha="0.6"
+        android:pathData="M10,24h28v1h-28z" />
+    
+</vector>

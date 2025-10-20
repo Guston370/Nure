@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Scanning frame overlay background -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    
+    <!-- Semi-transparent background -->
+    <solid android:color="#80000000" />
+    
+    <!-- Cutout rectangle in center -->
+    <corners android:radius="16dp" />
+    
+</shape>

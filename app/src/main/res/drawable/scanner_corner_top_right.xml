@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Scanner corner indicator - Top Right -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <!-- Corner line - horizontal -->
+    <item android:top="22dp" android:left="22dp" android:right="0dp" android:bottom="22dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/health_teal" />
+            <size android:height="6dp" />
+        </shape>
+    </item>
+    
+    <!-- Corner line - vertical -->
+    <item android:top="0dp" android:left="22dp" android:right="22dp" android:bottom="22dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/health_teal" />
+            <size android:width="6dp" />
+        </shape>
+    </item>
+    
+</layer-list>

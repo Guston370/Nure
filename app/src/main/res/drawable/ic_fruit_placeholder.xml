@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    
+    <!-- Background -->
+    <path
+        android:fillColor="@color/health_light_gray"
+        android:pathData="M0,0h120v120h-120z" />
+    
+    <!-- Apple Body -->
+    <path
+        android:fillColor="#FF6B6B"
+        android:pathData="M60,30 Q45,30 35,45 Q30,60 35,75 Q45,90 60,90 Q75,90 85,75 Q90,60 85,45 Q75,30 60,30 Z" />
+    
+    <!-- Apple Stem -->
+    <path
+        android:fillColor="#8B4513"
+        android:pathData="M58,25h4v10h-4z" />
+    
+    <!-- Apple Leaf -->
+    <path
+        android:fillColor="@color/health_mint_green"
+        android:pathData="M65,28 Q70,25 75,30 Q70,35 65,32 Z" />
+    
+    <!-- Apple Highlight -->
+    <path
+        android:fillColor="#FFB3B3"
+        android:fillAlpha="0.6"
+        android:pathData="M50,40 Q55,35 60,40 Q55,50 50,45 Z" />
+    
+</vector>
