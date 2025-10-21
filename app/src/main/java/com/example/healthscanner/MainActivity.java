@@ -123,6 +123,9 @@ public class MainActivity extends BaseActivity {
 
             Log.d(TAG, "Starting main app initialization...");
 
+            // Check and restore Firebase authentication state
+            checkFirebaseAuthState();
+            
             // Check if this is a new user from Google Sign-In or successful login
             checkAndWelcomeUser();
 
@@ -394,6 +397,65 @@ public class MainActivity extends BaseActivity {
             Log.e(TAG, "Error showing authentication dialog", e);
             // Fallback to redirect
             authManager.navigateToLogin(this);
+        }
+    }
+
+    /**
+     * Check and restore Firebase authentication state
+     */
+    private void checkFirebaseAuthState() {
+        try {
+            com.google.firebase.auth.FirebaseAuth firebaseAuth = com.google.firebase.auth.FirebaseAuth.getInstance();
+            com.google.firebase.auth.FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+            
+            if (currentUser != null) {
+                Log.d(TAG, "Firebase user found: " + currentUser.getEmail());
+                
+                // Refresh the token to ensure it's still valid
+                currentUser.getIdToken(true)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Firebase token is valid and refreshed");
+                            
+                            // Update SharedPreferences with current Firebase user data
+                            SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
+                            editor.putBoolean("is_logged_in", true);
+                            editor.putLong("login_timestamp", System.currentTimeMillis());
+                            editor.putString("current_user_email", currentUser.getEmail());
+                            editor.putString("current_user_name", currentUser.getDisplayName());
+                            editor.putString("current_user_id", currentUser.getUid());
+                            
+                            if (currentUser.getProviderData() != null && !currentUser.getProviderData().isEmpty()) {
+                                editor.putString("auth_provider", currentUser.getProviderData().get(0).getProviderId());
+                            }
+                            
+                            if (currentUser.getPhotoUrl() != null) {
+                                editor.putString("current_user_photo", currentUser.getPhotoUrl().toString());
+                            }
+                            
+                            editor.apply();
+                            Log.d(TAG, "SharedPreferences updated with current Firebase user data");
+                            
+                        } else {
+                            Log.w(TAG, "Firebase token refresh failed: " + task.getException());
+                            // Token is invalid, user needs to sign in again
+                            authManager.clearAuthState();
+                        }
+                    });
+                    
+            } else {
+                Log.d(TAG, "No Firebase user found");
+                // Check if SharedPreferences thinks user is logged in but Firebase doesn't
+                SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+                boolean isLoggedIn = prefs.getBoolean("is_logged_in", false);
+                if (isLoggedIn) {
+                    Log.w(TAG, "SharedPreferences shows logged in but no Firebase user - clearing auth state");
+                    authManager.clearAuthState();
+                }
+            }
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Error checking Firebase auth state: " + e.getMessage(), e);
         }
     }
 

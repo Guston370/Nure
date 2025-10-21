@@ -79,6 +79,19 @@ public class AuthManager {
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         if (currentUser != null) {
             Log.d(TAG, "Firebase user is authenticated: " + currentUser.getEmail());
+            
+            // Refresh the token to ensure it's still valid
+            currentUser.getIdToken(true)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "Firebase token refreshed successfully");
+                        // Update login timestamp to extend session
+                        updateLoginTimestamp();
+                    } else {
+                        Log.w(TAG, "Failed to refresh Firebase token: " + task.getException());
+                    }
+                });
+            
             return true;
         } else {
             Log.d(TAG, "No Firebase user found, clearing session");
@@ -101,6 +114,16 @@ public class AuthManager {
         long thirtyDaysInMillis = 30L * 24 * 60 * 60 * 1000; // 30 days
         
         return (currentTime - loginTime) < thirtyDaysInMillis;
+    }
+    
+    /**
+     * Update login timestamp to extend session
+     */
+    private void updateLoginTimestamp() {
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putLong(KEY_LOGIN_TIMESTAMP, System.currentTimeMillis());
+        editor.apply();
+        Log.d(TAG, "Login timestamp updated to extend session");
     }
     
     /**

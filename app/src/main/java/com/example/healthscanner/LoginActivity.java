@@ -813,6 +813,9 @@ public class LoginActivity extends AppCompatActivity {
             
             Log.d(TAG, "Firebase login state saved successfully for: " + user.getEmail());
             
+            // Create user profile in Firebase Firestore (for email/password login)
+            createFirebaseUserProfile(user);
+            
         } catch (Exception e) {
             Log.e(TAG, "Error saving Firebase login state", e);
         }
@@ -947,6 +950,9 @@ public class LoginActivity extends AppCompatActivity {
                                 
                                 // Save basic login state (simple approach)
                                 saveLoginState(user);
+                                
+                                // Create user profile in Firebase Firestore
+                                createFirebaseUserProfile(user);
                                 
                                 // Show success message
                                 String displayName = user.getDisplayName();
@@ -1145,6 +1151,61 @@ public class LoginActivity extends AppCompatActivity {
         editor.apply();
         
         Log.d(TAG, "Login state saved successfully for user: " + user.getEmail());
+    }
+
+    /**
+     * Create user profile in Firebase Firestore
+     * @param user The authenticated Firebase user
+     */
+    private void createFirebaseUserProfile(FirebaseUser user) {
+        if (user == null) {
+            Log.w(TAG, "Cannot create Firebase profile: user is null");
+            return;
+        }
+        
+        Log.d(TAG, "Creating Firebase user profile for: " + user.getEmail());
+        
+        FirebaseManager firebaseManager = FirebaseManager.getInstance();
+        firebaseManager.createUserProfile(user, new FirebaseManager.OperationCallback() {
+            @Override
+            public void onSuccess() {
+                Log.d(TAG, "✅ Firebase user profile created successfully for: " + user.getEmail());
+                
+                // Save additional Google-specific data
+                SharedPreferences.Editor editor = healthScannerPrefs.edit();
+                editor.putBoolean("firebase_profile_created", true);
+                editor.putLong("firebase_profile_timestamp", System.currentTimeMillis());
+                
+                // Mark as fresh Google sign-in for welcome message
+                if (user.getProviderData() != null && !user.getProviderData().isEmpty()) {
+                    String providerId = user.getProviderData().get(0).getProviderId();
+                    if ("google.com".equals(providerId)) {
+                        editor.putBoolean("fresh_google_signin", true);
+                        editor.putString("google_account_type", "personal");
+                        
+                        // Extract first and last name from display name
+                        String displayName = user.getDisplayName();
+                        if (displayName != null && !displayName.isEmpty()) {
+                            String[] nameParts = displayName.split(" ", 2);
+                            editor.putString("current_user_first_name", nameParts[0]);
+                            if (nameParts.length > 1) {
+                                editor.putString("current_user_last_name", nameParts[1]);
+                            }
+                        }
+                    }
+                }
+                
+                editor.apply();
+                Log.d(TAG, "Google account data saved to SharedPreferences");
+            }
+            
+            @Override
+            public void onFailure(String error) {
+                Log.e(TAG, "❌ Failed to create Firebase user profile: " + error);
+                // Don't block the login process, just log the error
+                // The user can still use the app, profile creation can be retried later
+            }
+        });
     }
 
     private void handleForgotPassword() {
