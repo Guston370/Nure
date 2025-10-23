@@ -1,6 +1,7 @@
 package com.example.healthscanner;
 
 import android.animation.ValueAnimator;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -13,9 +14,37 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import com.example.healthscanner.database.FirebaseScanManager;
+import com.example.healthscanner.models.Scan;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 /**
- * Analytics Activity for health insights and statistics
- * Matches Home Page design with gradient header and animated cards
+ * Enhanced Analytics Activity with Firebase data and advanced charts
+ * Shows comprehensive statistics with animated charts and real data
  */
 public class AnalyticsActivity extends BaseActivity {
     
@@ -26,29 +55,41 @@ public class AnalyticsActivity extends BaseActivity {
     private TextView analyticsSubtitle;
     private ImageView refreshIcon;
     
-    // Metric Cards
-    private CardView dailyCaloriesCard;
-    private CardView healthScoreCard;
-    private CardView categoriesCard;
-    private CardView trendsCard;
-    private CardView insightsCard;
+    // Statistics Cards
+    private CardView totalScansCard;
+    private CardView weeklyScansCard;
+    private CardView monthlyScansCard;
+    private CardView avgHealthScoreCard;
+    private CardView avgCaloriesCard;
+    private CardView avgTimeBetweenCard;
     
     // Data Elements
-    private TextView dailyCaloriesNumber;
-    private TextView healthScoreNumber;
+    private TextView totalScansNumber;
+    private TextView weeklyScansNumber;
+    private TextView monthlyScansNumber;
+    private TextView avgHealthScoreNumber;
+    private TextView avgCaloriesNumber;
+    private TextView avgTimeBetweenNumber;
     private ProgressBar healthScoreProgress;
     private TextView personalInsightText;
     
-    // Auth Manager
+    // Charts
+    private PieChart categoryPieChart;
+    private BarChart scanFrequencyChart;
+    private LineChart trendsLineChart;
+    
+    // Firebase managers
     private AuthManager authManager;
+    private FirebaseScanManager scanManager;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_analytics_enhanced);
         
-        // Initialize AuthManager
+        // Initialize managers
         authManager = AuthManager.getInstance(this);
+        scanManager = FirebaseScanManager.getInstance();
         
         // Simple authentication check - trust navigation from authenticated home page
         boolean fromNavigation = getIntent().getBooleanExtra("from_navigation", false);
@@ -60,9 +101,10 @@ public class AnalyticsActivity extends BaseActivity {
         
         initializeViews();
         initializeBottomNavigation();
+        setupCharts();
         setupEntranceAnimations();
         setupClickListeners();
-        loadAnalyticsData();
+        loadRealAnalyticsData();
     }
     
     private void initializeViews() {
@@ -366,6 +408,334 @@ public class AnalyticsActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         // Refresh data when returning to the activity
-        // This ensures data is up-to-date
+        loadRealAnalyticsData();
+    }
+    
+    /**
+     * Load real analytics data from Firebase
+     */
+    private void loadRealAnalyticsData() {
+        String userId = authManager.getCurrentUserId();
+        if (userId == null || userId.isEmpty()) {
+            Log.w(TAG, "No user ID available for analytics");
+            showEmptyAnalytics();
+            return;
+        }
+        
+        Log.d(TAG, "🔥 Loading real analytics data from Firebase for user: " + userId);
+        
+        // Show loading state
+        showLoadingState();
+        
+        // Get comprehensive statistics from Firebase
+        scanManager.getScanStatistics(userId, new FirebaseScanManager.StatisticsCallback() {
+            @Override
+            public void onSuccess(FirebaseScanManager.ScanStatistics statistics) {
+                Log.d(TAG, "✅ Analytics data loaded successfully");
+                runOnUiThread(() -> {
+                    displayStatistics(statistics);
+                    loadWeeklyAndMonthlyData(userId);
+                    setupChartsWithData(statistics);
+                });
+            }
+            
+            @Override
+            public void onFailure(String error) {
+                Log.e(TAG, "❌ Failed to load analytics data: " + error);
+                runOnUiThread(() -> {
+                    showEmptyAnalytics();
+                    android.widget.Toast.makeText(AnalyticsActivity.this, 
+                        "Unable to load analytics data. Please check your connection.", 
+                        android.widget.Toast.LENGTH_LONG).show();
+                });
+            }
+        });
+    }
+    
+    /**
+     * Load weekly and monthly scan counts
+     */
+    private void loadWeeklyAndMonthlyData(String userId) {
+        // Get weekly scans
+        scanManager.getWeeklyScans(userId, new FirebaseScanManager.ScanListCallback() {
+            @Override
+            public void onSuccess(List<Scan> scans) {
+                runOnUiThread(() -> {
+                    animateCounterValue(weeklyScansNumber, scans.size());
+                });
+            }
+            
+            @Override
+            public void onFailure(String error) {
+                Log.w(TAG, "Failed to load weekly scans: " + error);
+            }
+        });
+        
+        // Get monthly scans
+        scanManager.getMonthlyScans(userId, new FirebaseScanManager.ScanListCallback() {
+            @Override
+            public void onSuccess(List<Scan> scans) {
+                runOnUiThread(() -> {
+                    animateCounterValue(monthlyScansNumber, scans.size());
+                });
+            }
+            
+            @Override
+            public void onFailure(String error) {
+                Log.w(TAG, "Failed to load monthly scans: " + error);
+            }
+        });
+    }
+    
+    /**
+     * Display statistics with animations
+     */
+    private void displayStatistics(FirebaseScanManager.ScanStatistics stats) {
+        // Animate total scans
+        animateCounterValue(totalScansNumber, stats.totalScans);
+        
+        // Animate health score
+        if (stats.averageHealthScore > 0) {
+            animateHealthScore(stats.averageHealthScore);
+            animateCounterValue(avgHealthScoreNumber, (int)(stats.averageHealthScore * 10));
+        } else {
+            avgHealthScoreNumber.setText("--");
+            if (healthScoreProgress != null) healthScoreProgress.setProgress(0);
+        }
+        
+        // Animate average calories
+        if (stats.averageCalories > 0) {
+            animateCounterValue(avgCaloriesNumber, (int)stats.averageCalories);
+        } else {
+            avgCaloriesNumber.setText("--");
+        }
+        
+        // Calculate and display average time between scans
+        if (stats.averageTimeBetweenScans > 0) {
+            long hours = stats.averageTimeBetweenScans / (1000 * 60 * 60);
+            if (hours > 24) {
+                long days = hours / 24;
+                avgTimeBetweenNumber.setText(days + "d");
+            } else {
+                avgTimeBetweenNumber.setText(hours + "h");
+            }
+        } else {
+            avgTimeBetweenNumber.setText("--");
+        }
+        
+        // Generate insights
+        generateRealInsights(stats);
+    }
+    
+    /**
+     * Setup charts with real data
+     */
+    private void setupChartsWithData(FirebaseScanManager.ScanStatistics stats) {
+        // Setup category pie chart
+        setupCategoryPieChart(stats.categoryBreakdown);
+        
+        // Setup scan frequency chart (placeholder for now)
+        setupScanFrequencyChart();
+        
+        // Setup trends line chart (placeholder for now)
+        setupTrendsLineChart();
+    }
+    
+    /**
+     * Setup category breakdown pie chart
+     */
+    private void setupCategoryPieChart(Map<String, Integer> categoryData) {
+        if (categoryPieChart == null || categoryData.isEmpty()) {
+            return;
+        }
+        
+        List<PieEntry> entries = new ArrayList<>();
+        int[] colors = {
+            Color.parseColor("#4CAF50"), // Food - Green
+            Color.parseColor("#FF9800"), // Cosmetics - Orange
+            Color.parseColor("#2196F3"), // Beverages - Blue
+            Color.parseColor("#9C27B0"), // Personal Care - Purple
+            Color.parseColor("#F44336"), // Other - Red
+        };
+        
+        for (Map.Entry<String, Integer> entry : categoryData.entrySet()) {
+            entries.add(new PieEntry(entry.getValue(), entry.getKey()));
+        }
+        
+        PieDataSet dataSet = new PieDataSet(entries, "Categories");
+        dataSet.setColors(colors);
+        dataSet.setValueTextSize(12f);
+        dataSet.setValueTextColor(Color.WHITE);
+        
+        PieData data = new PieData(dataSet);
+        categoryPieChart.setData(data);
+        categoryPieChart.getDescription().setEnabled(false);
+        categoryPieChart.setDrawHoleEnabled(true);
+        categoryPieChart.setHoleColor(Color.TRANSPARENT);
+        categoryPieChart.setHoleRadius(40f);
+        categoryPieChart.setTransparentCircleRadius(45f);
+        categoryPieChart.animateY(1000);
+        categoryPieChart.invalidate();
+    }
+    
+    /**
+     * Setup scan frequency bar chart
+     */
+    private void setupScanFrequencyChart() {
+        if (scanFrequencyChart == null) {
+            return;
+        }
+        
+        // Placeholder data - will be enhanced with real daily scan data
+        List<BarEntry> entries = new ArrayList<>();
+        String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+        
+        for (int i = 0; i < 7; i++) {
+            entries.add(new BarEntry(i, (float)(Math.random() * 10))); // Placeholder
+        }
+        
+        BarDataSet dataSet = new BarDataSet(entries, "Scans per Day");
+        dataSet.setColor(Color.parseColor("#4CAF50"));
+        dataSet.setValueTextSize(10f);
+        
+        BarData data = new BarData(dataSet);
+        scanFrequencyChart.setData(data);
+        
+        XAxis xAxis = scanFrequencyChart.getXAxis();
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(days));
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularity(1f);
+        
+        scanFrequencyChart.getDescription().setEnabled(false);
+        scanFrequencyChart.animateY(1000);
+        scanFrequencyChart.invalidate();
+    }
+    
+    /**
+     * Setup trends line chart
+     */
+    private void setupTrendsLineChart() {
+        if (trendsLineChart == null) {
+            return;
+        }
+        
+        // Placeholder data - will be enhanced with real trend data
+        List<Entry> entries = new ArrayList<>();
+        for (int i = 0; i < 30; i++) {
+            entries.add(new Entry(i, (float)(Math.random() * 10)));
+        }
+        
+        LineDataSet dataSet = new LineDataSet(entries, "Health Score Trend");
+        dataSet.setColor(Color.parseColor("#2196F3"));
+        dataSet.setCircleColor(Color.parseColor("#2196F3"));
+        dataSet.setLineWidth(2f);
+        dataSet.setCircleRadius(3f);
+        dataSet.setDrawCircleHole(false);
+        dataSet.setValueTextSize(9f);
+        dataSet.setDrawFilled(true);
+        dataSet.setFillColor(Color.parseColor("#2196F3"));
+        dataSet.setFillAlpha(50);
+        
+        LineData data = new LineData(dataSet);
+        trendsLineChart.setData(data);
+        trendsLineChart.getDescription().setEnabled(false);
+        trendsLineChart.animateX(1000);
+        trendsLineChart.invalidate();
+    }
+    
+    /**
+     * Generate real insights based on statistics
+     */
+    private void generateRealInsights(FirebaseScanManager.ScanStatistics stats) {
+        if (personalInsightText == null) return;
+        
+        StringBuilder insights = new StringBuilder();
+        
+        if (stats.totalScans == 0) {
+            insights.append("🌟 Welcome to Health Scanner! Start scanning products to see your personalized health insights here. Your journey to healthier choices begins with your first scan!");
+        } else if (stats.totalScans < 5) {
+            insights.append("🚀 Great start! You've scanned ").append(stats.totalScans).append(" product").append(stats.totalScans > 1 ? "s" : "").append(". Keep scanning to build your health profile and get more detailed insights!");
+        } else {
+            // Generate insights based on real data
+            if (stats.averageHealthScore >= 7.0) {
+                insights.append("🌟 Excellent choices! Your average health score of ").append(String.format("%.1f", stats.averageHealthScore)).append(" shows you're making great nutritional decisions. ");
+            } else if (stats.averageHealthScore >= 5.0) {
+                insights.append("👍 Good progress! Your average health score is ").append(String.format("%.1f", stats.averageHealthScore)).append(". Consider choosing more products with higher nutritional value. ");
+            } else if (stats.averageHealthScore > 0) {
+                insights.append("💪 Room for improvement! Your average health score is ").append(String.format("%.1f", stats.averageHealthScore)).append(". Try scanning more fruits, vegetables, and whole grain products. ");
+            }
+            
+            if (stats.averageCalories > 400) {
+                insights.append("Consider choosing lower-calorie options to maintain a balanced diet. ");
+            } else if (stats.averageCalories > 0 && stats.averageCalories <= 200) {
+                insights.append("Great job choosing lower-calorie products! ");
+            }
+            
+            // Category insights
+            if (!stats.categoryBreakdown.isEmpty()) {
+                String topCategory = stats.categoryBreakdown.entrySet().stream()
+                    .max(Map.Entry.comparingByValue())
+                    .map(Map.Entry::getKey)
+                    .orElse("products");
+                insights.append("You scan ").append(topCategory).append(" most frequently. ");
+            }
+            
+            insights.append("You've scanned ").append(stats.totalScans).append(" products total. Keep it up! 🎯");
+        }
+        
+        personalInsightText.setText(insights.toString());
+    }
+    
+    /**
+     * Show loading state
+     */
+    private void showLoadingState() {
+        if (totalScansNumber != null) totalScansNumber.setText("...");
+        if (weeklyScansNumber != null) weeklyScansNumber.setText("...");
+        if (monthlyScansNumber != null) monthlyScansNumber.setText("...");
+        if (avgHealthScoreNumber != null) avgHealthScoreNumber.setText("...");
+        if (avgCaloriesNumber != null) avgCaloriesNumber.setText("...");
+        if (avgTimeBetweenNumber != null) avgTimeBetweenNumber.setText("...");
+        if (personalInsightText != null) {
+            personalInsightText.setText("📊 Loading your personalized analytics from Firebase...");
+        }
+    }
+    
+    /**
+     * Animate counter values with count-up effect
+     */
+    private void animateCounterValue(TextView textView, int targetValue) {
+        if (textView == null) return;
+        
+        if (targetValue == 0) {
+            textView.setText("--");
+            return;
+        }
+        
+        ValueAnimator animator = ValueAnimator.ofInt(0, targetValue);
+        animator.setDuration(1500);
+        animator.addUpdateListener(animation -> {
+            int value = (int) animation.getAnimatedValue();
+            textView.setText(String.valueOf(value));
+        });
+        
+        // Start animation after a delay for staggered effect
+        new Handler().postDelayed(() -> animator.start(), 300);
+    }
+    
+    /**
+     * Setup charts (initialize chart views)
+     */
+    private void setupCharts() {
+        // Initialize chart views - will be populated with data later
+        if (categoryPieChart != null) {
+            categoryPieChart.setNoDataText("Loading category data...");
+        }
+        if (scanFrequencyChart != null) {
+            scanFrequencyChart.setNoDataText("Loading frequency data...");
+        }
+        if (trendsLineChart != null) {
+            trendsLineChart.setNoDataText("Loading trend data...");
+        }
     }
 }

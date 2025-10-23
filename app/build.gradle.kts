@@ -79,6 +79,9 @@ dependencies {
     // Firebase BOM - manages all Firebase library versions
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
     
+    // MPAndroidChart for advanced charts and graphs
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    
     // Firebase Authentication
     implementation("com.google.firebase:firebase-auth")
     

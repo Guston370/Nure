@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Health Scanner App Icon for Adaptive Icons - Optimally Fitted -->
+<!-- Health Scanner App Icon - Optimized for Adaptive Icons -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Icon with proper padding for adaptive icon safe zone -->
+    <!-- Main icon with proper safe zone sizing -->
     <item
         android:drawable="@drawable/nure_logo"
-        android:gravity="center"
-        android:width="72dp"
-        android:height="72dp" />
+        android:gravity="center">
+        <!-- Inset to fit within adaptive icon safe zone (66dp out of 108dp) -->
+        <inset
+            android:insetLeft="21dp"
+            android:insetTop="21dp"
+            android:insetRight="21dp"
+            android:insetBottom="21dp" />
+    </item>
 </layer-list>

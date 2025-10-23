@@ -1154,7 +1154,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Create user profile in Firebase Firestore
+     * Create user profile in Firebase Firestore with enhanced logging
      * @param user The authenticated Firebase user
      */
     private void createFirebaseUserProfile(FirebaseUser user) {
@@ -1163,22 +1163,41 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
         
-        Log.d(TAG, "Creating Firebase user profile for: " + user.getEmail());
+        Log.d(TAG, "🔥 CREATING FIREBASE USER PROFILE");
+        Log.d(TAG, "User ID: " + user.getUid());
+        Log.d(TAG, "Email: " + user.getEmail());
+        Log.d(TAG, "Display Name: " + user.getDisplayName());
+        Log.d(TAG, "Photo URL: " + (user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : "null"));
+        Log.d(TAG, "Email Verified: " + user.isEmailVerified());
+        
+        if (user.getProviderData() != null && !user.getProviderData().isEmpty()) {
+            Log.d(TAG, "Auth Provider: " + user.getProviderData().get(0).getProviderId());
+        }
         
         FirebaseManager firebaseManager = FirebaseManager.getInstance();
         firebaseManager.createUserProfile(user, new FirebaseManager.OperationCallback() {
             @Override
             public void onSuccess() {
-                Log.d(TAG, "✅ Firebase user profile created successfully for: " + user.getEmail());
+                Log.d(TAG, "✅ FIREBASE USER PROFILE CREATED SUCCESSFULLY!");
+                Log.d(TAG, "🔍 Check Firebase Console: https://console.firebase.google.com/project/nure-70d49/firestore/data/users/" + user.getUid());
                 
-                // Save additional Google-specific data
+                // Clear SharedPreferences - we'll use Firebase as primary storage
+                clearLocalStorage();
+                
+                // Save only essential auth data locally
                 SharedPreferences.Editor editor = healthScannerPrefs.edit();
+                editor.putBoolean("is_logged_in", true);
+                editor.putLong("login_timestamp", System.currentTimeMillis());
+                editor.putString("current_user_id", user.getUid());
+                editor.putString("current_user_email", user.getEmail());
                 editor.putBoolean("firebase_profile_created", true);
                 editor.putLong("firebase_profile_timestamp", System.currentTimeMillis());
                 
-                // Mark as fresh Google sign-in for welcome message
+                // Mark as fresh sign-in for welcome message
                 if (user.getProviderData() != null && !user.getProviderData().isEmpty()) {
                     String providerId = user.getProviderData().get(0).getProviderId();
+                    editor.putString("auth_provider", providerId);
+                    
                     if ("google.com".equals(providerId)) {
                         editor.putBoolean("fresh_google_signin", true);
                         editor.putString("google_account_type", "personal");
@@ -1196,16 +1215,53 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 
                 editor.apply();
-                Log.d(TAG, "Google account data saved to SharedPreferences");
+                Log.d(TAG, "✅ Essential auth data saved locally, Firebase is primary storage");
             }
             
             @Override
             public void onFailure(String error) {
-                Log.e(TAG, "❌ Failed to create Firebase user profile: " + error);
-                // Don't block the login process, just log the error
-                // The user can still use the app, profile creation can be retried later
+                Log.e(TAG, "❌ FAILED TO CREATE FIREBASE USER PROFILE!");
+                Log.e(TAG, "Error: " + error);
+                Log.e(TAG, "🔧 Check Firebase configuration and internet connection");
+                
+                // Still save basic auth data so user can use the app
+                SharedPreferences.Editor editor = healthScannerPrefs.edit();
+                editor.putBoolean("is_logged_in", true);
+                editor.putLong("login_timestamp", System.currentTimeMillis());
+                editor.putString("current_user_id", user.getUid());
+                editor.putString("current_user_email", user.getEmail());
+                editor.putBoolean("firebase_profile_created", false);
+                editor.apply();
+                
+                // Show user a message about offline mode
+                runOnUiThread(() -> {
+                    Toast.makeText(LoginActivity.this, 
+                        "Signed in successfully. Some features may be limited due to connection issues.", 
+                        Toast.LENGTH_LONG).show();
+                });
             }
         });
+    }
+    
+    /**
+     * Clear local storage to use Firebase as primary storage
+     */
+    private void clearLocalStorage() {
+        Log.d(TAG, "🧹 Clearing local storage - Firebase will be primary storage");
+        SharedPreferences.Editor editor = healthScannerPrefs.edit();
+        
+        // Clear old scan data stored locally
+        editor.remove("recent_scans");
+        editor.remove("scan_history");
+        editor.remove("total_scans");
+        editor.remove("healthy_choices");
+        editor.remove("average_health_score");
+        editor.remove("user_saved_items");
+        editor.remove("health_concerns");
+        editor.remove("dietary_preferences");
+        
+        editor.apply();
+        Log.d(TAG, "✅ Local storage cleared - Firebase is now primary data source");
     }
 
     private void handleForgotPassword() {
