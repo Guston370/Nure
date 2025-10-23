@@ -113,18 +113,28 @@ public class AnalyticsActivity extends BaseActivity {
         analyticsSubtitle = findViewById(R.id.analyticsSubtitle);
         refreshIcon = findViewById(R.id.refreshIcon);
         
-        // Metric cards
-        dailyCaloriesCard = findViewById(R.id.dailyCaloriesCard);
-        healthScoreCard = findViewById(R.id.healthScoreCard);
-        categoriesCard = findViewById(R.id.categoriesCard);
-        trendsCard = findViewById(R.id.trendsCard);
-        insightsCard = findViewById(R.id.insightsCard);
+        // Statistics Cards (using existing IDs for now)
+        totalScansCard = findViewById(R.id.dailyCaloriesCard); // Temporary mapping
+        weeklyScansCard = findViewById(R.id.healthScoreCard); // Temporary mapping
+        monthlyScansCard = findViewById(R.id.categoriesCard); // Temporary mapping
+        avgHealthScoreCard = findViewById(R.id.trendsCard); // Temporary mapping
+        avgCaloriesCard = findViewById(R.id.insightsCard); // Temporary mapping
+        // avgTimeBetweenCard = null; // Not in current layout
         
-        // Data elements
-        dailyCaloriesNumber = findViewById(R.id.dailyCaloriesNumber);
-        healthScoreNumber = findViewById(R.id.healthScoreNumber);
+        // Data elements (using existing IDs for now)
+        totalScansNumber = findViewById(R.id.dailyCaloriesNumber); // Temporary mapping
+        // weeklyScansNumber = null; // Not in current layout
+        // monthlyScansNumber = null; // Not in current layout
+        avgHealthScoreNumber = findViewById(R.id.healthScoreNumber); // Temporary mapping
+        // avgCaloriesNumber = null; // Not in current layout
+        // avgTimeBetweenNumber = null; // Not in current layout
         healthScoreProgress = findViewById(R.id.healthScoreProgress);
         personalInsightText = findViewById(R.id.personalInsightText);
+        
+        // Charts (not in current layout - will be null)
+        // categoryPieChart = null;
+        // scanFrequencyChart = null;
+        // trendsLineChart = null;
     }
     
     @Override
@@ -147,7 +157,7 @@ public class AnalyticsActivity extends BaseActivity {
     }
     
     private void animateCardsSequentially() {
-        CardView[] cards = {dailyCaloriesCard, healthScoreCard, categoriesCard, trendsCard, insightsCard};
+        CardView[] cards = {totalScansCard, weeklyScansCard, monthlyScansCard, avgHealthScoreCard, avgCaloriesCard, avgTimeBetweenCard};
         int[] delays = {400, 500, 600, 700, 800};
         
         for (int i = 0; i < cards.length; i++) {
@@ -191,43 +201,43 @@ public class AnalyticsActivity extends BaseActivity {
     }
     
     private void setupCardClickListeners() {
-        // Daily calories card click
-        if (dailyCaloriesCard != null) {
-            dailyCaloriesCard.setOnClickListener(v -> {
+        // Total scans card click
+        if (totalScansCard != null) {
+            totalScansCard.setOnClickListener(v -> {
                 v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_bounce));
-                // Handle calories detail view
+                // Handle total scans detail view
             });
         }
         
-        // Health score card click
-        if (healthScoreCard != null) {
-            healthScoreCard.setOnClickListener(v -> {
+        // Weekly scans card click
+        if (weeklyScansCard != null) {
+            weeklyScansCard.setOnClickListener(v -> {
+                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_bounce));
+                // Handle weekly scans detail view
+            });
+        }
+        
+        // Monthly scans card click
+        if (monthlyScansCard != null) {
+            monthlyScansCard.setOnClickListener(v -> {
+                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_bounce));
+                // Handle monthly scans detail view
+            });
+        }
+        
+        // Average health score card click
+        if (avgHealthScoreCard != null) {
+            avgHealthScoreCard.setOnClickListener(v -> {
                 v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_bounce));
                 // Handle health score detail view
             });
         }
         
-        // Categories card click
-        if (categoriesCard != null) {
-            categoriesCard.setOnClickListener(v -> {
+        // Average calories card click
+        if (avgCaloriesCard != null) {
+            avgCaloriesCard.setOnClickListener(v -> {
                 v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_bounce));
-                // Handle categories detail view
-            });
-        }
-        
-        // Trends card click
-        if (trendsCard != null) {
-            trendsCard.setOnClickListener(v -> {
-                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_bounce));
-                // Handle trends detail view
-            });
-        }
-        
-        // Insights card click
-        if (insightsCard != null) {
-            insightsCard.setOnClickListener(v -> {
-                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_bounce));
-                // Handle insights detail view
+                // Handle calories detail view
             });
         }
     }
@@ -283,9 +293,9 @@ public class AnalyticsActivity extends BaseActivity {
     }
     
     private void animateCaloriesCounter(int targetCalories) {
-        if (dailyCaloriesNumber != null) {
+        if (avgCaloriesNumber != null) {
             if (targetCalories == 0) {
-                dailyCaloriesNumber.setText("--");
+                avgCaloriesNumber.setText("--");
                 return;
             }
             
@@ -293,7 +303,7 @@ public class AnalyticsActivity extends BaseActivity {
             animator.setDuration(2000);
             animator.addUpdateListener(animation -> {
                 int value = (int) animation.getAnimatedValue();
-                dailyCaloriesNumber.setText(String.format("%,d", value));
+                avgCaloriesNumber.setText(String.format("%,d", value));
             });
             
             // Start animation after card appears
@@ -302,9 +312,9 @@ public class AnalyticsActivity extends BaseActivity {
     }
     
     private void animateHealthScore(double targetScore) {
-        if (healthScoreNumber != null && healthScoreProgress != null) {
+        if (avgHealthScoreNumber != null && healthScoreProgress != null) {
             if (targetScore == 0) {
-                healthScoreNumber.setText("--");
+                avgHealthScoreNumber.setText("--");
                 healthScoreProgress.setProgress(0);
                 return;
             }
@@ -314,7 +324,7 @@ public class AnalyticsActivity extends BaseActivity {
             scoreAnimator.setDuration(2000);
             scoreAnimator.addUpdateListener(animation -> {
                 float value = (float) animation.getAnimatedValue();
-                healthScoreNumber.setText(String.format("%.1f", value));
+                avgHealthScoreNumber.setText(String.format("%.1f", value));
             });
             
             // Animate the progress bar
@@ -366,8 +376,12 @@ public class AnalyticsActivity extends BaseActivity {
     }
     
     private void showEmptyAnalytics() {
-        if (dailyCaloriesNumber != null) dailyCaloriesNumber.setText("--");
-        if (healthScoreNumber != null) healthScoreNumber.setText("--");
+        if (totalScansNumber != null) totalScansNumber.setText("--");
+        if (weeklyScansNumber != null) weeklyScansNumber.setText("--");
+        if (monthlyScansNumber != null) monthlyScansNumber.setText("--");
+        if (avgHealthScoreNumber != null) avgHealthScoreNumber.setText("--");
+        if (avgCaloriesNumber != null) avgCaloriesNumber.setText("--");
+        if (avgTimeBetweenNumber != null) avgTimeBetweenNumber.setText("--");
         if (healthScoreProgress != null) healthScoreProgress.setProgress(0);
         if (personalInsightText != null) {
             personalInsightText.setText("🌟 Start scanning products to see your personalized health analytics and insights!");
