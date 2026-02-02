@@ -52,7 +52,7 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Check if activity is in valid state
+        // Check if activity is in a valid state
         if (isFinishing() || isDestroyed()) {
             Log.w(TAG, "Activity is finishing or destroyed, skipping initialization");
             return;
