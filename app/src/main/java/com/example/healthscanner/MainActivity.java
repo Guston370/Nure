@@ -52,7 +52,7 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Check if activity is in a valid state
+        // Check if activity is a valid state
         if (isFinishing() || isDestroyed()) {
             Log.w(TAG, "Activity is finishing or destroyed, skipping initialization");
             return;
@@ -101,7 +101,7 @@ public class MainActivity extends BaseActivity {
                     });
                 }
             } else if (fromNavigation) {
-                // Coming from bottom navigation - check auth but don't redirect if failed
+                // Coming from bottom navigation - check auth but do not redirect if failed
                 // This prevents redirect loops during navigation
                 if (!authManager.isUserAuthenticated()) {
                     Log.d(TAG, "User not authenticated during navigation, showing login prompt");
