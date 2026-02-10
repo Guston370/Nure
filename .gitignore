@@ -100,6 +100,6 @@ ehthumbs.db
 Thumbs.db
 
 # Nure Health Scanner specific
-app/google-services.json
+# app/google-services.json
 generate_sha_keys.bat
 generate_sha_keys.sh
