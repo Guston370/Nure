@@ -387,7 +387,7 @@ public class SignUpActivity extends AppCompatActivity {
         
         String lowerPassword = password.toLowerCase();
         for (String common : commonPasswords) {
-            if (lowerPassword.equals(common) || lowerPassword.contains(common)) {
+            if (lowerPassword.equals(common)) {
                 return true;
             }
         }
@@ -406,7 +406,7 @@ public class SignUpActivity extends AppCompatActivity {
         
         // Check for sequential characters
         if (hasSequentialCharacters(password)) {
-            showError("Password cannot contain sequential characters (e.g., 123, abc)");
+            showError("Password cannot contain sequential characters (e.g., 1234, abcd)");
             return false;
         }
         
@@ -432,8 +432,9 @@ public class SignUpActivity extends AppCompatActivity {
         String sequences = "0123456789abcdefghijklmnopqrstuvwxyz";
         String lowerPassword = password.toLowerCase();
         
-        for (int i = 0; i <= sequences.length() - 3; i++) {
-            String sequence = sequences.substring(i, i + 3);
+        // Only block sequences of 4+ consecutive characters (e.g. "abcd", "1234")
+        for (int i = 0; i <= sequences.length() - 4; i++) {
+            String sequence = sequences.substring(i, i + 4);
             if (lowerPassword.contains(sequence)) {
                 return true;
             }
