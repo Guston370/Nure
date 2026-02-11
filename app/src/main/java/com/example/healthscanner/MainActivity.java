@@ -190,38 +190,24 @@ public class MainActivity extends BaseActivity {
         try {
             // Enhanced Home Layout Views
             TextView welcomeText = findViewById(R.id.welcomeText);
-            TextView totalScansNumber = findViewById(R.id.totalScansNumber);
-            TextView healthScoreNumber = findViewById(R.id.healthScoreNumber);
-            TextView savedItemsNumber = findViewById(R.id.savedItemsNumber);
-            TextView healthEmoji = findViewById(R.id.healthEmoji);
+            // Stats views removed from new design
+            // TextView totalScansNumber = findViewById(R.id.totalScansNumber);
+            // TextView healthScoreNumber = findViewById(R.id.healthScoreNumber);
+            // TextView savedItemsNumber = findViewById(R.id.savedItemsNumber);
+            // TextView healthEmoji = findViewById(R.id.healthEmoji);
 
-            // Search and scan elements
-            scanIcon = findViewById(R.id.scanIcon);
+            // Search and scan elements - removed from new design
+            // scanIcon = findViewById(R.id.scanIcon);
 
             // Set personalized welcome text with Google account integration
             if (welcomeText != null) {
-                String realUserName = getRealUserName();
-                String firstName = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getString("current_user_first_name", "");
-                String authProvider = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getString("auth_provider", "");
-                boolean freshSignIn = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean("fresh_google_signin", false);
-                
-                if (freshSignIn && !firstName.isEmpty()) {
-                    // Special welcome for fresh Google sign-in
-                    welcomeText.setText("Welcome back, " + firstName + "! ✨");
-                } else if (!firstName.isEmpty()) {
-                    // Use first name for more personal feel
-                    welcomeText.setText("Hi, " + firstName + "! 👋");
-                } else if (realUserName != null && !realUserName.isEmpty()) {
-                    // Fallback to full name
-                    welcomeText.setText("Hi, " + realUserName + " 👋");
-                } else {
-                    // Default greeting
-                    welcomeText.setText("Hi there! 👋");
-                }
+                // Use the new design text
+                welcomeText.setText("Let's Check Your");
             }
 
             // Set REAL stats (no artificial data)
-            setRealUserStats(totalScansNumber, healthScoreNumber, savedItemsNumber, healthEmoji);
+            // Stats views removed from new design
+            // setRealUserStats(totalScansNumber, healthScoreNumber, savedItemsNumber, healthEmoji);
 
             Log.d(TAG, "Views initialized with real user data");
         } catch (Exception e) {
