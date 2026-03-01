@@ -13,7 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
+import android.widget.LinearLayout;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -35,11 +35,11 @@ public class SettingsActivity extends BaseActivity {
     private ImageView helpIcon;
 
     // Setting Cards
-    private CardView notificationsCard;
-    private CardView darkModeCard;
-    private CardView privacyPolicyCard;
-    private CardView exportHistoryCard;
-    private CardView logoutCard;
+    private View notificationsCard;
+    private View darkModeCard;
+    private View privacyPolicyCard;
+    private View exportHistoryCard;
+    private View logoutCard;
 
     // Switches
     private SwitchMaterial notificationSwitch;
@@ -107,12 +107,12 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void animateCardsSequentially() {
-        CardView[] cards = { notificationsCard, darkModeCard, privacyPolicyCard, exportHistoryCard, logoutCard };
+        View[] cards = { notificationsCard, darkModeCard, privacyPolicyCard, exportHistoryCard, logoutCard };
         int[] delays = { 400, 500, 600, 700, 800 };
 
         for (int i = 0; i < cards.length; i++) {
             if (cards[i] != null) {
-                final CardView card = cards[i];
+                final View card = cards[i];
                 final boolean isLogout = (i == cards.length - 1);
 
                 card.postDelayed(() -> {

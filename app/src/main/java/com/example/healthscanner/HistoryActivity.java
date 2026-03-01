@@ -54,7 +54,6 @@ public class HistoryActivity extends BaseActivity {
         historyContent = findViewById(R.id.historyContentContainer);
     }
 
-
     private void loadScanHistory() {
         try {
             SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
@@ -80,7 +79,7 @@ public class HistoryActivity extends BaseActivity {
                 }
 
                 // Setup start scanning button
-                MaterialButton startScanningButton = findViewById(R.id.startScanningButton);
+                View startScanningButton = findViewById(R.id.startScanningButton);
                 if (startScanningButton != null) {
                     startScanningButton.setOnClickListener(v -> {
                         Intent intent = new Intent(this, VerticalScannerActivity.class);

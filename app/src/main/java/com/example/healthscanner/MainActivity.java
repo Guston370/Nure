@@ -12,7 +12,10 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -47,6 +50,7 @@ public class MainActivity extends BaseActivity {
     private AuthManager authManager;
     private SyncManager syncManager;
     private DarkModeManager darkModeManager;
+    private DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,6 +170,7 @@ public class MainActivity extends BaseActivity {
             initializeViews();
             initializeHapticFeedback();
             setupClickListeners();
+            setupSidebar();
             initializeBottomNavigation();
             setupRecentScansRecyclerView();
             updateStatsCards();
@@ -190,25 +195,25 @@ public class MainActivity extends BaseActivity {
         try {
             // Enhanced Home Layout Views
             TextView welcomeText = findViewById(R.id.welcomeText);
-            // Stats views removed from new design
-            // TextView totalScansNumber = findViewById(R.id.totalScansNumber);
-            // TextView healthScoreNumber = findViewById(R.id.healthScoreNumber);
-            // TextView savedItemsNumber = findViewById(R.id.savedItemsNumber);
-            // TextView healthEmoji = findViewById(R.id.healthEmoji);
+            TextView totalScansNumber = findViewById(R.id.totalScansNumber);
+            TextView healthScoreNumber = findViewById(R.id.healthScoreNumber);
+            TextView savedItemsNumber = findViewById(R.id.savedItemsNumber);
+            TextView healthEmoji = findViewById(R.id.healthEmoji);
 
-            // Search and scan elements - removed from new design
-            // scanIcon = findViewById(R.id.scanIcon);
-
-            // Set personalized welcome text with Google account integration
+            // Set personalized welcome text with user's name
             if (welcomeText != null) {
-                // Use the new design text
-                welcomeText.setText("Let's Check Your");
+                String userName = getRealUserName();
+                if (userName != null && !userName.isEmpty()) {
+                    // Extract first name only
+                    String firstName = userName.split(" ")[0];
+                    welcomeText.setText("Hi " + firstName + ", Let's");
+                } else {
+                    welcomeText.setText("Let's Check Your");
+                }
             }
 
             // Set REAL stats (no artificial data)
-            // Stats views removed from new design
-            // setRealUserStats(totalScansNumber, healthScoreNumber, savedItemsNumber,
-            // healthEmoji);
+            setRealUserStats(totalScansNumber, healthScoreNumber, savedItemsNumber, healthEmoji);
 
             Log.d(TAG, "Views initialized with real user data");
         } catch (Exception e) {
@@ -506,12 +511,24 @@ public class MainActivity extends BaseActivity {
                 });
             }
 
-            // Scan icon click - Launch vertical scanner
-            if (scanIcon != null) {
-                scanIcon.setOnClickListener(v -> {
+            // Quick scan button click - Launch vertical scanner
+            View quickScanButton = findViewById(R.id.quickScanButton);
+            if (quickScanButton != null) {
+                quickScanButton.setOnClickListener(v -> {
                     performHapticFeedback();
                     animateView(v);
                     launchVerticalScanner();
+                });
+            }
+
+            // Profile image click - Open sidebar drawer
+            View profileImage = findViewById(R.id.profileImage);
+            if (profileImage != null) {
+                profileImage.setOnClickListener(v -> {
+                    performHapticFeedback();
+                    if (drawerLayout != null) {
+                        drawerLayout.openDrawer(findViewById(R.id.sidebarDrawer));
+                    }
                 });
             }
 
@@ -537,9 +554,141 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    /**
+     * Initialize the sidebar drawer and its menu items
+     */
+    private void setupSidebar() {
+        try {
+            drawerLayout = findViewById(R.id.drawerLayout);
+
+            // Populate user info in sidebar header
+            TextView sidebarUserName = findViewById(R.id.sidebarUserName);
+            TextView sidebarUserEmail = findViewById(R.id.sidebarUserEmail);
+
+            if (sidebarUserName != null) {
+                String userName = getRealUserName();
+                if (userName != null && !userName.isEmpty()) {
+                    sidebarUserName.setText(userName);
+                } else {
+                    sidebarUserName.setText("User");
+                }
+            }
+
+            if (sidebarUserEmail != null) {
+                SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+                String email = prefs.getString("current_user_email", "");
+                if (!email.isEmpty()) {
+                    sidebarUserEmail.setText(email);
+                } else {
+                    sidebarUserEmail.setText("Not signed in");
+                }
+            }
+
+            // Sidebar header click - open profile
+            View sidebarHeader = findViewById(R.id.sidebarHeader);
+            if (sidebarHeader != null) {
+                sidebarHeader.setOnClickListener(v -> {
+                    closeSidebarAndNavigate(ProfileActivity.class);
+                });
+            }
+
+            // My Profile
+            View sidebarMyProfile = findViewById(R.id.sidebarMyProfile);
+            if (sidebarMyProfile != null) {
+                sidebarMyProfile.setOnClickListener(v -> {
+                    closeSidebarAndNavigate(ProfileActivity.class);
+                });
+            }
+
+            // Scan History
+            View sidebarScanHistory = findViewById(R.id.sidebarScanHistory);
+            if (sidebarScanHistory != null) {
+                sidebarScanHistory.setOnClickListener(v -> {
+                    closeSidebarAndNavigate(HistoryActivity.class);
+                });
+            }
+
+            // Analytics
+            View sidebarAnalytics = findViewById(R.id.sidebarAnalytics);
+            if (sidebarAnalytics != null) {
+                sidebarAnalytics.setOnClickListener(v -> {
+                    closeSidebarAndNavigate(AnalyticsActivity.class);
+                });
+            }
+
+            // Settings
+            View sidebarSettings = findViewById(R.id.sidebarSettings);
+            if (sidebarSettings != null) {
+                sidebarSettings.setOnClickListener(v -> {
+                    closeSidebarAndNavigate(SettingsActivity.class);
+                });
+            }
+
+            // Help & Support
+            View sidebarHelp = findViewById(R.id.sidebarHelp);
+            if (sidebarHelp != null) {
+                sidebarHelp.setOnClickListener(v -> {
+                    // Close sidebar - no dedicated help activity yet
+                    if (drawerLayout != null) {
+                        drawerLayout.closeDrawers();
+                    }
+                    android.widget.Toast.makeText(this, "Help & Support coming soon!", android.widget.Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            // Logout
+            View sidebarLogout = findViewById(R.id.sidebarLogout);
+            if (sidebarLogout != null) {
+                sidebarLogout.setOnClickListener(v -> {
+                    if (drawerLayout != null) {
+                        drawerLayout.closeDrawers();
+                    }
+                    // Show confirmation dialog
+                    new androidx.appcompat.app.AlertDialog.Builder(this)
+                            .setTitle("Logout")
+                            .setMessage("Are you sure you want to logout?")
+                            .setPositiveButton("Logout", (dialog, which) -> {
+                                if (authManager != null) {
+                                    authManager.clearAuthState();
+                                }
+                                com.google.firebase.auth.FirebaseAuth.getInstance().signOut();
+                                Intent loginIntent = new Intent(this, LoginActivity.class);
+                                loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(loginIntent);
+                                finish();
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .show();
+                });
+            }
+
+            Log.d(TAG, "Sidebar setup successfully");
+        } catch (Exception e) {
+            Log.e(TAG, "Error setting up sidebar: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Close the sidebar drawer and navigate to the specified activity
+     */
+    private void closeSidebarAndNavigate(Class<?> targetActivity) {
+        if (drawerLayout != null) {
+            drawerLayout.closeDrawers();
+        }
+        // Small delay to let the drawer close animation finish
+        new android.os.Handler().postDelayed(() -> {
+            Intent intent = new Intent(this, targetActivity);
+            intent.putExtra("from_navigation", true);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+        }, 250);
+    }
+
     private void setupRecentScansRecyclerView() {
         try {
             RecyclerView recentScansRecyclerView = findViewById(R.id.recentScansRecyclerView);
+            View emptyStateContainer = findViewById(R.id.emptyStateContainer);
+
             if (recentScansRecyclerView != null) {
                 LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,
                         false);
@@ -549,12 +698,18 @@ public class MainActivity extends BaseActivity {
                 java.util.List<RecentScansAdapter.ScanItem> scanItems = loadRealScanHistory();
 
                 if (scanItems.isEmpty()) {
-                    // Hide recent scans section completely if no real data
+                    // Show empty state instead of hiding
                     recentScansRecyclerView.setVisibility(View.GONE);
-                    Log.d(TAG, "No real scan history found - hiding recent scans section");
+                    if (emptyStateContainer != null) {
+                        emptyStateContainer.setVisibility(View.VISIBLE);
+                    }
+                    Log.d(TAG, "No real scan history found - showing empty state");
                 } else {
                     // Show recent scans section with real data
                     recentScansRecyclerView.setVisibility(View.VISIBLE);
+                    if (emptyStateContainer != null) {
+                        emptyStateContainer.setVisibility(View.GONE);
+                    }
 
                     RecentScansAdapter adapter = new RecentScansAdapter(this, scanItems);
                     adapter.setOnItemClickListener(item -> {
@@ -697,6 +852,16 @@ public class MainActivity extends BaseActivity {
             return R.id.nav_scan;
         }
         return R.id.nav_home;
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(findViewById(R.id.sidebarDrawer))) {
+            drawerLayout.closeDrawers();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
