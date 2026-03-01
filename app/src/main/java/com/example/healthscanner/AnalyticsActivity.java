@@ -12,7 +12,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 
 import com.example.healthscanner.database.FirebaseScanManager;
 import com.example.healthscanner.models.Scan;
@@ -56,12 +55,12 @@ public class AnalyticsActivity extends BaseActivity {
     private ImageView refreshIcon;
 
     // Statistics Cards
-    private CardView totalScansCard;
-    private CardView weeklyScansCard;
-    private CardView monthlyScansCard;
-    private CardView avgHealthScoreCard;
-    private CardView avgCaloriesCard;
-    private CardView avgTimeBetweenCard;
+    private View totalScansCard;
+    private View weeklyScansCard;
+    private View monthlyScansCard;
+    private View avgHealthScoreCard;
+    private View avgCaloriesCard;
+    private View avgTimeBetweenCard;
 
     // Data Elements
     private TextView totalScansNumber;
@@ -157,13 +156,13 @@ public class AnalyticsActivity extends BaseActivity {
     }
 
     private void animateCardsSequentially() {
-        CardView[] cards = { totalScansCard, weeklyScansCard, monthlyScansCard, avgHealthScoreCard, avgCaloriesCard,
+        View[] cards = { totalScansCard, weeklyScansCard, monthlyScansCard, avgHealthScoreCard, avgCaloriesCard,
                 avgTimeBetweenCard };
         int[] delays = { 400, 500, 600, 700, 800 };
 
         for (int i = 0; i < cards.length; i++) {
             if (cards[i] != null) {
-                final CardView card = cards[i];
+                final View card = cards[i];
                 final boolean isInsights = (i == cards.length - 1);
 
                 card.postDelayed(() -> {
