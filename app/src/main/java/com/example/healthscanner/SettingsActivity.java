@@ -32,7 +32,7 @@ public class SettingsActivity extends BaseActivity {
     // UI Elements
     private TextView settingsTitle;
     private TextView settingsSubtitle;
-    private ImageView helpIcon;
+    private View helpIcon;
 
     // Setting Cards
     private View notificationsCard;
@@ -70,10 +70,10 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void initializeViews() {
-        // Header elements
+        // Header elements - two-line title: "App" / "Settings"
         settingsTitle = findViewById(R.id.settingsTitle);
         settingsSubtitle = findViewById(R.id.settingsSubtitle);
-        helpIcon = findViewById(R.id.helpIcon);
+        helpIcon = findViewById(R.id.helpIcon); // FrameLayout in XML, use View
 
         // Setting cards
         notificationsCard = findViewById(R.id.notificationsCard);

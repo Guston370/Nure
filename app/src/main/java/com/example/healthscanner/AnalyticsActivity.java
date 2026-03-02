@@ -52,7 +52,7 @@ public class AnalyticsActivity extends BaseActivity {
     // UI Elements
     private TextView analyticsTitle;
     private TextView analyticsSubtitle;
-    private ImageView refreshIcon;
+    private View refreshIcon;
 
     // Statistics Cards
     private View totalScansCard;
@@ -110,7 +110,7 @@ public class AnalyticsActivity extends BaseActivity {
         // Header elements
         analyticsTitle = findViewById(R.id.analyticsTitle);
         analyticsSubtitle = findViewById(R.id.analyticsSubtitle);
-        refreshIcon = findViewById(R.id.refreshIcon);
+        refreshIcon = findViewById(R.id.refreshIcon); // FrameLayout in XML, use View
 
         // Statistics Cards (using existing IDs for now)
         totalScansCard = findViewById(R.id.dailyCaloriesCard); // Temporary mapping
@@ -532,7 +532,8 @@ public class AnalyticsActivity extends BaseActivity {
             animateHealthScore(stats.averageHealthScore);
             animateCounterValue(avgHealthScoreNumber, (int) (stats.averageHealthScore * 10));
         } else {
-            avgHealthScoreNumber.setText("--");
+            if (avgHealthScoreNumber != null)
+                avgHealthScoreNumber.setText("--");
             if (healthScoreProgress != null)
                 healthScoreProgress.setProgress(0);
         }
@@ -541,20 +542,23 @@ public class AnalyticsActivity extends BaseActivity {
         if (stats.averageCalories > 0) {
             animateCounterValue(avgCaloriesNumber, (int) stats.averageCalories);
         } else {
-            avgCaloriesNumber.setText("--");
+            if (avgCaloriesNumber != null)
+                avgCaloriesNumber.setText("--");
         }
 
         // Calculate and display average time between scans
-        if (stats.averageTimeBetweenScans > 0) {
-            long hours = stats.averageTimeBetweenScans / (1000 * 60 * 60);
-            if (hours > 24) {
-                long days = hours / 24;
-                avgTimeBetweenNumber.setText(days + "d");
+        if (avgTimeBetweenNumber != null) {
+            if (stats.averageTimeBetweenScans > 0) {
+                long hours = stats.averageTimeBetweenScans / (1000 * 60 * 60);
+                if (hours > 24) {
+                    long days = hours / 24;
+                    avgTimeBetweenNumber.setText(days + "d");
+                } else {
+                    avgTimeBetweenNumber.setText(hours + "h");
+                }
             } else {
-                avgTimeBetweenNumber.setText(hours + "h");
+                avgTimeBetweenNumber.setText("--");
             }
-        } else {
-            avgTimeBetweenNumber.setText("--");
         }
 
         // Generate insights
