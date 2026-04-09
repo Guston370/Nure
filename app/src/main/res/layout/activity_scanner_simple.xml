@@ -131,6 +131,27 @@
 
         </androidx.cardview.widget.CardView>
 
+        <!-- Camera Capture Button (center, larger) -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/camera_capture_button"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            app:cardCornerRadius="36dp"
+            app:cardElevation="12dp"
+            app:cardBackgroundColor="@color/primary_teal">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_photo_capture"
+                android:contentDescription="Take Photo"
+                app:tint="@color/white" />
+
+        </androidx.cardview.widget.CardView>
+
         <!-- Manual Entry Button -->
         <androidx.cardview.widget.CardView
             android:id="@+id/manual_entry_button"

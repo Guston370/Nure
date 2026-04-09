@@ -1,10 +1,13 @@
 package com.example.healthscanner;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -17,17 +20,24 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -43,7 +53,7 @@ public class VerticalScannerActivity extends BaseActivity {
     // UI Elements
     private PreviewView cameraPreview;
     private ImageView backButton, flashToggle, closeOverlayButton;
-    private CardView galleryButton, scanStatusCard, viewDetailsButton, scanAnotherButton;
+    private CardView galleryButton, cameraCaptureButton, scanStatusCard, viewDetailsButton, scanAnotherButton;
     private TextView instructionsText, scanStatusText;
     private ProgressBar scanProgress;
     private View scanningLine;
@@ -54,8 +64,10 @@ public class VerticalScannerActivity extends BaseActivity {
     private ProcessCameraProvider cameraProvider;
     private Preview preview;
     private ImageAnalysis imageAnalysis;
+    private ImageCapture imageCapture;
     private boolean isFlashOn = false;
     private boolean isScanning = false;
+    private boolean isCapturing = false;
     private String currentBarcode = null;
     
     @Override
@@ -83,6 +95,7 @@ public class VerticalScannerActivity extends BaseActivity {
         backButton = findViewById(R.id.back_button);
         flashToggle = findViewById(R.id.flash_toggle);
         galleryButton = findViewById(R.id.gallery_button);
+        cameraCaptureButton = findViewById(R.id.camera_capture_button);
         scanStatusCard = findViewById(R.id.scan_status_card);
         instructionsText = findViewById(R.id.instructions_text);
         scanStatusText = findViewById(R.id.scan_status_text);
@@ -110,7 +123,19 @@ public class VerticalScannerActivity extends BaseActivity {
             animateButtonPress(v);
             openGallery();
         });
+<<<<<<< Updated upstream
         
+=======
+
+        // Camera capture button
+        if (cameraCaptureButton != null) {
+            cameraCaptureButton.setOnClickListener(v -> {
+                animateButtonPress(v);
+                capturePhoto();
+            });
+        }
+
+>>>>>>> Stashed changes
         // Manual entry button
         CardView manualEntryButton = findViewById(R.id.manual_entry_button);
         if (manualEntryButton != null) {
@@ -199,9 +224,21 @@ public class VerticalScannerActivity extends BaseActivity {
             .build();
         
         // Set up barcode analyzer
+<<<<<<< Updated upstream
         imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(this), 
             new BarcodeAnalyzer(this::onBarcodeDetected));
         
+=======
+        imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(this),
+                new BarcodeAnalyzer(this::onBarcodeDetected));
+
+        // Image capture use case for taking photos
+        imageCapture = new ImageCapture.Builder()
+                .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+                .setFlashMode(isFlashOn ? ImageCapture.FLASH_MODE_ON : ImageCapture.FLASH_MODE_OFF)
+                .build();
+
+>>>>>>> Stashed changes
         // Camera selector (back camera)
         CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
         
@@ -211,8 +248,13 @@ public class VerticalScannerActivity extends BaseActivity {
             
             // Bind use cases to camera and get camera control
             androidx.camera.core.Camera camera = cameraProvider.bindToLifecycle(
+<<<<<<< Updated upstream
                 this, cameraSelector, preview, imageAnalysis);
             
+=======
+                    this, cameraSelector, preview, imageAnalysis, imageCapture);
+
+>>>>>>> Stashed changes
             // Enable flash if needed
             if (camera.getCameraInfo().hasFlashUnit()) {
                 camera.getCameraControl().enableTorch(isFlashOn);
@@ -263,7 +305,69 @@ public class VerticalScannerActivity extends BaseActivity {
             Log.e(TAG, "Error toggling flash: " + e.getMessage(), e);
         }
     }
+<<<<<<< Updated upstream
     
+=======
+
+    /**
+     * Capture a photo from the camera preview and save it to the device.
+     */
+    private void capturePhoto() {
+        if (imageCapture == null) {
+            showScanStatus("Camera not ready", false);
+            return;
+        }
+
+        if (isCapturing) {
+            return; // Prevent rapid-fire captures
+        }
+
+        isCapturing = true;
+        showScanStatus("📸 Capturing photo...", true);
+        performHapticFeedback();
+
+        // Create unique file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String fileName = "NURE_" + timeStamp + ".jpg";
+
+        // Save to app's external Pictures directory
+        File picturesDir = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "");
+        if (!picturesDir.exists()) {
+            picturesDir.mkdirs();
+        }
+        File photoFile = new File(picturesDir, fileName);
+
+        ImageCapture.OutputFileOptions outputOptions =
+                new ImageCapture.OutputFileOptions.Builder(photoFile).build();
+
+        imageCapture.takePicture(outputOptions, ContextCompat.getMainExecutor(this),
+                new ImageCapture.OnImageSavedCallback() {
+                    @Override
+                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+                        isCapturing = false;
+                        Uri savedUri = Uri.fromFile(photoFile);
+                        Log.d(TAG, "Photo captured successfully: " + savedUri);
+                        showScanStatus("✅ Photo saved!", true);
+
+                        android.widget.Toast.makeText(VerticalScannerActivity.this,
+                                "Photo saved: " + fileName,
+                                android.widget.Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(@NonNull ImageCaptureException exception) {
+                        isCapturing = false;
+                        Log.e(TAG, "Photo capture failed: " + exception.getMessage(), exception);
+                        showScanStatus("❌ Photo capture failed", false);
+
+                        android.widget.Toast.makeText(VerticalScannerActivity.this,
+                                "Failed to capture photo",
+                                android.widget.Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+>>>>>>> Stashed changes
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
