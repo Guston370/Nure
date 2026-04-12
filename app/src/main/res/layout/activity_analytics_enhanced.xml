@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/home_background_gradient"
+    android:background="@drawable/home_bg_clean"
     android:animateLayoutChanges="true"
     tools:context=".AnalyticsActivity">
 
@@ -14,8 +14,11 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingBottom="90dp"
+        android:overScrollMode="never"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -23,654 +26,775 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="@dimen/spacing_xxxl">
+            android:paddingTop="16dp"
+            android:paddingBottom="32dp">
 
-            <!-- Header Section with Gradient -->
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <!-- ==================== TOP BAR ==================== -->
+            <LinearLayout
                 android:id="@+id/headerSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/header_gradient_background"
-                android:paddingStart="@dimen/spacing_lg"
-                android:paddingEnd="@dimen/spacing_lg"
-                android:paddingTop="@dimen/spacing_xl"
-                android:paddingBottom="@dimen/spacing_lg">
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="36dp"
+                android:paddingBottom="12dp">
 
-                <!-- Analytics Title -->
-                <TextView
-                    android:id="@+id/analyticsTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Your Health Insights 📈"
-                    android:textSize="28sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"
-                    android:alpha="0"
-                    android:translationY="-20dp"
-                    android:animation="@anim/fade_in_slide_down"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/refreshIcon" />
+                <!-- Back Button -->
+                <FrameLayout
+                    android:id="@+id/backButton"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="@drawable/bg_notification_circle"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless">
 
-                <!-- Subtitle -->
-                <TextView
-                    android:id="@+id/analyticsSubtitle"
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_arrow_back"
+                        android:contentDescription="Back"
+                        app:tint="#1B1B1B" />
+                </FrameLayout>
+
+                <View
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Track your health journey and progress"
-                    android:textSize="16sp"
-                    android:textColor="@color/white"
-                    android:alpha="0.9"
-                    android:layout_marginTop="@dimen/spacing_xs"
-                    app:layout_constraintTop_toBottomOf="@+id/analyticsTitle"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/refreshIcon" />
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
 
                 <!-- Refresh Icon -->
-                <ImageView
+                <FrameLayout
                     android:id="@+id/refreshIcon"
-                    android:layout_width="@dimen/icon_size_large"
-                    android:layout_height="@dimen/icon_size_large"
-                    android:src="@drawable/ic_refresh"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="Refresh Analytics"
-                    app:tint="@color/white"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="@drawable/bg_notification_circle"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless">
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_refresh"
+                        android:contentDescription="Refresh Analytics"
+                        app:tint="#1B1B1B" />
+                </FrameLayout>
+            </LinearLayout>
 
-            <!-- Key Metrics Cards Row -->
+            <!-- ==================== HEADLINE ==================== -->
             <LinearLayout
-                android:id="@+id/metricsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="20dp"
+                android:paddingEnd="60dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="4dp">
+
+                <TextView
+                    android:id="@+id/analyticsTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Your Health"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:textColor="#1B1B1B"
+                    android:fontFamily="sans-serif-medium"
+                    android:letterSpacing="-0.02"
+                    android:lineSpacingMultiplier="1.1" />
+
+                <TextView
+                    android:id="@+id/analyticsSubtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Insights"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/health_teal"
+                    android:fontFamily="sans-serif-medium"
+                    android:letterSpacing="-0.02"
+                    android:lineSpacingMultiplier="1.1" />
+            </LinearLayout>
+
+            <!-- ==================== KEY METRICS - 2x2 GRID ==================== -->
+            <!-- Row 1 -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_margin="@dimen/spacing_md"
-                android:weightSum="2"
-                android:animation="@anim/slide_up">
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="20dp"
+                android:weightSum="2">
 
-                <!-- Daily Calories Card -->
-                <androidx.cardview.widget.CardView
+                <!-- Total Scans Card -->
+                <LinearLayout
                     android:id="@+id/dailyCaloriesCard"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginEnd="@dimen/spacing_xs"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="@dimen/elevation_md"
-                    app:cardBackgroundColor="@color/white">
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_analytics_metric_card"
+                    android:orientation="vertical"
+                    android:padding="18dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="@dimen/spacing_lg"
-                        android:gravity="center">
+                    <FrameLayout
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/bg_icon_circle_teal"
+                        android:layout_marginBottom="14dp">
 
                         <ImageView
-                            android:layout_width="@dimen/icon_size_large"
-                            android:layout_height="@dimen/icon_size_large"
-                            android:src="@drawable/ic_local_fire_department"
-                            android:contentDescription="Calories"
-                            app:tint="@color/health_orange"
-                            android:layout_marginBottom="@dimen/spacing_sm" />
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_barcode_scan"
+                            android:contentDescription="Total Scans"
+                            app:tint="@color/health_teal" />
+                    </FrameLayout>
 
-                        <TextView
-                            android:id="@+id/dailyCaloriesNumber"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="1,847"
-                            android:textSize="28sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/health_orange" />
+                    <TextView
+                        android:id="@+id/dailyCaloriesNumber"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="#1B1B1B"
+                        android:fontFamily="sans-serif-medium" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Daily Calories"
-                            android:textSize="14sp"
-                            android:textColor="@color/health_text_secondary"
-                            android:layout_marginTop="@dimen/spacing_xs" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total Scans"
+                        android:textSize="13sp"
+                        android:textColor="#999B96"
+                        android:fontFamily="sans-serif"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="↗️ +12% from yesterday"
-                            android:textSize="12sp"
-                            android:textColor="@color/health_mint_green"
-                            android:layout_marginTop="@dimen/spacing_xs" />
-
-                    </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
-
-                <!-- Average Health Score Card -->
-                <androidx.cardview.widget.CardView
+                <!-- Health Score Card -->
+                <LinearLayout
                     android:id="@+id/healthScoreCard"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="@dimen/spacing_xs"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="@dimen/elevation_md"
-                    app:cardBackgroundColor="@color/white">
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_analytics_metric_card"
+                    android:orientation="vertical"
+                    android:padding="18dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="@dimen/spacing_lg"
-                        android:gravity="center">
+                    <!-- Circular Progress for Health Score -->
+                    <FrameLayout
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_marginBottom="14dp">
 
-                        <!-- Circular Progress Placeholder -->
-                        <FrameLayout
-                            android:layout_width="80dp"
-                            android:layout_height="80dp"
-                            android:layout_marginBottom="@dimen/spacing_sm">
-
-                            <ProgressBar
-                                android:id="@+id/healthScoreProgress"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:progress="82"
-                                android:max="100"
-                                android:progressDrawable="@drawable/circular_progress_gradient"
-                                android:background="@drawable/circular_progress_background" />
-
-                            <TextView
-                                android:id="@+id/healthScoreNumber"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="8.2"
-                                android:textSize="20sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/health_mint_green" />
-
-                        </FrameLayout>
+                        <ProgressBar
+                            android:id="@+id/healthScoreProgress"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:progress="82"
+                            android:max="100"
+                            android:progressDrawable="@drawable/circular_progress_gradient"
+                            android:background="@drawable/circular_progress_background" />
 
                         <TextView
+                            android:id="@+id/healthScoreNumber"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Health Score"
-                            android:textSize="14sp"
-                            android:textColor="@color/health_text_secondary" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="😊 Great choices!"
+                            android:layout_gravity="center"
+                            android:text="8.2"
                             android:textSize="12sp"
-                            android:textColor="@color/health_mint_green"
-                            android:layout_marginTop="@dimen/spacing_xs" />
+                            android:textStyle="bold"
+                            android:textColor="@color/health_teal"
+                            android:fontFamily="sans-serif-medium" />
+                    </FrameLayout>
 
-                    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Health Score"
+                        android:textSize="13sp"
+                        android:textColor="#999B96"
+                        android:fontFamily="sans-serif"
+                        android:layout_marginTop="2dp" />
 
-                </androidx.cardview.widget.CardView>
-
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Average"
+                        android:textSize="11sp"
+                        android:textColor="#C8CBC5"
+                        android:fontFamily="sans-serif"
+                        android:layout_marginTop="1dp" />
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- Most Scanned Categories Card -->
-            <androidx.cardview.widget.CardView
+            <!-- Row 2 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="12dp"
+                android:weightSum="2">
+
+                <!-- Weekly Scans Card -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_analytics_metric_card"
+                    android:orientation="vertical"
+                    android:padding="18dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <FrameLayout
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/bg_icon_circle_blue"
+                        android:layout_marginBottom="14dp">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_trending_up"
+                            android:contentDescription="Weekly Scans"
+                            app:tint="#2196F3" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="--"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="#1B1B1B"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="This Week"
+                        android:textSize="13sp"
+                        android:textColor="#999B96"
+                        android:fontFamily="sans-serif"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+
+                <!-- Daily Calories Card -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_analytics_metric_card"
+                    android:orientation="vertical"
+                    android:padding="18dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <FrameLayout
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/bg_icon_circle_orange"
+                        android:layout_marginBottom="14dp">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_local_fire_department"
+                            android:contentDescription="Calories"
+                            app:tint="#FF9800" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="--"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="#1B1B1B"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Avg Calories"
+                        android:textSize="13sp"
+                        android:textColor="#999B96"
+                        android:fontFamily="sans-serif"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ==================== MOST SCANNED CATEGORIES ==================== -->
+            <LinearLayout
                 android:id="@+id/categoriesCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/spacing_md"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="@dimen/elevation_md"
-                app:cardBackgroundColor="@color/white"
-                android:animation="@anim/slide_up">
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_recent_scan_card"
+                android:orientation="vertical"
+                android:padding="22dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/spacing_lg">
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="18dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="@dimen/spacing_md">
+                    <FrameLayout
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/bg_icon_circle_teal"
+                        android:layout_marginEnd="12dp">
 
                         <ImageView
-                            android:layout_width="@dimen/icon_size_medium"
-                            android:layout_height="@dimen/icon_size_medium"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_gravity="center"
                             android:src="@drawable/ic_category"
                             android:contentDescription="Categories"
-                            app:tint="@color/health_teal"
-                            android:layout_marginEnd="@dimen/spacing_sm" />
+                            app:tint="@color/health_teal" />
+                    </FrameLayout>
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Most Scanned Categories"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/health_text_primary" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Most Scanned"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="#1B1B1B"
+                        android:fontFamily="sans-serif-medium" />
+                </LinearLayout>
 
-                    </LinearLayout>
+                <!-- Category Bars -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-                    <!-- Category Bars -->
+                    <!-- Beverages -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:layout_marginBottom="14dp">
 
-                        <!-- Beverages -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
-                            android:layout_marginBottom="@dimen/spacing_sm">
+                            android:layout_marginBottom="6dp">
 
                             <TextView
-                                android:layout_width="80dp"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="1"
                                 android:text="🥤 Beverages"
                                 android:textSize="14sp"
-                                android:textColor="@color/health_text_primary" />
-
-                            <ProgressBar
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="0dp"
-                                android:layout_height="8dp"
-                                android:layout_weight="1"
-                                android:layout_marginStart="@dimen/spacing_sm"
-                                android:layout_marginEnd="@dimen/spacing_sm"
-                                android:progress="85"
-                                android:max="100"
-                                android:progressDrawable="@drawable/progress_bar_gradient" />
+                                android:textColor="#1B1B1B"
+                                android:fontFamily="sans-serif-medium" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="85%"
-                                android:textSize="12sp"
-                                android:textColor="@color/health_text_secondary" />
-
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/health_teal"
+                                android:fontFamily="sans-serif-medium" />
                         </LinearLayout>
 
-                        <!-- Snacks -->
+                        <ProgressBar
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="8dp"
+                            android:progress="85"
+                            android:max="100"
+                            android:progressDrawable="@drawable/bg_category_progress" />
+                    </LinearLayout>
+
+                    <!-- Snacks -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="14dp">
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
-                            android:layout_marginBottom="@dimen/spacing_sm">
+                            android:layout_marginBottom="6dp">
 
                             <TextView
-                                android:layout_width="80dp"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="1"
                                 android:text="🍿 Snacks"
                                 android:textSize="14sp"
-                                android:textColor="@color/health_text_primary" />
-
-                            <ProgressBar
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="0dp"
-                                android:layout_height="8dp"
-                                android:layout_weight="1"
-                                android:layout_marginStart="@dimen/spacing_sm"
-                                android:layout_marginEnd="@dimen/spacing_sm"
-                                android:progress="72"
-                                android:max="100"
-                                android:progressDrawable="@drawable/progress_bar_gradient" />
+                                android:textColor="#1B1B1B"
+                                android:fontFamily="sans-serif-medium" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="72%"
-                                android:textSize="12sp"
-                                android:textColor="@color/health_text_secondary" />
-
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/health_teal"
+                                android:fontFamily="sans-serif-medium" />
                         </LinearLayout>
 
-                        <!-- Dairy -->
+                        <ProgressBar
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="8dp"
+                            android:progress="72"
+                            android:max="100"
+                            android:progressDrawable="@drawable/bg_category_progress" />
+                    </LinearLayout>
+
+                    <!-- Dairy -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="14dp">
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
-                            android:layout_marginBottom="@dimen/spacing_sm">
+                            android:layout_marginBottom="6dp">
 
                             <TextView
-                                android:layout_width="80dp"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="1"
                                 android:text="🥛 Dairy"
                                 android:textSize="14sp"
-                                android:textColor="@color/health_text_primary" />
-
-                            <ProgressBar
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="0dp"
-                                android:layout_height="8dp"
-                                android:layout_weight="1"
-                                android:layout_marginStart="@dimen/spacing_sm"
-                                android:layout_marginEnd="@dimen/spacing_sm"
-                                android:progress="58"
-                                android:max="100"
-                                android:progressDrawable="@drawable/progress_bar_gradient" />
+                                android:textColor="#1B1B1B"
+                                android:fontFamily="sans-serif-medium" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="58%"
-                                android:textSize="12sp"
-                                android:textColor="@color/health_text_secondary" />
-
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/health_teal"
+                                android:fontFamily="sans-serif-medium" />
                         </LinearLayout>
 
-                        <!-- Cereals -->
+                        <ProgressBar
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="8dp"
+                            android:progress="58"
+                            android:max="100"
+                            android:progressDrawable="@drawable/bg_category_progress" />
+                    </LinearLayout>
+
+                    <!-- Cereals -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:gravity="center_vertical">
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="6dp">
 
                             <TextView
-                                android:layout_width="80dp"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="1"
                                 android:text="🥣 Cereals"
                                 android:textSize="14sp"
-                                android:textColor="@color/health_text_primary" />
-
-                            <ProgressBar
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:layout_width="0dp"
-                                android:layout_height="8dp"
-                                android:layout_weight="1"
-                                android:layout_marginStart="@dimen/spacing_sm"
-                                android:layout_marginEnd="@dimen/spacing_sm"
-                                android:progress="43"
-                                android:max="100"
-                                android:progressDrawable="@drawable/progress_bar_gradient" />
+                                android:textColor="#1B1B1B"
+                                android:fontFamily="sans-serif-medium" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="43%"
-                                android:textSize="12sp"
-                                android:textColor="@color/health_text_secondary" />
-
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/health_teal"
+                                android:fontFamily="sans-serif-medium" />
                         </LinearLayout>
 
+                        <ProgressBar
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="8dp"
+                            android:progress="43"
+                            android:max="100"
+                            android:progressDrawable="@drawable/bg_category_progress" />
                     </LinearLayout>
-
                 </LinearLayout>
+            </LinearLayout>
 
-            </androidx.cardview.widget.CardView>
-
-            <!-- Weekly Trends Card -->
-            <androidx.cardview.widget.CardView
+            <!-- ==================== WEEKLY TRENDS ==================== -->
+            <LinearLayout
                 android:id="@+id/trendsCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/spacing_md"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="@dimen/elevation_md"
-                app:cardBackgroundColor="@color/white"
-                android:animation="@anim/slide_up">
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_recent_scan_card"
+                android:orientation="vertical"
+                android:padding="22dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/spacing_lg">
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="18dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="@dimen/spacing_md">
+                    <FrameLayout
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/bg_icon_circle_blue"
+                        android:layout_marginEnd="12dp">
 
                         <ImageView
-                            android:layout_width="@dimen/icon_size_medium"
-                            android:layout_height="@dimen/icon_size_medium"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_gravity="center"
                             android:src="@drawable/ic_trending_up"
                             android:contentDescription="Trends"
-                            app:tint="@color/health_mint_green"
-                            android:layout_marginEnd="@dimen/spacing_sm" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Weekly Health Trends"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/health_text_primary" />
-
-                    </LinearLayout>
-
-                    <!-- Chart Placeholder -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="120dp"
-                        android:orientation="horizontal"
-                        android:gravity="bottom"
-                        android:layout_marginBottom="@dimen/spacing_md">
-
-                        <!-- Mock Chart Bars -->
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="60dp"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="4dp"
-                            android:background="@drawable/chart_bar_gradient" />
-
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="4dp"
-                            android:background="@drawable/chart_bar_gradient" />
-
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="45dp"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="4dp"
-                            android:background="@drawable/chart_bar_gradient" />
-
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="95dp"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="4dp"
-                            android:background="@drawable/chart_bar_gradient" />
-
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="70dp"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="4dp"
-                            android:background="@drawable/chart_bar_gradient" />
-
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="85dp"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="4dp"
-                            android:background="@drawable/chart_bar_gradient" />
-
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="100dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/chart_bar_gradient" />
-
-                    </LinearLayout>
-
-                    <!-- Chart Labels -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Mon"
-                            android:textSize="12sp"
-                            android:textColor="@color/health_text_secondary"
-                            android:gravity="center" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Tue"
-                            android:textSize="12sp"
-                            android:textColor="@color/health_text_secondary"
-                            android:gravity="center" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Wed"
-                            android:textSize="12sp"
-                            android:textColor="@color/health_text_secondary"
-                            android:gravity="center" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Thu"
-                            android:textSize="12sp"
-                            android:textColor="@color/health_text_secondary"
-                            android:gravity="center" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Fri"
-                            android:textSize="12sp"
-                            android:textColor="@color/health_text_secondary"
-                            android:gravity="center" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Sat"
-                            android:textSize="12sp"
-                            android:textColor="@color/health_text_secondary"
-                            android:gravity="center" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Sun"
-                            android:textSize="12sp"
-                            android:textColor="@color/health_text_secondary"
-                            android:gravity="center" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <!-- Additional Insights Card -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/insightsCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/spacing_md"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="@dimen/elevation_md"
-                android:animation="@anim/fade_in">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="@drawable/tip_card_gradient"
-                    android:padding="@dimen/spacing_lg">
+                            app:tint="#2196F3" />
+                    </FrameLayout>
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="@dimen/spacing_md">
-
-                        <ImageView
-                            android:layout_width="@dimen/icon_size_large"
-                            android:layout_height="@dimen/icon_size_large"
-                            android:src="@drawable/ic_lightbulb"
-                            android:contentDescription="Insights"
-                            app:tint="@color/white"
-                            android:layout_marginEnd="@dimen/spacing_sm" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="💡 Personal Insights"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/white" />
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/personalInsightText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="You've been making healthier choices this week! Your average health score improved by 15%. Keep scanning those nutritious products! 🌟"
-                        android:textSize="14sp"
-                        android:textColor="@color/white"
-                        android:alpha="0.95"
-                        android:lineSpacingExtra="2dp" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="@dimen/spacing_md">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="🎯 Goal: Scan 5 healthy products today"
-                            android:textSize="12sp"
-                            android:textColor="@color/white"
-                            android:alpha="0.9" />
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="3/5"
-                            android:textSize="12sp"
+                            android:text="Weekly Trends"
+                            android:textSize="18sp"
                             android:textStyle="bold"
-                            android:textColor="@color/white" />
+                            android:textColor="#1B1B1B"
+                            android:fontFamily="sans-serif-medium" />
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Scans per day"
+                            android:textSize="12sp"
+                            android:textColor="#999B96"
+                            android:fontFamily="sans-serif"
+                            android:layout_marginTop="2dp" />
                     </LinearLayout>
-
                 </LinearLayout>
 
-            </androidx.cardview.widget.CardView>
+                <!-- Chart Bars with improved styling -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="130dp"
+                    android:orientation="horizontal"
+                    android:gravity="bottom|center_horizontal"
+                    android:layout_marginBottom="10dp">
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="55dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/chart_bar_gradient" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="80dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/chart_bar_gradient" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="42dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/chart_bar_gradient" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/chart_bar_gradient" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="65dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/chart_bar_gradient" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="88dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/chart_bar_gradient" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="110dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/chart_bar_gradient" />
+                </LinearLayout>
+
+                <!-- Chart Labels -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="4dp">
+
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Mon" android:textSize="11sp" android:textColor="#999B96" android:fontFamily="sans-serif" android:gravity="center" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Tue" android:textSize="11sp" android:textColor="#999B96" android:fontFamily="sans-serif" android:gravity="center" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Wed" android:textSize="11sp" android:textColor="#999B96" android:fontFamily="sans-serif" android:gravity="center" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Thu" android:textSize="11sp" android:textColor="#999B96" android:fontFamily="sans-serif" android:gravity="center" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Fri" android:textSize="11sp" android:textColor="#999B96" android:fontFamily="sans-serif" android:gravity="center" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Sat" android:textSize="11sp" android:textColor="#999B96" android:fontFamily="sans-serif" android:gravity="center" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Sun" android:textSize="11sp" android:textColor="#999B96" android:fontFamily="sans-serif" android:gravity="center" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ==================== PERSONAL INSIGHTS ==================== -->
+            <LinearLayout
+                android:id="@+id/insightsCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_tip_card_clean"
+                android:orientation="vertical"
+                android:padding="22dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="💡"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Personal Insights"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/health_teal"
+                        android:fontFamily="sans-serif-medium"
+                        android:letterSpacing="0.04" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/personalInsightText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="You've been making healthier choices this week! Your average health score improved by 15%. Keep scanning those nutritious products! 🌟"
+                    android:textSize="14sp"
+                    android:textColor="#2E3630"
+                    android:fontFamily="sans-serif"
+                    android:lineSpacingMultiplier="1.4" />
+
+                <!-- Goal Progress -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/bg_settings_section_header"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="🎯 Goal: Scan 5 healthy products today"
+                        android:textSize="12sp"
+                        android:textColor="#4A7C59"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3/5"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/health_teal"
+                        android:fontFamily="sans-serif-medium" />
+                </LinearLayout>
+            </LinearLayout>
 
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Enhanced Bottom Navigation -->
-    <include layout="@layout/bottom_nav_enhanced" />
+    <!-- Classy Bottom Navigation -->
+    <include layout="@layout/bottom_nav_classy" />
 
     <!-- Animation Overlay Container for Circular Reveal -->
     <include layout="@layout/animation_overlay_container" />

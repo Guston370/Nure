@@ -12,7 +12,10 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -47,6 +50,7 @@ public class MainActivity extends BaseActivity {
     private AuthManager authManager;
     private SyncManager syncManager;
     private DarkModeManager darkModeManager;
+    private DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,10 +68,10 @@ public class MainActivity extends BaseActivity {
 
             // Initialize Authentication Manager
             authManager = AuthManager.getInstance(this);
-            
+
             // Initialize Sync Manager
             syncManager = SyncManager.getInstance(this);
-            
+
             // Initialize Dark Mode Manager and apply user preference
             darkModeManager = DarkModeManager.getInstance(this);
             darkModeManager.applyUserPreference();
@@ -82,18 +86,18 @@ public class MainActivity extends BaseActivity {
             if (fromGoogleSignIn || bypassAuthCheck || userAuthenticated) {
                 Log.d(TAG, "=== ENTERING MAIN APP FROM AUTHENTICATED SOURCE ===");
                 Log.d(TAG, "User successfully authenticated, loading main app interface...");
-                
+
                 // Immediately sync data after successful authentication
                 if (syncManager != null) {
                     syncManager.syncImmediately(new SyncManager.SyncCallback() {
                         @Override
                         public void onSuccess() {
                             Log.d(TAG, "Initial sync completed after authentication");
-                            
+
                             // Check if this is a Google user and ensure Firebase profile exists
                             ensureGoogleUserInFirebase();
                         }
-                        
+
                         @Override
                         public void onFailure(String error) {
                             Log.w(TAG, "Initial sync failed after authentication: " + error);
@@ -114,7 +118,7 @@ public class MainActivity extends BaseActivity {
                     Log.d(TAG, "User not authenticated, enabling test mode for development");
                     authManager.enableTestMode();
                     // Continue with app initialization
-                    
+
                     // Also create test data immediately
                     android.os.Handler handler = new android.os.Handler();
                     handler.postDelayed(() -> createTestDataInFirebase(), 1000);
@@ -125,7 +129,7 @@ public class MainActivity extends BaseActivity {
 
             // Check and restore Firebase authentication state
             checkFirebaseAuthState();
-            
+
             // Check if this is a new user from Google Sign-In or successful login
             checkAndWelcomeUser();
 
@@ -166,6 +170,7 @@ public class MainActivity extends BaseActivity {
             initializeViews();
             initializeHapticFeedback();
             setupClickListeners();
+            setupSidebar();
             initializeBottomNavigation();
             setupRecentScansRecyclerView();
             updateStatsCards();
@@ -177,7 +182,7 @@ public class MainActivity extends BaseActivity {
             if (getIntent().getBooleanExtra("start_scanner", false)) {
                 launchVerticalScanner();
             }
-            
+
             // Start automatic sync service
             startAutoSync();
 
@@ -195,28 +200,15 @@ public class MainActivity extends BaseActivity {
             TextView savedItemsNumber = findViewById(R.id.savedItemsNumber);
             TextView healthEmoji = findViewById(R.id.healthEmoji);
 
-            // Search and scan elements
-            scanIcon = findViewById(R.id.scanIcon);
-
-            // Set personalized welcome text with Google account integration
+            // Set personalized welcome text with user's name
             if (welcomeText != null) {
-                String realUserName = getRealUserName();
-                String firstName = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getString("current_user_first_name", "");
-                String authProvider = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getString("auth_provider", "");
-                boolean freshSignIn = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean("fresh_google_signin", false);
-                
-                if (freshSignIn && !firstName.isEmpty()) {
-                    // Special welcome for fresh Google sign-in
-                    welcomeText.setText("Welcome back, " + firstName + "! ✨");
-                } else if (!firstName.isEmpty()) {
-                    // Use first name for more personal feel
-                    welcomeText.setText("Hi, " + firstName + "! 👋");
-                } else if (realUserName != null && !realUserName.isEmpty()) {
-                    // Fallback to full name
-                    welcomeText.setText("Hi, " + realUserName + " 👋");
+                String userName = getRealUserName();
+                if (userName != null && !userName.isEmpty()) {
+                    // Extract first name only
+                    String firstName = userName.split(" ")[0];
+                    welcomeText.setText("Hi " + firstName + ", Let's");
                 } else {
-                    // Default greeting
-                    welcomeText.setText("Hi there! 👋");
+                    welcomeText.setText("Let's Check Your");
                 }
             }
 
@@ -407,42 +399,43 @@ public class MainActivity extends BaseActivity {
         try {
             com.google.firebase.auth.FirebaseAuth firebaseAuth = com.google.firebase.auth.FirebaseAuth.getInstance();
             com.google.firebase.auth.FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-            
+
             if (currentUser != null) {
                 Log.d(TAG, "Firebase user found: " + currentUser.getEmail());
-                
+
                 // Refresh the token to ensure it's still valid
                 currentUser.getIdToken(true)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "Firebase token is valid and refreshed");
-                            
-                            // Update SharedPreferences with current Firebase user data
-                            SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
-                            editor.putBoolean("is_logged_in", true);
-                            editor.putLong("login_timestamp", System.currentTimeMillis());
-                            editor.putString("current_user_email", currentUser.getEmail());
-                            editor.putString("current_user_name", currentUser.getDisplayName());
-                            editor.putString("current_user_id", currentUser.getUid());
-                            
-                            if (currentUser.getProviderData() != null && !currentUser.getProviderData().isEmpty()) {
-                                editor.putString("auth_provider", currentUser.getProviderData().get(0).getProviderId());
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "Firebase token is valid and refreshed");
+
+                                // Update SharedPreferences with current Firebase user data
+                                SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
+                                editor.putBoolean("is_logged_in", true);
+                                editor.putLong("login_timestamp", System.currentTimeMillis());
+                                editor.putString("current_user_email", currentUser.getEmail());
+                                editor.putString("current_user_name", currentUser.getDisplayName());
+                                editor.putString("current_user_id", currentUser.getUid());
+
+                                if (currentUser.getProviderData() != null && !currentUser.getProviderData().isEmpty()) {
+                                    editor.putString("auth_provider",
+                                            currentUser.getProviderData().get(0).getProviderId());
+                                }
+
+                                if (currentUser.getPhotoUrl() != null) {
+                                    editor.putString("current_user_photo", currentUser.getPhotoUrl().toString());
+                                }
+
+                                editor.apply();
+                                Log.d(TAG, "SharedPreferences updated with current Firebase user data");
+
+                            } else {
+                                Log.w(TAG, "Firebase token refresh failed: " + task.getException());
+                                // Token is invalid, user needs to sign in again
+                                authManager.clearAuthState();
                             }
-                            
-                            if (currentUser.getPhotoUrl() != null) {
-                                editor.putString("current_user_photo", currentUser.getPhotoUrl().toString());
-                            }
-                            
-                            editor.apply();
-                            Log.d(TAG, "SharedPreferences updated with current Firebase user data");
-                            
-                        } else {
-                            Log.w(TAG, "Firebase token refresh failed: " + task.getException());
-                            // Token is invalid, user needs to sign in again
-                            authManager.clearAuthState();
-                        }
-                    });
-                    
+                        });
+
             } else {
                 Log.d(TAG, "No Firebase user found");
                 // Check if SharedPreferences thinks user is logged in but Firebase doesn't
@@ -453,7 +446,7 @@ public class MainActivity extends BaseActivity {
                     authManager.clearAuthState();
                 }
             }
-            
+
         } catch (Exception e) {
             Log.e(TAG, "Error checking Firebase auth state: " + e.getMessage(), e);
         }
@@ -518,12 +511,24 @@ public class MainActivity extends BaseActivity {
                 });
             }
 
-            // Scan icon click - Launch vertical scanner
-            if (scanIcon != null) {
-                scanIcon.setOnClickListener(v -> {
+            // Quick scan button click - Launch vertical scanner
+            View quickScanButton = findViewById(R.id.quickScanButton);
+            if (quickScanButton != null) {
+                quickScanButton.setOnClickListener(v -> {
                     performHapticFeedback();
                     animateView(v);
                     launchVerticalScanner();
+                });
+            }
+
+            // Profile image click - Open sidebar drawer
+            View profileImage = findViewById(R.id.profileImage);
+            if (profileImage != null) {
+                profileImage.setOnClickListener(v -> {
+                    performHapticFeedback();
+                    if (drawerLayout != null) {
+                        drawerLayout.openDrawer(findViewById(R.id.sidebarDrawer));
+                    }
                 });
             }
 
@@ -541,15 +546,7 @@ public class MainActivity extends BaseActivity {
                 Log.d(TAG, "viewAllScans view not found in layout");
             }
 
-            // Floating Action Button for quick scan
-            com.google.android.material.floatingactionbutton.FloatingActionButton fabScan = findViewById(R.id.fab_scan);
-            if (fabScan != null) {
-                fabScan.setOnClickListener(v -> {
-                    performHapticFeedback();
-                    animateView(v);
-                    launchVerticalScanner();
-                });
-            }
+            // Center scan button is now handled by BaseActivity's classy navbar
 
             Log.d(TAG, "Click listeners setup successfully");
         } catch (Exception e) {
@@ -557,9 +554,141 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    /**
+     * Initialize the sidebar drawer and its menu items
+     */
+    private void setupSidebar() {
+        try {
+            drawerLayout = findViewById(R.id.drawerLayout);
+
+            // Populate user info in sidebar header
+            TextView sidebarUserName = findViewById(R.id.sidebarUserName);
+            TextView sidebarUserEmail = findViewById(R.id.sidebarUserEmail);
+
+            if (sidebarUserName != null) {
+                String userName = getRealUserName();
+                if (userName != null && !userName.isEmpty()) {
+                    sidebarUserName.setText(userName);
+                } else {
+                    sidebarUserName.setText("User");
+                }
+            }
+
+            if (sidebarUserEmail != null) {
+                SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+                String email = prefs.getString("current_user_email", "");
+                if (!email.isEmpty()) {
+                    sidebarUserEmail.setText(email);
+                } else {
+                    sidebarUserEmail.setText("Not signed in");
+                }
+            }
+
+            // Sidebar header click - open profile
+            View sidebarHeader = findViewById(R.id.sidebarHeader);
+            if (sidebarHeader != null) {
+                sidebarHeader.setOnClickListener(v -> {
+                    closeSidebarAndNavigate(ProfileActivity.class);
+                });
+            }
+
+            // My Profile
+            View sidebarMyProfile = findViewById(R.id.sidebarMyProfile);
+            if (sidebarMyProfile != null) {
+                sidebarMyProfile.setOnClickListener(v -> {
+                    closeSidebarAndNavigate(ProfileActivity.class);
+                });
+            }
+
+            // Scan History
+            View sidebarScanHistory = findViewById(R.id.sidebarScanHistory);
+            if (sidebarScanHistory != null) {
+                sidebarScanHistory.setOnClickListener(v -> {
+                    closeSidebarAndNavigate(HistoryActivity.class);
+                });
+            }
+
+            // Analytics
+            View sidebarAnalytics = findViewById(R.id.sidebarAnalytics);
+            if (sidebarAnalytics != null) {
+                sidebarAnalytics.setOnClickListener(v -> {
+                    closeSidebarAndNavigate(AnalyticsActivity.class);
+                });
+            }
+
+            // Settings
+            View sidebarSettings = findViewById(R.id.sidebarSettings);
+            if (sidebarSettings != null) {
+                sidebarSettings.setOnClickListener(v -> {
+                    closeSidebarAndNavigate(SettingsActivity.class);
+                });
+            }
+
+            // Help & Support
+            View sidebarHelp = findViewById(R.id.sidebarHelp);
+            if (sidebarHelp != null) {
+                sidebarHelp.setOnClickListener(v -> {
+                    // Close sidebar - no dedicated help activity yet
+                    if (drawerLayout != null) {
+                        drawerLayout.closeDrawers();
+                    }
+                    android.widget.Toast.makeText(this, "Help & Support coming soon!", android.widget.Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            // Logout
+            View sidebarLogout = findViewById(R.id.sidebarLogout);
+            if (sidebarLogout != null) {
+                sidebarLogout.setOnClickListener(v -> {
+                    if (drawerLayout != null) {
+                        drawerLayout.closeDrawers();
+                    }
+                    // Show confirmation dialog
+                    new androidx.appcompat.app.AlertDialog.Builder(this)
+                            .setTitle("Logout")
+                            .setMessage("Are you sure you want to logout?")
+                            .setPositiveButton("Logout", (dialog, which) -> {
+                                if (authManager != null) {
+                                    authManager.clearAuthState();
+                                }
+                                com.google.firebase.auth.FirebaseAuth.getInstance().signOut();
+                                Intent loginIntent = new Intent(this, LoginActivity.class);
+                                loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(loginIntent);
+                                finish();
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .show();
+                });
+            }
+
+            Log.d(TAG, "Sidebar setup successfully");
+        } catch (Exception e) {
+            Log.e(TAG, "Error setting up sidebar: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Close the sidebar drawer and navigate to the specified activity
+     */
+    private void closeSidebarAndNavigate(Class<?> targetActivity) {
+        if (drawerLayout != null) {
+            drawerLayout.closeDrawers();
+        }
+        // Small delay to let the drawer close animation finish
+        new android.os.Handler().postDelayed(() -> {
+            Intent intent = new Intent(this, targetActivity);
+            intent.putExtra("from_navigation", true);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+        }, 250);
+    }
+
     private void setupRecentScansRecyclerView() {
         try {
             RecyclerView recentScansRecyclerView = findViewById(R.id.recentScansRecyclerView);
+            View emptyStateContainer = findViewById(R.id.emptyStateContainer);
+
             if (recentScansRecyclerView != null) {
                 LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,
                         false);
@@ -569,12 +698,18 @@ public class MainActivity extends BaseActivity {
                 java.util.List<RecentScansAdapter.ScanItem> scanItems = loadRealScanHistory();
 
                 if (scanItems.isEmpty()) {
-                    // Hide recent scans section completely if no real data
+                    // Show empty state instead of hiding
                     recentScansRecyclerView.setVisibility(View.GONE);
-                    Log.d(TAG, "No real scan history found - hiding recent scans section");
+                    if (emptyStateContainer != null) {
+                        emptyStateContainer.setVisibility(View.VISIBLE);
+                    }
+                    Log.d(TAG, "No real scan history found - showing empty state");
                 } else {
                     // Show recent scans section with real data
                     recentScansRecyclerView.setVisibility(View.VISIBLE);
+                    if (emptyStateContainer != null) {
+                        emptyStateContainer.setVisibility(View.GONE);
+                    }
 
                     RecentScansAdapter adapter = new RecentScansAdapter(this, scanItems);
                     adapter.setOnItemClickListener(item -> {
@@ -719,6 +854,16 @@ public class MainActivity extends BaseActivity {
         return R.id.nav_home;
     }
 
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(findViewById(R.id.sidebarDrawer))) {
+            drawerLayout.closeDrawers();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -825,7 +970,7 @@ public class MainActivity extends BaseActivity {
             Log.e(TAG, "Error animating view: " + e.getMessage(), e);
         }
     }
-    
+
     /**
      * Start automatic sync service
      */
@@ -835,7 +980,7 @@ public class MainActivity extends BaseActivity {
                 Intent syncIntent = new Intent(this, AutoSyncService.class);
                 startService(syncIntent);
                 Log.d(TAG, "Auto-sync service started");
-                
+
                 // Create test data to verify Firebase connection
                 createTestDataInFirebase();
             }
@@ -843,7 +988,7 @@ public class MainActivity extends BaseActivity {
             Log.e(TAG, "Error starting auto-sync service: " + e.getMessage(), e);
         }
     }
-    
+
     /**
      * Create test data in Firebase to verify connection
      */
@@ -852,17 +997,18 @@ public class MainActivity extends BaseActivity {
             // Check authentication status
             boolean isAuthenticated = authManager.isUserAuthenticated();
             String userId = authManager.getCurrentUserId();
-            
+
             Log.d(TAG, "🔍 FIREBASE TEST DEBUG:");
             Log.d(TAG, "   - Is Authenticated: " + isAuthenticated);
             Log.d(TAG, "   - User ID: " + (userId != null ? userId : "NULL"));
-            
+
             // Check Firebase Auth user
-            com.google.firebase.auth.FirebaseUser firebaseUser = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
+            com.google.firebase.auth.FirebaseUser firebaseUser = com.google.firebase.auth.FirebaseAuth.getInstance()
+                    .getCurrentUser();
             if (firebaseUser != null) {
                 Log.d(TAG, "   - Firebase User: " + firebaseUser.getEmail());
                 Log.d(TAG, "   - Firebase UID: " + firebaseUser.getUid());
-                
+
                 // Use Firebase UID if local user ID is null
                 if (userId == null || userId.isEmpty()) {
                     userId = firebaseUser.getUid();
@@ -871,10 +1017,10 @@ public class MainActivity extends BaseActivity {
             } else {
                 Log.w(TAG, "   - No Firebase user found");
             }
-            
+
             if (userId != null && !userId.isEmpty()) {
                 final String finalUserId = userId; // Make final for lambda
-                
+
                 // Create comprehensive test data
                 Map<String, Object> testData = new HashMap<>();
                 testData.put("testMessage", "Hello from Health Scanner App!");
@@ -887,53 +1033,58 @@ public class MainActivity extends BaseActivity {
                 testData.put("authProvider", prefs.getString("auth_provider", "unknown"));
                 testData.put("userEmail", prefs.getString("current_user_email", "unknown"));
                 testData.put("userName", prefs.getString("current_user_name", "unknown"));
-                
+
                 Log.d(TAG, "🚀 Creating test data for user: " + finalUserId);
-                
+
                 // Get Firebase instance and create test document
-                com.google.firebase.firestore.FirebaseFirestore db = com.google.firebase.firestore.FirebaseFirestore.getInstance();
-                
+                com.google.firebase.firestore.FirebaseFirestore db = com.google.firebase.firestore.FirebaseFirestore
+                        .getInstance();
+
                 db.collection("users")
-                    .document(finalUserId)
-                    .set(testData, com.google.firebase.firestore.SetOptions.merge())
-                    .addOnSuccessListener(aVoid -> {
-                        Log.d(TAG, "✅ TEST DATA CREATED IN FIREBASE!");
-                        Log.d(TAG, "🔍 Check Firebase Console: https://console.firebase.google.com/project/nure-70d49/firestore/data/users/" + finalUserId);
-                        Log.d(TAG, "📍 Direct link: https://console.firebase.google.com/project/nure-70d49/firestore/data/~2Fusers~2F" + finalUserId);
-                        
-                        android.widget.Toast.makeText(this, 
-                            "✅ Test data created! User: " + finalUserId, 
-                            android.widget.Toast.LENGTH_LONG).show();
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e(TAG, "❌ FAILED TO CREATE TEST DATA IN FIREBASE: " + e.getMessage(), e);
-                        Log.e(TAG, "   - Error details: " + e.getClass().getSimpleName());
-                        if (e.getCause() != null) {
-                            Log.e(TAG, "   - Cause: " + e.getCause().getMessage());
-                        }
-                        
-                        android.widget.Toast.makeText(this, 
-                            "❌ Firebase failed: " + e.getMessage(), 
-                            android.widget.Toast.LENGTH_LONG).show();
-                    });
-                    
+                        .document(finalUserId)
+                        .set(testData, com.google.firebase.firestore.SetOptions.merge())
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d(TAG, "✅ TEST DATA CREATED IN FIREBASE!");
+                            Log.d(TAG,
+                                    "🔍 Check Firebase Console: https://console.firebase.google.com/project/nure-70d49/firestore/data/users/"
+                                            + finalUserId);
+                            Log.d(TAG,
+                                    "📍 Direct link: https://console.firebase.google.com/project/nure-70d49/firestore/data/~2Fusers~2F"
+                                            + finalUserId);
+
+                            android.widget.Toast.makeText(this,
+                                    "✅ Test data created! User: " + finalUserId,
+                                    android.widget.Toast.LENGTH_LONG).show();
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e(TAG, "❌ FAILED TO CREATE TEST DATA IN FIREBASE: " + e.getMessage(), e);
+                            Log.e(TAG, "   - Error details: " + e.getClass().getSimpleName());
+                            if (e.getCause() != null) {
+                                Log.e(TAG, "   - Cause: " + e.getCause().getMessage());
+                            }
+
+                            android.widget.Toast.makeText(this,
+                                    "❌ Firebase failed: " + e.getMessage(),
+                                    android.widget.Toast.LENGTH_LONG).show();
+                        });
+
             } else {
                 Log.e(TAG, "❌ CANNOT CREATE TEST DATA - NO USER ID AVAILABLE");
                 Log.e(TAG, "   - Check authentication flow");
                 Log.e(TAG, "   - Make sure user is signed in");
-                
-                android.widget.Toast.makeText(this, 
-                    "❌ No user ID - please sign in first", 
-                    android.widget.Toast.LENGTH_LONG).show();
+
+                android.widget.Toast.makeText(this,
+                        "❌ No user ID - please sign in first",
+                        android.widget.Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
             Log.e(TAG, "❌ ERROR CREATING TEST DATA: " + e.getMessage(), e);
-            android.widget.Toast.makeText(this, 
-                "❌ Test data error: " + e.getMessage(), 
-                android.widget.Toast.LENGTH_LONG).show();
+            android.widget.Toast.makeText(this,
+                    "❌ Test data error: " + e.getMessage(),
+                    android.widget.Toast.LENGTH_LONG).show();
         }
     }
-    
+
     /**
      * Ensure Google users are properly stored in Firebase database
      */
@@ -943,10 +1094,10 @@ public class MainActivity extends BaseActivity {
             String authProvider = prefs.getString("auth_provider", "");
             String userId = authManager.getCurrentUserId();
             boolean firebaseProfileCreated = prefs.getBoolean("firebase_profile_created", false);
-            
+
             if ("google.com".equals(authProvider) && userId != null && !firebaseProfileCreated) {
                 Log.d(TAG, "🔍 Google user detected without Firebase profile, creating...");
-                
+
                 // Create comprehensive user data from stored Google account info
                 java.util.Map<String, Object> userData = new java.util.HashMap<>();
                 userData.put("email", prefs.getString("current_user_email", ""));
@@ -963,7 +1114,7 @@ public class MainActivity extends BaseActivity {
                 userData.put("lastLoginAt", new java.util.Date());
                 userData.put("appVersion", "1.0.0");
                 userData.put("platform", "Android");
-                
+
                 // Initialize health app defaults
                 userData.put("totalScans", 0);
                 userData.put("healthyChoices", 0);
@@ -973,34 +1124,36 @@ public class MainActivity extends BaseActivity {
                 userData.put("scanHistory", "[]");
                 userData.put("healthConcerns", new java.util.ArrayList<String>());
                 userData.put("dietaryPreferences", new java.util.ArrayList<String>());
-                
+
                 // Save to Firebase
-                com.example.healthscanner.database.FirebaseManager firebaseManager = 
-                    com.example.healthscanner.database.FirebaseManager.getInstance();
-                    
-                firebaseManager.syncCompleteUserData(userId, userData, 
-                    new com.example.healthscanner.database.FirebaseManager.OperationCallback() {
-                        @Override
-                        public void onSuccess() {
-                            Log.d(TAG, "✅ Google user profile created in Firebase from MainActivity!");
-                            Log.d(TAG, "🔍 Check: https://console.firebase.google.com/project/nure-70d49/firestore/data/users/" + userId);
-                            
-                            prefs.edit()
-                                .putBoolean("firebase_profile_created", true)
-                                .putLong("firebase_profile_timestamp", System.currentTimeMillis())
-                                .apply();
-                        }
-                        
-                        @Override
-                        public void onFailure(String error) {
-                            Log.e(TAG, "❌ Failed to create Google user profile in Firebase: " + error);
-                        }
-                    });
-                    
+                com.example.healthscanner.database.FirebaseManager firebaseManager = com.example.healthscanner.database.FirebaseManager
+                        .getInstance();
+
+                firebaseManager.syncCompleteUserData(userId, userData,
+                        new com.example.healthscanner.database.FirebaseManager.OperationCallback() {
+                            @Override
+                            public void onSuccess() {
+                                Log.d(TAG, "✅ Google user profile created in Firebase from MainActivity!");
+                                Log.d(TAG,
+                                        "🔍 Check: https://console.firebase.google.com/project/nure-70d49/firestore/data/users/"
+                                                + userId);
+
+                                prefs.edit()
+                                        .putBoolean("firebase_profile_created", true)
+                                        .putLong("firebase_profile_timestamp", System.currentTimeMillis())
+                                        .apply();
+                            }
+
+                            @Override
+                            public void onFailure(String error) {
+                                Log.e(TAG, "❌ Failed to create Google user profile in Firebase: " + error);
+                            }
+                        });
+
             } else if ("google.com".equals(authProvider) && firebaseProfileCreated) {
                 Log.d(TAG, "✅ Google user already has Firebase profile");
             }
-            
+
         } catch (Exception e) {
             Log.e(TAG, "Error ensuring Google user in Firebase: " + e.getMessage(), e);
         }

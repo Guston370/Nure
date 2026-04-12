@@ -700,11 +700,10 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             
                             if (user != null) {
-                                // Check if email is verified (security requirement)
+                                // Log email verification status (non-blocking)
                                 if (!user.isEmailVerified()) {
                                     Log.w(TAG, "Email not verified for user: " + user.getEmail());
-                                    showEmailVerificationDialog(user);
-                                    return;
+                                    // Don't block login — just remind the user
                                 }
                                 
                                 // Save comprehensive login state with Firebase data
@@ -1516,23 +1515,30 @@ public class LoginActivity extends AppCompatActivity {
         String message = exception.getMessage();
         if (message == null) return "An unknown error occurred";
         
+        Log.e(TAG, "Firebase error message: " + message);
+        
+        String messageLower = message.toLowerCase();
+        
         // Provide user-friendly error messages based on Firebase error codes
-        if (message.contains("ERROR_INVALID_EMAIL") || message.contains("email address is badly formatted")) {
+        if (messageLower.contains("invalid_email") || messageLower.contains("email address is badly formatted")) {
             return "Please enter a valid email address.";
-        } else if (message.contains("ERROR_WRONG_PASSWORD") || message.contains("password is invalid")) {
+        } else if (messageLower.contains("wrong_password") || messageLower.contains("password is invalid")) {
             return "Incorrect password. Please try again.";
-        } else if (message.contains("ERROR_USER_NOT_FOUND") || message.contains("no user record")) {
-            return "No account found with this email address.";
-        } else if (message.contains("ERROR_USER_DISABLED")) {
+        } else if (messageLower.contains("user_not_found") || messageLower.contains("no user record")) {
+            return "No account found with this email. Please sign up first.";
+        } else if (messageLower.contains("invalid_login_credentials") || messageLower.contains("invalid credential") || messageLower.contains("incorrect, malformed")) {
+            return "Invalid email or password. Please check your credentials or sign up for a new account.";
+        } else if (messageLower.contains("user_disabled")) {
             return "This account has been disabled. Please contact support.";
-        } else if (message.contains("ERROR_TOO_MANY_REQUESTS")) {
+        } else if (messageLower.contains("too_many_requests") || messageLower.contains("too many")) {
             return "Too many failed attempts. Please try again later.";
-        } else if (message.contains("ERROR_NETWORK_REQUEST_FAILED") || message.contains("network error")) {
+        } else if (messageLower.contains("network") || messageLower.contains("connection")) {
             return "Network error. Please check your internet connection.";
-        } else if (message.contains("ERROR_OPERATION_NOT_ALLOWED")) {
+        } else if (messageLower.contains("operation_not_allowed") || messageLower.contains("not enabled")) {
             return "Email/password sign-in is not enabled. Please contact support.";
         } else {
-            return "Login failed. Please try again.";
+            // Show the actual error for debugging instead of a generic message
+            return "Login failed: " + message;
         }
     }
 
