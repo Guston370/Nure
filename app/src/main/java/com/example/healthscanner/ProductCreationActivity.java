@@ -123,6 +123,15 @@ public class ProductCreationActivity extends AppCompatActivity {
         }
     }
 
+    private boolean isNetworkAvailable() {
+        android.net.ConnectivityManager cm = (android.net.ConnectivityManager) getSystemService(android.content.Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            android.net.NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        }
+        return false;
+    }
+
     private void attemptSubmission() {
         String name = inputName.getText().toString().trim();
         String category = inputCategory.getText().toString().trim();
@@ -145,62 +154,54 @@ public class ProductCreationActivity extends AppCompatActivity {
             JSONObject metadata = new JSONObject();
             metadata.put("barcode", barcode);
             metadata.put("product_name", name);
-            metadata.put("brand", category); // using category field for structural simplicity
+            metadata.put("brand", category);
             metadata.put("ingredients", ingredients);
             
-            // Build Multipart Form
-            MultipartBody.Builder builder = new MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("metadata", metadata.toString());
+            // Persist to local preview db to keep local features alive
+            DatabaseHelper.addNewProduct(ProductCreationActivity.this, metadata);
 
-            if (currentPhotoPath != null) {
-                File file = new File(currentPhotoPath);
-                builder.addFormDataPart("image", file.getName(),
-                        RequestBody.create(file, MediaType.parse("image/jpeg")));
-            }
+            boolean isOnline = isNetworkAvailable();
+            String deviceId = android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+            
+            com.example.healthscanner.database.queue.DataQueueEntity entity = new com.example.healthscanner.database.queue.DataQueueEntity(
+                    java.util.UUID.randomUUID().toString(),
+                    name,
+                    barcode,
+                    currentPhotoPath,
+                    System.currentTimeMillis(),
+                    "manual",
+                    deviceId != null ? deviceId : "unknown_device",
+                    "pending"
+            );
 
-            RequestBody requestBody = builder.build();
-
-            // Fire REST pipeline
-            Request request = new Request.Builder()
-                    .url(ApiConfig.API_URL_ADD_PRODUCT)
-                    .post(requestBody)
-                    .build();
-
-            httpClient.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    runOnUiThread(() -> {
-                        loadingProgress.setVisibility(View.GONE);
-                        btnSubmit.setEnabled(true);
-                        Toast.makeText(ProductCreationActivity.this, "Network Error Submitting Product", Toast.LENGTH_SHORT).show();
-                    });
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    if (response.isSuccessful()) {
-                        // Persist dynamically to local Read/Write dataset!
-                        DatabaseHelper.addNewProduct(ProductCreationActivity.this, metadata);
+            new Thread(() -> {
+                com.example.healthscanner.database.queue.AppDatabase.getDatabase(this).queueDao().insert(entity);
+                
+                androidx.work.Constraints constraints = new androidx.work.Constraints.Builder()
+                        .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED)
+                        .build();
                         
-                        runOnUiThread(() -> {
-                            loadingProgress.setVisibility(View.GONE);
-                            Toast.makeText(ProductCreationActivity.this, "Product Confirmed & Added to Ecosystem!", Toast.LENGTH_LONG).show();
-                            Intent intent = new Intent(ProductCreationActivity.this, ProductDetailsEnhancedActivity.class);
-                            intent.putExtra("barcode", barcode);
-                            startActivity(intent);
-                            finish();
-                        });
-                    } else {
-                        runOnUiThread(() -> {
-                            loadingProgress.setVisibility(View.GONE);
-                            btnSubmit.setEnabled(true);
-                            Toast.makeText(ProductCreationActivity.this, "Server rejected submission.", Toast.LENGTH_SHORT).show();
-                        });
-                    }
-                }
-            });
+                androidx.work.OneTimeWorkRequest syncWorkRequest = new androidx.work.OneTimeWorkRequest.Builder(com.example.healthscanner.database.queue.DataSyncWorker.class)
+                        .setConstraints(constraints)
+                        .build();
+                        
+                androidx.work.WorkManager.getInstance(this).enqueue(syncWorkRequest);
 
+                runOnUiThread(() -> {
+                    loadingProgress.setVisibility(View.GONE);
+                    if (!isOnline) {
+                        Toast.makeText(ProductCreationActivity.this, "Saved offline", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(ProductCreationActivity.this, "Product queued for upload!", Toast.LENGTH_SHORT).show();
+                    }
+                    
+                    Intent intent = new Intent(ProductCreationActivity.this, ProductDetailsEnhancedActivity.class);
+                    intent.putExtra("barcode", barcode);
+                    startActivity(intent);
+                    finish();
+                });
+            }).start();
+            
         } catch (Exception e) {
             loadingProgress.setVisibility(View.GONE);
             btnSubmit.setEnabled(true);
