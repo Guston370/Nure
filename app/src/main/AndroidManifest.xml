@@ -19,7 +19,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="false"
+        android:usesCleartextTraffic="true"
         android:theme="@style/Theme.HealthScanner">
 
         <!-- LoginActivity as launcher -->
@@ -66,6 +66,14 @@
             android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <!-- ApiDetectionResultActivity -->
+        <activity
+            android:name=".ApiDetectionResultActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".VerticalScannerActivity"
+            android:theme="@style/Theme.HealthScanner" />
 
         <!-- ProductDetailsActivitySimple -->
         <activity
@@ -123,6 +131,12 @@
         <!-- Firebase Test Activity for debugging -->
         <activity
             android:name=".FirebaseTestActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.HealthScanner" />
+
+        <activity
+            android:name=".ProductSelectionActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.HealthScanner" />
