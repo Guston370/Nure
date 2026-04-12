@@ -11,6 +11,7 @@ public class ApiConfig {
     public static final String API_URL_PREDICT = NURE_BASE_URL + "/predict";
     public static final String API_URL_OCR_DETECT = NURE_BASE_URL + "/ocr-detect";
     public static final String API_URL_STORE_FEEDBACK = NURE_BASE_URL + "/store-feedback";
+    public static final String API_URL_ADD_PRODUCT = NURE_BASE_URL + "/add-product";
 
     // OpenFoodFacts API (Free, no key required)
     public static final String OPENFOODFACTS_BASE_URL = "https://world.openfoodfacts.org/api/v0/product/";

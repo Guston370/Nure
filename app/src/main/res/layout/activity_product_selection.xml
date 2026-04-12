@@ -19,7 +19,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Automatic detection failed. Search the OpenFoodFacts directory manually or enter a custom label to confirm your item:"
+        android:text="Product detection failed. Search verified database manually:"
         android:padding="16dp"
         android:textSize="14sp"
         android:textColor="@color/md_theme_light_onSurfaceVariant" />
@@ -73,6 +73,15 @@
         android:visibility="gone"
         android:padding="16dp"/>
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_scan_barcode_fallback"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:visibility="gone"
+        android:text="Scan barcode to verify and add this product."
+        app:icon="@drawable/ic_barcode_scan" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/product_recycler_view"
         android:layout_width="match_parent"
@@ -81,14 +90,6 @@
         android:clipToPadding="false"
         android:paddingBottom="80dp" />
 
-    <!-- Manual Submission Block -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_submit_manual"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:padding="12dp"
-        android:text="Submit Typed Text Directly"
-        app:icon="@drawable/ic_upload" />
+    <!-- Removed Manual Submission Block to force read-only selection -->
 
 </LinearLayout>

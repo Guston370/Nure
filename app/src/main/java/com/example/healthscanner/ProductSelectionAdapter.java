@@ -11,10 +11,12 @@ import java.util.List;
 public class ProductSelectionAdapter extends RecyclerView.Adapter<ProductSelectionAdapter.ViewHolder> {
 
     public static class ProductItem {
+        public String barcode;
         public String name;
         public String brand;
         
-        public ProductItem(String name, String brand) {
+        public ProductItem(String barcode, String name, String brand) {
+            this.barcode = barcode;
             this.name = name;
             this.brand = brand;
         }

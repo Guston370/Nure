@@ -210,7 +210,7 @@ public class VerticalScannerActivity extends BaseActivity {
             scanningLine.setVisibility(View.VISIBLE);
             detectCrosshair.setVisibility(View.GONE);
             
-            instructionsText.setText("Position barcode in the frame");
+            instructionsText.setText("For better accuracy, scan the barcode against the local DB");
             
             if (captureButtonIcon != null) {
                 captureButtonIcon.setImageResource(R.drawable.ic_barcode_scan);
@@ -226,7 +226,7 @@ public class VerticalScannerActivity extends BaseActivity {
             scanningLine.setVisibility(View.GONE);
             detectCrosshair.setVisibility(View.VISIBLE);
             
-            instructionsText.setText("Tap capture button to detect product");
+            instructionsText.setText("Try verifying via Barcode first for DB accuracy");
             
             if (captureButtonIcon != null) {
                 captureButtonIcon.setImageResource(R.drawable.ic_detect_product);
@@ -340,25 +340,95 @@ public class VerticalScannerActivity extends BaseActivity {
         if (isScanning || currentMode != ScanMode.BARCODE) return; // Prevent multiple scans
         
         isScanning = true;
-        showScanStatus("✅ Barcode detected! Opening product details...", true);
-        
-        // Vibrate for feedback
+        showScanStatus("🔍 Barcode found! Validating dynamically via Cloud...", true);
         performHapticFeedback();
         
-        Log.d(TAG, "Navigating to product details with barcode: " + barcode);
-        
-        // Add a small delay for better UX
-        if (scanStatusCard != null) {
-            scanStatusCard.postDelayed(() -> {
-                Intent intent = new Intent(this, ProductDetailsEnhancedActivity.class);
-                intent.putExtra("barcode", barcode);
-                startActivity(intent);
-            }, 500); 
-        } else {
-            Intent intent = new Intent(this, ProductDetailsEnhancedActivity.class);
-            intent.putExtra("barcode", barcode);
-            startActivity(intent);
+        com.example.healthscanner.network.PipelineManager.verifyBarcodeStrictly(barcode, new com.example.healthscanner.network.PipelineManager.VerificationCallback() {
+            @Override
+            public void onVerified(String label, String source) {
+                runOnUiThread(() -> {
+                    showScanStatus("✅ Label Secured! Capturing Image automatically...", true);
+                    capturePhotoForOfflineSync(label, barcode, source);
+                });
+            }
+
+            @Override
+            public void onFailure() {
+                runOnUiThread(() -> {
+                    showScanStatus("❌ Cloud Metadata failed. Fallback required.", false);
+                    promptUserForManualLabel(barcode);
+                });
+            }
+        });
+    }
+
+    private void promptUserForManualLabel(String barcode) {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        builder.setTitle("API Exhausted");
+        builder.setMessage("Please enter the product label manually for Barcode: " + barcode);
+
+        final android.widget.EditText input = new android.widget.EditText(this);
+        input.setHint("e.g. maggi");
+        builder.setView(input);
+
+        builder.setPositiveButton("Capture & Sync", (dialog, which) -> {
+            String sanitizedLabel = input.getText().toString().trim().toLowerCase().replaceAll("[^a-z0-9\\s]", " ").replaceAll("\\s+", " ").trim();
+            if (sanitizedLabel.isEmpty()) {
+                isScanning = false;
+                showScanStatus("❌ Label cannot be empty. Scan aborted.", false);
+                return;
+            }
+            capturePhotoForOfflineSync(sanitizedLabel, barcode, "user_fallback");
+        });
+        builder.setNegativeButton("Cancel Scan", (dialog, which) -> {
+            dialog.cancel();
+            isScanning = false;
+            showScanStatus("Ready", true);
+        });
+
+        builder.setCancelable(false);
+        builder.show();
+    }
+
+    private void capturePhotoForOfflineSync(String label, String barcode, String source) {
+        if (imageCapture == null) {
+            isScanning = false;
+            return;
         }
+
+        setCaptureButtonEnabled(false);
+        
+        // Output statically directly to cache logic inside PipelineManager later implicitly via bitmap
+        // To be simpler, we will use imageCapture to write to cache, then trigger PipelineManager
+        File photoFile = new File(getCacheDir(), "SYNC_" + System.currentTimeMillis() + ".jpg");
+        androidx.camera.core.ImageCapture.OutputFileOptions options = 
+                new androidx.camera.core.ImageCapture.OutputFileOptions.Builder(photoFile).build();
+
+        imageCapture.takePicture(options, androidx.core.content.ContextCompat.getMainExecutor(this),
+                new androidx.camera.core.ImageCapture.OnImageSavedCallback() {
+                    @Override
+                    public void onImageSaved(@androidx.annotation.NonNull androidx.camera.core.ImageCapture.OutputFileResults outputFileResults) {
+                        try {
+                            android.graphics.Bitmap bitmap = android.graphics.BitmapFactory.decodeFile(photoFile.getAbsolutePath());
+                            com.example.healthscanner.network.PipelineManager.commitToOfflineQueue(VerticalScannerActivity.this, label, barcode, bitmap, source);
+                            
+                            showScanStatus("✅ Locked in SQLite offline queue! Syncing invisibly.", true);
+                            
+                            // Re-enable UX
+                            scanStatusCard.postDelayed(() -> {
+                                isScanning = false;
+                                setCaptureButtonEnabled(true);
+                                showScanStatus("Ready", true);
+                            }, 3000);
+                        } catch (Exception e) {}
+                    }
+                    @Override
+                    public void onError(@androidx.annotation.NonNull androidx.camera.core.ImageCaptureException exception) {
+                        isScanning = false;
+                        setCaptureButtonEnabled(true);
+                        showScanStatus("❌ Camera constraint failure.", false);
+                    }
+                });
     }
     
     private void toggleFlash() {
@@ -389,48 +459,8 @@ public class VerticalScannerActivity extends BaseActivity {
      * Capture a photo and send it to the YOLO API.
      */
     private void capturePhotoForDetection() {
-        if (imageCapture == null) {
-            showScanStatus("Camera not ready", false);
-            return;
-        }
-
-        if (isCapturing) {
-            return; 
-        }
-
-        isCapturing = true;
-        setCaptureButtonEnabled(false);
-        showScanStatus("📸 Processing image, please wait...", true);
-        if (scanProgress != null) scanProgress.setVisibility(View.VISIBLE);
-        performHapticFeedback();
-
-        // Create temporary file
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        String fileName = "NURE_DETECT_" + timeStamp + ".jpg";
-
-        File cacheDir = getCacheDir();
-        File photoFile = new File(cacheDir, fileName);
-
-        ImageCapture.OutputFileOptions outputOptions =
-                new ImageCapture.OutputFileOptions.Builder(photoFile).build();
-
-        imageCapture.takePicture(outputOptions, ContextCompat.getMainExecutor(this),
-                new ImageCapture.OnImageSavedCallback() {
-                    @Override
-                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                        Log.d(TAG, "Photo captured successfully: " + photoFile.getAbsolutePath());
-                        // Run API call on background thread
-                        detectProductViaApi(photoFile);
-                    }
-
-                    @Override
-                    public void onError(@NonNull ImageCaptureException exception) {
-                        isCapturing = false;
-                        setCaptureButtonEnabled(true);
-                        Log.e(TAG, "Photo capture failed: " + exception.getMessage(), exception);
-                        showScanStatus("❌ Photo capture failed", false);
-                    }
-                });
+        // Disabled YOLO bounding fallback explicitly due to Cloud Firestore constraint requirements.
+        showScanStatus("❌ YOLO Detection disabled. Strict Barcode scanning is mandatory.", false);
     }
 
     private void detectProductViaApi(File photoFile) {

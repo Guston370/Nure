@@ -1,0 +1,62 @@
+[
+  {
+    "barcode": "8901058002388",
+    "product_name": "Maggi 2-Minute Noodles",
+    "brand": "Nestle",
+    "ingredients": "Wheat flour, Edible vegetable oil, Salt, Wheat gluten, Mineral (Calcium carbonate), Guar gum.",
+    "nutrition": {
+      "calories": 427,
+      "protein": 8.0,
+      "sugar": 1.2,
+      "fat": 15.7,
+      "carbs": 63.5,
+      "fiber": 2.0,
+      "sodium": 1240
+    }
+  },
+  {
+    "barcode": "8901491101923",
+    "product_name": "Lays Classic Salted",
+    "brand": "Frito-Lay",
+    "ingredients": "Potatoes, Edible Vegetable Oil, Salt.",
+    "nutrition": {
+      "calories": 544,
+      "protein": 7.0,
+      "sugar": 0.5,
+      "fat": 34.0,
+      "carbs": 52.0,
+      "fiber": 4.5,
+      "sodium": 750
+    }
+  },
+  {
+    "barcode": "5449000000996",
+    "product_name": "Coca-Cola Original",
+    "brand": "Coca-Cola",
+    "ingredients": "Carbonated Water, Sugar, Color (Caramel E150d), Acid (Phosphoric Acid), Natural Flavorings.",
+    "nutrition": {
+      "calories": 42,
+      "protein": 0.0,
+      "sugar": 10.6,
+      "fat": 0.0,
+      "carbs": 10.6,
+      "fiber": 0.0,
+      "sodium": 0
+    }
+  },
+  {
+    "barcode": "1234567890123",
+    "product_name": "Organic Whole Grain Cereal",
+    "brand": "HealthyChoice",
+    "ingredients": "Whole grain oats, whole grain wheat, brown rice, honey, almonds, natural vanilla flavor.",
+    "nutrition": {
+      "calories": 350,
+      "protein": 12.5,
+      "sugar": 8.2,
+      "fat": 4.1,
+      "carbs": 68.0,
+      "fiber": 9.5,
+      "sodium": 180
+    }
+  }
+]

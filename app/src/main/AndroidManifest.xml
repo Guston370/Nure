@@ -141,6 +141,12 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.HealthScanner" />
 
+        <activity
+            android:name=".ProductCreationActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.HealthScanner" />
+
         <!-- FileProvider for camera photo capture -->
         <provider
             android:name="androidx.core.content.FileProvider"

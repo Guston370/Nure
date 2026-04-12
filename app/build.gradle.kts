@@ -90,6 +90,9 @@ dependencies {
     // Firebase Firestore (for database storage)
     implementation("com.google.firebase:firebase-firestore")
     
+    // Firebase Storage (for binary image uploads)
+    implementation("com.google.firebase:firebase-storage")
+    
     // Google Sign-In
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     
@@ -110,6 +113,15 @@ dependencies {
     
     // Lottie for animations
     implementation("com.airbnb.android:lottie:6.2.0")
+
+    // Room SQLite Offline Sync
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+    
+    // WorkManager
+    val work_version = "2.9.0"
+    implementation("androidx.work:work-runtime:$work_version")
 
     // Testing
     testImplementation(libs.junit)

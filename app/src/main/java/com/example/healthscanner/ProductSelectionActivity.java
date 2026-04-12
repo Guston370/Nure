@@ -2,6 +2,10 @@ package com.example.healthscanner;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -12,10 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -23,18 +23,10 @@ import com.google.android.material.textfield.TextInputEditText;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class ProductSelectionActivity extends AppCompatActivity {
 
@@ -42,52 +34,50 @@ public class ProductSelectionActivity extends AppCompatActivity {
     
     private TextInputEditText searchEditText;
     private MaterialButton btnSearch;
-    private MaterialButton btnSubmitManual;
+    private MaterialButton btnScanBarcodeFallback;
     private ProgressBar loadingProgress;
     private TextView errorText;
     private RecyclerView productRecyclerView;
     
     private ProductSelectionAdapter adapter;
-    private List<ProductSelectionAdapter.ProductItem> productList;
+    private List<ProductSelectionAdapter.ProductItem> masterProductList;
+    private List<ProductSelectionAdapter.ProductItem> filteredList;
     
-    private RequestQueue requestQueue;
-    private OkHttpClient httpClient;
-    
-    private String capturedImagePath;
+    private Handler debounceHandler;
+    private Runnable searchRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_selection);
 
-        capturedImagePath = getIntent().getStringExtra("image_path");
-        if (capturedImagePath == null) {
-            Toast.makeText(this, "No image provided", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-
-        httpClient = new OkHttpClient();
-        requestQueue = Volley.newRequestQueue(this);
+        debounceHandler = new Handler(Looper.getMainLooper());
+        masterProductList = new ArrayList<>();
+        filteredList = new ArrayList<>();
 
         setupUI();
+        loadLocalDataset();
     }
 
     private void setupUI() {
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> finish());
 
         searchEditText = findViewById(R.id.search_edit_text);
         btnSearch = findViewById(R.id.btn_search);
-        btnSubmitManual = findViewById(R.id.btn_submit_manual);
+        btnScanBarcodeFallback = findViewById(R.id.btn_scan_barcode_fallback);
         loadingProgress = findViewById(R.id.loading_progress);
         errorText = findViewById(R.id.error_text);
         productRecyclerView = findViewById(R.id.product_recycler_view);
 
-        productList = new ArrayList<>();
-        adapter = new ProductSelectionAdapter(productList, item -> {
-            submitCorrectionAndFinish(item.name);
+        btnScanBarcodeFallback.setOnClickListener(v -> {
+            Intent intent = new Intent(this, VerticalScannerActivity.class);
+            startActivity(intent);
+            finish();
+        });
+
+        adapter = new ProductSelectionAdapter(filteredList, item -> {
+            submitCorrectionAndFinish(item.barcode);
         });
 
         productRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -95,113 +85,90 @@ public class ProductSelectionActivity extends AppCompatActivity {
 
         btnSearch.setOnClickListener(v -> {
             String query = searchEditText.getText().toString().trim();
-            if (!query.isEmpty()) {
-                searchOpenFoodFacts(query);
-            }
+            filterProducts(query);
         });
 
-        btnSubmitManual.setOnClickListener(v -> {
-            String manualLabel = searchEditText.getText().toString().trim();
-            if (!manualLabel.isEmpty()) {
-                submitCorrectionAndFinish(manualLabel);
-            } else {
-                searchEditText.setError("Please type a product name");
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (searchRunnable != null) {
+                    debounceHandler.removeCallbacks(searchRunnable);
+                }
+                searchRunnable = () -> filterProducts(s.toString().trim());
+                debounceHandler.postDelayed(searchRunnable, 300); // 300ms debounce
             }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
         });
     }
 
-    private void searchOpenFoodFacts(String query) {
+    private void loadLocalDataset() {
         loadingProgress.setVisibility(View.VISIBLE);
-        errorText.setVisibility(View.GONE);
-        productRecyclerView.setVisibility(View.GONE);
+        new Thread(() -> {
+            try {
+                JSONArray jsonArray = DatabaseHelper.loadLocalDatabase(this);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject obj = jsonArray.getJSONObject(i);
+                    masterProductList.add(new ProductSelectionAdapter.ProductItem(
+                            obj.getString("barcode"),
+                            obj.getString("product_name"),
+                            obj.optString("brand", "Unknown")
+                    ));
+                }
 
-        String url = "https://world.openfoodfacts.org/cgi/search.pl?search_terms=" + 
-                android.net.Uri.encode(query) + "&search_simple=1&action=process&json=1";
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                response -> {
+                runOnUiThread(() -> {
                     loadingProgress.setVisibility(View.GONE);
-                    try {
-                        JSONArray productsObj = response.optJSONArray("products");
-                        productList.clear();
-                        if (productsObj != null && productsObj.length() > 0) {
-                            for (int i = 0; i < Math.min(20, productsObj.length()); i++) {
-                                JSONObject item = productsObj.getJSONObject(i);
-                                String name = item.optString("product_name", "");
-                                String brand = item.optString("brands", "");
-                                if (!name.isEmpty()) {
-                                    productList.add(new ProductSelectionAdapter.ProductItem(name, brand));
-                                }
-                            }
-                            adapter.updateData(productList);
-                            productRecyclerView.setVisibility(View.VISIBLE);
-                        } else {
-                            errorText.setText("No products found for that search. You can enter a custom text and tap 'Submit Typed Text Directly'.");
-                            errorText.setVisibility(View.VISIBLE);
-                        }
-                    } catch (Exception e) {
-                        Log.e(TAG, "Parsing error", e);
-                        errorText.setText("Failed to parse directory results.");
-                        errorText.setVisibility(View.VISIBLE);
-                    }
-                },
-                error -> {
+                    // Initially show all
+                    filteredList.addAll(masterProductList);
+                    adapter.updateData(filteredList);
+                });
+            } catch (Exception e) {
+                Log.e(TAG, "Error loading local dataset", e);
+                runOnUiThread(() -> {
                     loadingProgress.setVisibility(View.GONE);
-                    Log.e(TAG, "Search network error", error);
-                    errorText.setText("Network error searching database.");
+                    errorText.setText("Failed to load local product database.");
                     errorText.setVisibility(View.VISIBLE);
                 });
-
-        requestQueue.add(request);
+            }
+        }).start();
     }
 
-    private void submitCorrectionAndFinish(String correctLabel) {
-        loadingProgress.setVisibility(View.VISIBLE);
-        Toast.makeText(this, "Uploading feedback...", Toast.LENGTH_SHORT).show();
+    private void filterProducts(String query) {
+        filteredList.clear();
+        errorText.setVisibility(View.GONE);
+        btnScanBarcodeFallback.setVisibility(View.GONE);
 
-        File photoFile = new File(capturedImagePath);
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("image", photoFile.getName(),
-                        RequestBody.create(photoFile, MediaType.parse("image/jpeg")))
-                .addFormDataPart("label", correctLabel)
-                .build();
+        if (query.isEmpty()) {
+            filteredList.addAll(masterProductList);
+            adapter.updateData(filteredList);
+            return;
+        }
 
-        okhttp3.Request request = new okhttp3.Request.Builder()
-                .url(ApiConfig.API_URL_STORE_FEEDBACK)
-                .post(requestBody)
-                .build();
-
-        httpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e(TAG, "Feedback submission failed", e);
-                runOnUiThread(() -> {
-                    loadingProgress.setVisibility(View.GONE);
-                    Toast.makeText(ProductSelectionActivity.this, "Network Error Submitting Feedback", Toast.LENGTH_SHORT).show();
-                    finish();
-                });
+        String lowerQuery = query.toLowerCase();
+        for (ProductSelectionAdapter.ProductItem item : masterProductList) {
+            if (item.name.toLowerCase().contains(lowerQuery) || item.brand.toLowerCase().contains(lowerQuery)) {
+                filteredList.add(item);
             }
+        }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                runOnUiThread(() -> {
-                    loadingProgress.setVisibility(View.GONE);
-                    if (response.isSuccessful()) {
-                        Toast.makeText(ProductSelectionActivity.this, "Correction Saved for Improvement!", Toast.LENGTH_LONG).show();
-                        
-                        // Proceed to the result screen with the new confirmed label
-                        Intent intent = new Intent(ProductSelectionActivity.this, ApiDetectionResultActivity.class);
-                        intent.putExtra("image_path", capturedImagePath);
-                        intent.putExtra("product", correctLabel);
-                        intent.putExtra("confidence", 1.0); // Forcing 100% since human verified
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        Toast.makeText(ProductSelectionActivity.this, "Failed to store feedback.", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
+        if (filteredList.isEmpty()) {
+            errorText.setText("Product not found in verified database.");
+            errorText.setVisibility(View.VISIBLE);
+            btnScanBarcodeFallback.setVisibility(View.VISIBLE);
+        }
+
+        adapter.updateData(filteredList);
+    }
+
+    private void submitCorrectionAndFinish(String barcode) {
+        // Enforce Read-Only System. Directly load the Barcode details.
+        Intent intent = new Intent(this, ProductDetailsEnhancedActivity.class);
+        intent.putExtra("barcode", barcode);
+        startActivity(intent);
+        finish();
     }
 }

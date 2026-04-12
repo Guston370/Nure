@@ -185,64 +185,63 @@ public class ProductDetailsEnhancedActivity extends AppCompatActivity {
     }
     
     private void fetchProductDetails(String barcode) {
-        Log.d(TAG, "Fetching product details for barcode: " + barcode);
+        Log.d(TAG, "Fetching product details for local barcode: " + barcode);
         
-        String url = "https://world.openfoodfacts.org/api/v0/product/" + barcode + ".json";
-        
-        JsonObjectRequest request = new JsonObjectRequest(
-            Request.Method.GET, url, null,
-            response -> {
-                try {
-                    if (response.has("status") && response.getInt("status") == 1) {
-                        Log.d(TAG, "Product found in API, parsing response");
-                        parseProductResponse(response, barcode);
-                    } else {
-                        Log.d(TAG, "Product not found in API, using demo data");
-                        createDemoProduct(barcode);
+        new Thread(() -> {
+            try {
+                org.json.JSONArray jsonArray = DatabaseHelper.loadLocalDatabase(this);
+                boolean found = false;
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    org.json.JSONObject obj = jsonArray.getJSONObject(i);
+                    if (obj.getString("barcode").equals(barcode)) {
+                        found = true;
+                        parseProductResponseLocal(obj, barcode);
+                        break;
                     }
-                } catch (JSONException e) {
-                    Log.e(TAG, "Error parsing response", e);
-                    createDemoProduct(barcode);
                 }
-            },
-            error -> {
-                Log.e(TAG, "API Error: " + error.getMessage());
-                createDemoProduct(barcode);
+
+                if (!found) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(ProductDetailsEnhancedActivity.this, "Barcode unused. Beginning Creation Flow.", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(ProductDetailsEnhancedActivity.this, ProductCreationActivity.class);
+                        intent.putExtra("barcode", barcode);
+                        startActivity(intent);
+                        finish();
+                    });
+                }
+
+            } catch (Exception e) {
+                Log.e(TAG, "Database parsing error", e);
+                runOnUiThread(() -> {
+                    Toast.makeText(ProductDetailsEnhancedActivity.this, "Database Error", Toast.LENGTH_SHORT).show();
+                });
             }
-        );
-        
-        requestQueue.add(request);
+        }).start();
     }
     
-    private void parseProductResponse(JSONObject response, String barcode) throws JSONException {
-        JSONObject product = response.getJSONObject("product");
-        
+    private void parseProductResponseLocal(JSONObject product, String barcode) {
         currentProduct = new ProductInfo();
         currentProduct.barcode = barcode;
         currentProduct.name = product.optString("product_name", "Unknown Product");
-        currentProduct.brand = product.optString("brands", "Unknown Brand");
+        currentProduct.brand = product.optString("brand", "Unknown Brand");
         
-        // Extract product image URL
-        currentProduct.imageUrl = product.optString("image_front_url", "");
-        if (currentProduct.imageUrl.isEmpty()) {
-            currentProduct.imageUrl = product.optString("image_url", "");
-        }
+        currentProduct.imageUrl = ""; // Local DB no longer provides external image URLs
         
-        // Extract nutritional information
-        JSONObject nutriments = product.optJSONObject("nutriments");
+        JSONObject nutriments = product.optJSONObject("nutrition");
         if (nutriments != null) {
-            currentProduct.calories = nutriments.optDouble("energy-kcal_100g", 0);
-            currentProduct.protein = nutriments.optDouble("proteins_100g", 0);
-            currentProduct.sugar = nutriments.optDouble("sugars_100g", 0);
-            currentProduct.fat = nutriments.optDouble("fat_100g", 0);
-            currentProduct.carbs = nutriments.optDouble("carbohydrates_100g", 0);
-            currentProduct.fiber = nutriments.optDouble("fiber_100g", 0);
-            currentProduct.sodium = nutriments.optDouble("sodium_100g", 0) * 1000; // Convert to mg
+            currentProduct.calories = nutriments.optDouble("calories", 0);
+            currentProduct.protein = nutriments.optDouble("protein", 0);
+            currentProduct.sugar = nutriments.optDouble("sugar", 0);
+            currentProduct.fat = nutriments.optDouble("fat", 0);
+            currentProduct.carbs = nutriments.optDouble("carbs", 0);
+            currentProduct.fiber = nutriments.optDouble("fiber", 0);
+            currentProduct.sodium = nutriments.optDouble("sodium", 0);
         }
         
-        currentProduct.ingredients = product.optString("ingredients_text", "Ingredients not available");
+        currentProduct.ingredients = product.optString("ingredients", "Ingredients not available");
         
-        displayProductDetails();
+        runOnUiThread(this::displayProductDetails);
     }
     
     private void createDemoProduct(String barcode) {
