@@ -37,7 +37,12 @@ public class DataSyncWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        Log.d(TAG, "SyncWorker initiated.");
+        Log.d(TAG, "SyncWorker initiated. Attempt: " + getRunAttemptCount());
+        
+        if (getRunAttemptCount() > 5) {
+            Log.e(TAG, "Max retry limit reached. Aborting this work request.");
+            return Result.failure();
+        }
         
         List<DataQueueEntity> pendingUploads = queueDao.getPendingUploads();
         
@@ -57,6 +62,14 @@ public class DataSyncWorker extends Worker {
             
             if (success) {
                 Log.d(TAG, "Removing successfully synced entity: " + entity.uuid);
+                // Data Safety requirement: delete local image until upload success
+                if (entity.localImagePath != null) {
+                    File localImg = new File(entity.localImagePath);
+                    if (localImg.exists()) {
+                        boolean deleted = localImg.delete();
+                        Log.d(TAG, "Local image deleted post-sync: " + deleted);
+                    }
+                }
                 // Purge safely
                 queueDao.delete(entity);
             } else {
@@ -70,6 +83,11 @@ public class DataSyncWorker extends Worker {
         if (hasFailures) {
             return Result.retry();
         }
+        
+        // Show Synced Successfully using Handler for UI Thread
+        new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
+            android.widget.Toast.makeText(getApplicationContext(), "Synced successfully", android.widget.Toast.LENGTH_SHORT).show();
+        });
         
         return Result.success();
     }
