@@ -6,6 +6,7 @@ plugins {
 android {
     namespace = "com.example.healthscanner"
     compileSdk = 35
+    buildToolsVersion = "35.0.0"
 
     defaultConfig {
         applicationId = "com.example.healthscanner"
@@ -60,8 +61,9 @@ dependencies {
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.google.zxing:core:3.4.1")
 
-    // ML Kit Barcode Scanning
+    // ML Kit Barcode Scanning & Text Recognition
     implementation("com.google.mlkit:barcode-scanning:17.2.0")
+    implementation("com.google.mlkit:text-recognition:16.0.1")
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
     implementation(libs.googleid)

@@ -6,6 +6,12 @@ package com.example.healthscanner;
  */
 public class ApiConfig {
     
+    // Custom YOLO Object Detection API
+    public static final String NURE_BASE_URL = "http://192.168.1.8:5000";
+    public static final String API_URL_PREDICT = NURE_BASE_URL + "/predict";
+    public static final String API_URL_OCR_DETECT = NURE_BASE_URL + "/ocr-detect";
+    public static final String API_URL_STORE_FEEDBACK = NURE_BASE_URL + "/store-feedback";
+
     // OpenFoodFacts API (Free, no key required)
     public static final String OPENFOODFACTS_BASE_URL = "https://world.openfoodfacts.org/api/v0/product/";
     
