@@ -79,7 +79,7 @@
                         android:layout_gravity="center"
                         android:src="@drawable/ic_notifications"
                         android:contentDescription="Notifications"
-                        app:tint="#1B1B1B" />
+                        app:tint="#111827" />
                 </FrameLayout>
             </LinearLayout>
 
@@ -100,7 +100,7 @@
                     android:text="Let's Check Your"
                     android:textSize="30sp"
                     android:textStyle="bold"
-                    android:textColor="#1B1B1B"
+                    android:textColor="#111827"
                     android:fontFamily="sans-serif-medium"
                     android:letterSpacing="-0.02"
                     android:lineSpacingMultiplier="1.1" />
@@ -149,7 +149,7 @@
                         android:layout_height="20dp"
                         android:src="@drawable/ic_search"
                         android:contentDescription="Search"
-                        app:tint="#999B96"
+                        app:tint="#9CA3AF"
                         android:layout_marginEnd="12dp" />
 
                     <TextView
@@ -157,7 +157,7 @@
                         android:layout_height="wrap_content"
                         android:text="Scan or search a food..."
                         android:textSize="15sp"
-                        android:textColor="#999B96"
+                        android:textColor="#6B7280"
                         android:fontFamily="sans-serif" />
                 </LinearLayout>
 
@@ -176,7 +176,7 @@
                         android:layout_gravity="center"
                         android:src="@drawable/ic_filter_tune"
                         android:contentDescription="Filter"
-                        app:tint="#1B1B1B" />
+                        app:tint="#111827" />
                 </FrameLayout>
             </LinearLayout>
 
@@ -210,7 +210,7 @@
                         android:text="0"
                         android:textSize="22sp"
                         android:textStyle="bold"
-                        android:textColor="#1B1B1B"
+                        android:textColor="#111827"
                         android:fontFamily="sans-serif-medium" />
 
                     <TextView
@@ -218,7 +218,7 @@
                         android:layout_height="wrap_content"
                         android:text="Total Scans"
                         android:textSize="11sp"
-                        android:textColor="#999B96"
+                        android:textColor="#6B7280"
                         android:fontFamily="sans-serif"
                         android:layout_marginTop="4dp" />
                 </LinearLayout>
@@ -249,7 +249,7 @@
                             android:text="--"
                             android:textSize="22sp"
                             android:textStyle="bold"
-                            android:textColor="#1B1B1B"
+                            android:textColor="#111827"
                             android:fontFamily="sans-serif-medium" />
 
                         <TextView
@@ -266,7 +266,7 @@
                         android:layout_height="wrap_content"
                         android:text="Avg Score"
                         android:textSize="11sp"
-                        android:textColor="#999B96"
+                        android:textColor="#6B7280"
                         android:fontFamily="sans-serif"
                         android:layout_marginTop="4dp" />
                 </LinearLayout>
@@ -290,7 +290,7 @@
                         android:text="0"
                         android:textSize="22sp"
                         android:textStyle="bold"
-                        android:textColor="#1B1B1B"
+                        android:textColor="#111827"
                         android:fontFamily="sans-serif-medium" />
 
                     <TextView
@@ -298,7 +298,7 @@
                         android:layout_height="wrap_content"
                         android:text="Saved"
                         android:textSize="11sp"
-                        android:textColor="#999B96"
+                        android:textColor="#6B7280"
                         android:fontFamily="sans-serif"
                         android:layout_marginTop="4dp" />
                 </LinearLayout>
@@ -329,7 +329,7 @@
                         android:text="Last scans"
                         android:textSize="18sp"
                         android:textStyle="bold"
-                        android:textColor="#1B1B1B"
+                        android:textColor="#111827"
                         android:fontFamily="sans-serif-medium" />
 
                     <TextView
@@ -338,7 +338,7 @@
                         android:layout_height="wrap_content"
                         android:text="See all"
                         android:textSize="14sp"
-                        android:textColor="#999B96"
+                        android:textColor="#6B7280"
                         android:fontFamily="sans-serif"
                         android:background="?attr/selectableItemBackground"
                         android:padding="@dimen/spacing_sm" />
@@ -389,7 +389,7 @@
                             android:text="No scans yet"
                             android:textSize="16sp"
                             android:textStyle="bold"
-                            android:textColor="#1B1B1B"
+                            android:textColor="#111827"
                             android:fontFamily="sans-serif-medium"
                             android:layout_marginTop="16dp" />
 
@@ -398,7 +398,7 @@
                             android:layout_height="wrap_content"
                             android:text="Tap the scan button to analyze your first product"
                             android:textSize="13sp"
-                            android:textColor="#999B96"
+                            android:textColor="#6B7280"
                             android:fontFamily="sans-serif"
                             android:gravity="center"
                             android:layout_marginTop="6dp" />
@@ -545,7 +545,7 @@
                 android:text="User"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="#1B1B1B"
+                android:textColor="#111827"
                 android:fontFamily="sans-serif-medium"
                 android:layout_marginTop="12dp" />
 
@@ -556,7 +556,7 @@
                 android:layout_height="wrap_content"
                 android:text="user@example.com"
                 android:textSize="13sp"
-                android:textColor="#999B96"
+                android:textColor="#6B7280"
                 android:fontFamily="sans-serif"
                 android:layout_marginTop="4dp" />
         </LinearLayout>
@@ -604,7 +604,7 @@
                     android:layout_height="wrap_content"
                     android:text="My Profile"
                     android:textSize="15sp"
-                    android:textColor="#1B1B1B"
+                    android:textColor="#111827"
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginStart="16dp" />
             </LinearLayout>
@@ -635,7 +635,7 @@
                     android:layout_height="wrap_content"
                     android:text="Scan History"
                     android:textSize="15sp"
-                    android:textColor="#1B1B1B"
+                    android:textColor="#111827"
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginStart="16dp" />
             </LinearLayout>
@@ -666,7 +666,7 @@
                     android:layout_height="wrap_content"
                     android:text="Analytics"
                     android:textSize="15sp"
-                    android:textColor="#1B1B1B"
+                    android:textColor="#111827"
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginStart="16dp" />
             </LinearLayout>
@@ -697,7 +697,7 @@
                     android:layout_height="wrap_content"
                     android:text="Settings"
                     android:textSize="15sp"
-                    android:textColor="#1B1B1B"
+                    android:textColor="#111827"
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginStart="16dp" />
             </LinearLayout>
@@ -737,7 +737,7 @@
                     android:layout_height="wrap_content"
                     android:text="Help &amp; Support"
                     android:textSize="15sp"
-                    android:textColor="#1B1B1B"
+                    android:textColor="#111827"
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginStart="16dp" />
             </LinearLayout>

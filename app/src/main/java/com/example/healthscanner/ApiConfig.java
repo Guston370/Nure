@@ -29,7 +29,7 @@ public class ApiConfig {
     
     // USDA FoodData Central API (Free, but requires API key)
     public static final String USDA_BASE_URL = "https://api.nal.usda.gov/fdc/v1/foods/search";
-    public static final String USDA_API_KEY = "your_usda_api_key"; // Replace with actual key
+    public static final String USDA_API_KEY = "gqqSgdnuyNOB7p4MRoLaFD7JDrTfe4ikWSjIEUw1"; // Replaced with actual key
     
     // Edamam Food Database API (Requires API key)
     public static final String EDAMAM_BASE_URL = "https://api.edamam.com/api/food-database/v2/parser";
