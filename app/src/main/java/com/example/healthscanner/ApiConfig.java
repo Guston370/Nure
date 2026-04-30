@@ -1,16 +1,31 @@
 package com.example.healthscanner;
 
 /**
- * API Configuration class containing all API keys and endpoints
- * In production, these should be stored securely or loaded from BuildConfig
+ * API Configuration class containing all API keys and endpoints.
+ * In production, these should be stored securely or loaded from BuildConfig.
  */
 public class ApiConfig {
-    
-    // Custom YOLO Object Detection API
+
+    // ==================== NURE Food Recognition API ====================
+    // Backend server running the ML food classifier with RLHF
     public static final String NURE_BASE_URL = "http://192.168.1.8:5000";
+
+    // Food recognition via ML model (MobileNetV2 + Transfer Learning)
     public static final String API_URL_PREDICT = NURE_BASE_URL + "/predict";
+
+    // OCR-based food detection fallback
     public static final String API_URL_OCR_DETECT = NURE_BASE_URL + "/ocr-detect";
+
+    // RLHF: Store human feedback to improve the model
     public static final String API_URL_STORE_FEEDBACK = NURE_BASE_URL + "/store-feedback";
+
+    // RLHF: Trigger model retraining with accumulated feedback
+    public static final String API_URL_RETRAIN = NURE_BASE_URL + "/retrain";
+
+    // RLHF: Get model performance statistics
+    public static final String API_URL_MODEL_STATS = NURE_BASE_URL + "/model-stats";
+
+    // ==================== External Food APIs ====================
 
     // OpenFoodFacts API (Free, no key required)
     public static final String OPENFOODFACTS_BASE_URL = "https://world.openfoodfacts.org/api/v0/product/";

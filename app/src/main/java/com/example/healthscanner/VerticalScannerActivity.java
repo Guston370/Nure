@@ -1,18 +1,14 @@
 package com.example.healthscanner;
 
 import android.Manifest;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -28,7 +24,6 @@ import androidx.camera.view.PreviewView;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -57,19 +52,18 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * Vertical Scanner Activity with modern camera interface
- * Supports both Barcode Scanning and Product Detection via YOLO API
+ * Supports both Barcode Scanning and Product Detection via Food Recognition API
  */
 public class VerticalScannerActivity extends BaseActivity {
 
     private static final String TAG = "VerticalScanner";
     private static final int CAMERA_PERMISSION_REQUEST = 100;
     private static final int GALLERY_REQUEST_CODE = 101;
-    
+
     private enum ScanMode {
         BARCODE, PRODUCT_DETECT
     }
     private ScanMode currentMode = ScanMode.BARCODE;
-    
 
     // UI Elements
     private PreviewView cameraPreview;
@@ -78,43 +72,32 @@ public class VerticalScannerActivity extends BaseActivity {
     private TextView instructionsText, scanStatusText, modeBarcodeText, modeDetectText;
     private ProgressBar scanProgress;
     private View scanningLine, scanningFrame;
-    
-    private View scanningLine;
-
-    // Overlay elements removed for simplified scanner
 
     // Camera
     private ProcessCameraProvider cameraProvider;
     private Preview preview;
     private ImageAnalysis imageAnalysis;
     private ImageCapture imageCapture;
-    
+
     private boolean isFlashOn = false;
     private boolean isScanning = false;
     private boolean isCapturing = false;
-    
+
     private OkHttpClient httpClient;
-    
-    private String currentBarcode = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scanner_simple);
-        
+
         httpClient = new OkHttpClient();
-        
-        // Initialize views
-        initializeViews();
-        setupClickListeners();
-        
-        // Default UI to barcode mode
-        updateModeUI();
-        
 
         // Initialize views
         initializeViews();
         setupClickListeners();
+
+        // Default UI to barcode mode
+        updateModeUI();
 
         // Check camera permission
         if (checkCameraPermission()) {
@@ -135,20 +118,18 @@ public class VerticalScannerActivity extends BaseActivity {
         cameraCaptureButton = findViewById(R.id.camera_capture_button);
         captureButtonIcon = findViewById(R.id.capture_button_icon);
         manualEntryButton = findViewById(R.id.manual_entry_button);
-        
+
         scanStatusCard = findViewById(R.id.scan_status_card);
         instructionsText = findViewById(R.id.instructions_text);
         scanStatusText = findViewById(R.id.scan_status_text);
         scanProgress = findViewById(R.id.scan_progress);
-        
+
         scanningLine = findViewById(R.id.scanning_line);
         scanningFrame = findViewById(R.id.scanning_frame);
         detectCrosshair = findViewById(R.id.detect_crosshair);
-        
+
         modeBarcodeText = findViewById(R.id.mode_barcode);
         modeDetectText = findViewById(R.id.mode_detect);
-
-        // Overlay elements removed - scanner now navigates directly to product details
     }
 
     private void setupClickListeners() {
@@ -170,16 +151,11 @@ public class VerticalScannerActivity extends BaseActivity {
             openGallery();
         });
 
-        // Camera capture button (used for both taking photos and manual barcode capture)
+        // Camera capture button
         if (cameraCaptureButton != null) {
             cameraCaptureButton.setOnClickListener(v -> {
                 animateButtonPress(v);
-                if (currentMode == ScanMode.PRODUCT_DETECT) {
-                    capturePhotoForDetection();
-                } else {
-                    // Fallback to taking photo if someone presses it in barcode mode
-                    capturePhotoForDetection();
-                }
+                capturePhotoForDetection();
             });
         }
 
@@ -190,73 +166,57 @@ public class VerticalScannerActivity extends BaseActivity {
                 openManualEntry();
             });
         }
-        
+
         // Mode switchers
         if (modeBarcodeText != null) {
             modeBarcodeText.setOnClickListener(v -> {
                 if (currentMode != ScanMode.BARCODE) {
                     currentMode = ScanMode.BARCODE;
                     updateModeUI();
-                    bindCameraUseCases(); // Rebind to enable barcode analyzer
+                    bindCameraUseCases();
                 }
             });
         }
-        
+
         if (modeDetectText != null) {
             modeDetectText.setOnClickListener(v -> {
                 if (currentMode != ScanMode.PRODUCT_DETECT) {
                     currentMode = ScanMode.PRODUCT_DETECT;
                     updateModeUI();
-                    bindCameraUseCases(); // Rebind to disable barcode analyzer if needed
+                    bindCameraUseCases();
                 }
             });
         }
     }
-    
+
     private void updateModeUI() {
         if (currentMode == ScanMode.BARCODE) {
-            // Update mode toggles
             modeBarcodeText.setBackgroundResource(R.drawable.mode_toggle_active);
             modeDetectText.setBackgroundResource(R.drawable.mode_toggle_inactive);
-            
-            // Show barcode views
+
             scanningFrame.setVisibility(View.VISIBLE);
             scanningLine.setVisibility(View.VISIBLE);
             detectCrosshair.setVisibility(View.GONE);
-            
+
             instructionsText.setText("Position barcode in the frame");
-            
+
             if (captureButtonIcon != null) {
                 captureButtonIcon.setImageResource(R.drawable.ic_barcode_scan);
             }
-            
         } else {
-            // Update mode toggles
             modeBarcodeText.setBackgroundResource(R.drawable.mode_toggle_inactive);
             modeDetectText.setBackgroundResource(R.drawable.mode_toggle_active);
-            
-            // Show detect views
+
             scanningFrame.setVisibility(View.GONE);
             scanningLine.setVisibility(View.GONE);
             detectCrosshair.setVisibility(View.VISIBLE);
-            
-            instructionsText.setText("Tap capture button to detect product");
-            
+
+            instructionsText.setText("Tap capture to recognize food item");
+
             if (captureButtonIcon != null) {
                 captureButtonIcon.setImageResource(R.drawable.ic_detect_product);
             }
         }
-
-        // Add long press on instructions for testing
-        if (instructionsText != null) {
-            instructionsText.setOnLongClickListener(v -> {
-                Log.d(TAG, "Long press detected - testing product details");
-                onBarcodeDetected("1234567890123");
-                return true;
-            });
-        }
-
-        // Overlay buttons removed - scanner now navigates directly to product details
     }
 
     private void animateButtonPress(View view) {
@@ -284,7 +244,6 @@ public class VerticalScannerActivity extends BaseActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
             @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         if (requestCode == CAMERA_PERMISSION_REQUEST) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startCamera();
@@ -297,7 +256,6 @@ public class VerticalScannerActivity extends BaseActivity {
 
     private void startCamera() {
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
-
         cameraProviderFuture.addListener(() -> {
             try {
                 cameraProvider = cameraProviderFuture.get();
@@ -310,10 +268,9 @@ public class VerticalScannerActivity extends BaseActivity {
     }
 
     private void bindCameraUseCases() {
-        if (cameraProvider == null)
-            return;
+        if (cameraProvider == null) return;
 
-        // Preview use case
+        // Preview
         preview = new Preview.Builder().build();
         preview.setSurfaceProvider(cameraPreview.getSurfaceProvider());
 
@@ -321,8 +278,7 @@ public class VerticalScannerActivity extends BaseActivity {
         imageAnalysis = new ImageAnalysis.Builder()
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .build();
-        
-        // Set up barcode analyzer (only process if in barcode mode)
+
         imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(this),
                 new BarcodeAnalyzer(barcode -> {
                     if (currentMode == ScanMode.BARCODE) {
@@ -330,44 +286,24 @@ public class VerticalScannerActivity extends BaseActivity {
                     }
                 }));
 
-        // Image capture use case for taking photos
+        // Image capture for taking photos
         imageCapture = new ImageCapture.Builder()
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
                 .setFlashMode(isFlashOn ? ImageCapture.FLASH_MODE_ON : ImageCapture.FLASH_MODE_OFF)
                 .build();
 
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .build();
-
-        // Set up barcode analyzer
-        imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(this),
-                new BarcodeAnalyzer(this::onBarcodeDetected));
-
-        // Camera selector (back camera)
         CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
 
         try {
-            // Unbind all use cases before rebinding
             cameraProvider.unbindAll();
-            
-            // Bind use cases to camera
             androidx.camera.core.Camera camera = cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview, imageAnalysis, imageCapture);
 
-            // Bind use cases to camera and get camera control
-            androidx.camera.core.Camera camera = cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageAnalysis);
-
-            // Enable flash if needed
             if (camera.getCameraInfo().hasFlashUnit()) {
                 camera.getCameraControl().enableTorch(isFlashOn);
             }
-            
+
             showScanStatus("Ready", true);
-            
-
-            showScanStatus("Ready to scan", true);
-
         } catch (Exception e) {
             Log.e(TAG, "Error binding camera use cases", e);
             showScanStatus("Camera binding failed", false);
@@ -375,51 +311,34 @@ public class VerticalScannerActivity extends BaseActivity {
     }
 
     private void onBarcodeDetected(String barcode) {
-        if (isScanning || currentMode != ScanMode.BARCODE) return; // Prevent multiple scans
-        
-        if (isScanning)
-            return; // Prevent multiple scans
-
+        if (isScanning || currentMode != ScanMode.BARCODE) return;
         isScanning = true;
-        showScanStatus("✅ Barcode detected! Opening product details...", true);
 
-        // Vibrate for feedback
+        showScanStatus("✅ Barcode detected! Opening product details...", true);
         performHapticFeedback();
-        
         Log.d(TAG, "Navigating to product details with barcode: " + barcode);
-        
-        // Add a small delay for better UX
+
         if (scanStatusCard != null) {
             scanStatusCard.postDelayed(() -> {
                 Intent intent = new Intent(this, ProductDetailsEnhancedActivity.class);
                 intent.putExtra("barcode", barcode);
                 startActivity(intent);
-            }, 500); 
+            }, 500);
         } else {
             Intent intent = new Intent(this, ProductDetailsEnhancedActivity.class);
             intent.putExtra("barcode", barcode);
             startActivity(intent);
         }
-
-        // Navigate directly to product details
-        navigateToProductDetails(barcode);
     }
 
     private void toggleFlash() {
         try {
             if (cameraProvider != null) {
                 isFlashOn = !isFlashOn;
-
-                // Update flash icon
                 flashToggle.setImageResource(isFlashOn ? R.drawable.ic_flash_on : R.drawable.ic_flash_off);
-
-                // Update flash icon color
                 flashToggle.setColorFilter(isFlashOn ? ContextCompat.getColor(this, R.color.primary_teal)
                         : ContextCompat.getColor(this, R.color.white));
-
-                // Rebind camera with flash setting
                 bindCameraUseCases();
-
                 showScanStatus(isFlashOn ? "Flash ON" : "Flash OFF", true);
             }
         } catch (Exception e) {
@@ -428,30 +347,24 @@ public class VerticalScannerActivity extends BaseActivity {
     }
 
     /**
-     * Capture a photo and send it to the YOLO API.
+     * Capture a photo and send it to the Food Recognition API.
      */
     private void capturePhotoForDetection() {
         if (imageCapture == null) {
             showScanStatus("Camera not ready", false);
             return;
         }
-
-        if (isCapturing) {
-            return; 
-        }
+        if (isCapturing) return;
 
         isCapturing = true;
         setCaptureButtonEnabled(false);
-        showScanStatus("📸 Processing image, please wait...", true);
+        showScanStatus("📸 Recognizing food item...", true);
         if (scanProgress != null) scanProgress.setVisibility(View.VISIBLE);
         performHapticFeedback();
 
-        // Create temporary file
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        String fileName = "NURE_DETECT_" + timeStamp + ".jpg";
-
-        File cacheDir = getCacheDir();
-        File photoFile = new File(cacheDir, fileName);
+        String fileName = "NURE_FOOD_" + timeStamp + ".jpg";
+        File photoFile = new File(getCacheDir(), fileName);
 
         ImageCapture.OutputFileOptions outputOptions =
                 new ImageCapture.OutputFileOptions.Builder(photoFile).build();
@@ -460,9 +373,8 @@ public class VerticalScannerActivity extends BaseActivity {
                 new ImageCapture.OnImageSavedCallback() {
                     @Override
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                        Log.d(TAG, "Photo captured successfully: " + photoFile.getAbsolutePath());
-                        // Run API call on background thread
-                        detectProductViaApi(photoFile);
+                        Log.d(TAG, "Photo captured: " + photoFile.getAbsolutePath());
+                        detectFoodViaApi(photoFile);
                     }
 
                     @Override
@@ -475,7 +387,10 @@ public class VerticalScannerActivity extends BaseActivity {
                 });
     }
 
-    private void detectProductViaApi(File photoFile) {
+    /**
+     * Send captured image to the Food Recognition API for ML-based identification.
+     */
+    private void detectFoodViaApi(File photoFile) {
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("image", photoFile.getName(),
@@ -495,8 +410,7 @@ public class VerticalScannerActivity extends BaseActivity {
                     isCapturing = false;
                     setCaptureButtonEnabled(true);
                     showScanStatus("❌ Network error. Check connection.", false);
-                    
-                    // Show error in result activity anyway
+
                     Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
                     intent.putExtra("image_path", photoFile.getAbsolutePath());
                     intent.putExtra("error", "Network Error: " + e.getMessage());
@@ -507,13 +421,12 @@ public class VerticalScannerActivity extends BaseActivity {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    Log.e(TAG, "API Error: " + response.code());
                     String errBody = response.body() != null ? response.body().string() : "Unknown Error";
                     runOnUiThread(() -> {
                         isCapturing = false;
                         setCaptureButtonEnabled(true);
                         showScanStatus("❌ API Error", false);
-                        
+
                         Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
                         intent.putExtra("image_path", photoFile.getAbsolutePath());
                         intent.putExtra("error", "API Error HTTP " + response.code() + ": " + errBody);
@@ -530,29 +443,41 @@ public class VerticalScannerActivity extends BaseActivity {
                     String product = json.optString("product", "Unknown");
                     double confidence = json.optDouble("confidence", 0.0);
                     org.json.JSONObject nutrition = json.optJSONObject("nutrition");
+                    org.json.JSONArray ingredientsArr = json.optJSONArray("ingredients");
+                    String servingSize = json.optString("serving_size", "1 serving");
+                    int healthScore = json.optInt("health_score", 50);
+                    org.json.JSONArray healthTags = json.optJSONArray("health_tags");
+                    org.json.JSONArray allergens = json.optJSONArray("allergens");
+                    boolean isVeg = json.optBoolean("is_vegetarian", false);
+                    org.json.JSONArray similarArr = json.optJSONArray("similar_products");
 
                     runOnUiThread(() -> {
                         isCapturing = false;
                         setCaptureButtonEnabled(true);
-                        
+
                         if (product.equals("fallback_product")) {
                             showScanStatus("🔍 Manual Selection Required", true);
                             Intent intent = new Intent(VerticalScannerActivity.this, ProductSelectionActivity.class);
                             intent.putExtra("image_path", photoFile.getAbsolutePath());
                             startActivity(intent);
-                        } else if (confidence > 0.8) {
-                            showScanStatus("✅ Product detected!", true);
-                            
+                        } else if (confidence > 0.3) {
+                            showScanStatus("✅ Food recognized: " + product, true);
+
                             Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
                             intent.putExtra("image_path", photoFile.getAbsolutePath());
                             intent.putExtra("product", product);
                             intent.putExtra("confidence", confidence);
-                            if (nutrition != null) {
-                                intent.putExtra("nutrition_json", nutrition.toString());
-                            }
+                            intent.putExtra("serving_size", servingSize);
+                            intent.putExtra("health_score", healthScore);
+                            intent.putExtra("is_vegetarian", isVeg);
+                            if (nutrition != null) intent.putExtra("nutrition_json", nutrition.toString());
+                            if (ingredientsArr != null) intent.putExtra("ingredients_json", ingredientsArr.toString());
+                            if (healthTags != null) intent.putExtra("health_tags_json", healthTags.toString());
+                            if (allergens != null) intent.putExtra("allergens_json", allergens.toString());
+                            if (similarArr != null) intent.putExtra("similar_products", similarArr.toString());
                             startActivity(intent);
                         } else {
-                            showScanStatus("🔍 Low confidence, falling back to OCR...", true);
+                            showScanStatus("🔍 Low confidence, trying OCR...", true);
                             runOcrFallback(photoFile);
                         }
                     });
@@ -562,8 +487,7 @@ public class VerticalScannerActivity extends BaseActivity {
                     runOnUiThread(() -> {
                         isCapturing = false;
                         setCaptureButtonEnabled(true);
-                        showScanStatus("❌ Error parsing response", false);
-                        
+
                         Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
                         intent.putExtra("image_path", photoFile.getAbsolutePath());
                         intent.putExtra("error", "Error parsing response: " + e.getMessage());
@@ -573,25 +497,26 @@ public class VerticalScannerActivity extends BaseActivity {
             }
         });
     }
-    
+
     private void runOcrFallback(File photoFile) {
         try {
             Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
             if (bitmap == null) throw new Exception("Failed to decode image");
-            
-            com.google.mlkit.vision.common.InputImage image = com.google.mlkit.vision.common.InputImage.fromBitmap(bitmap, 0);
-            com.google.mlkit.vision.text.TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
-            
+
+            com.google.mlkit.vision.common.InputImage image =
+                    com.google.mlkit.vision.common.InputImage.fromBitmap(bitmap, 0);
+            com.google.mlkit.vision.text.TextRecognizer recognizer =
+                    TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+
             recognizer.process(image)
                     .addOnSuccessListener(visionText -> {
                         String text = visionText.getText();
                         if (text != null && !text.trim().isEmpty()) {
                             sendOcrToApi(text, photoFile);
                         } else {
-                            // OCR found no text, give up
                             isCapturing = false;
                             setCaptureButtonEnabled(true);
-                            showScanStatus("❌ Detection Failed (No Text)", false);
+                            showScanStatus("❌ Could not recognize food", false);
                         }
                     })
                     .addOnFailureListener(e -> {
@@ -600,7 +525,6 @@ public class VerticalScannerActivity extends BaseActivity {
                         setCaptureButtonEnabled(true);
                         showScanStatus("❌ OCR Failed", false);
                     });
-                    
         } catch (Exception e) {
             Log.e(TAG, "OCR initialization failed", e);
             isCapturing = false;
@@ -608,21 +532,20 @@ public class VerticalScannerActivity extends BaseActivity {
             showScanStatus("❌ Error starting OCR", false);
         }
     }
-    
+
     private void sendOcrToApi(String text, File photoFile) {
-        okhttp3.RequestBody requestBody = new okhttp3.FormBody.Builder()
+        RequestBody requestBody = new okhttp3.FormBody.Builder()
                 .add("text", text)
                 .build();
-        
+
         Request request = new Request.Builder()
                 .url(ApiConfig.API_URL_OCR_DETECT)
                 .post(requestBody)
                 .build();
-                
+
         httpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                Log.e("OCR_ERROR", e.toString());
                 runOnUiThread(() -> {
                     isCapturing = false;
                     setCaptureButtonEnabled(true);
@@ -640,58 +563,40 @@ public class VerticalScannerActivity extends BaseActivity {
                     });
                     return;
                 }
-                
+
                 String responseData = response.body() != null ? response.body().string() : "{}";
-                Log.d("OCR_RESPONSE", responseData);
                 try {
                     org.json.JSONObject json = new org.json.JSONObject(responseData);
-                    String product = json.has("product") && !json.isNull("product") ? json.optString("product") : "Unknown";
-                    double confidence = json.has("confidence") ? json.optDouble("confidence") : 0.0;
+                    String product = json.optString("product", "Unknown");
+                    double confidence = json.optDouble("confidence", 0.0);
                     org.json.JSONObject nutrition = json.optJSONObject("nutrition");
-                    org.json.JSONArray similarProductsArray = json.optJSONArray("similar_products");
-                    String similarProductsStr = similarProductsArray != null ? similarProductsArray.toString() : "[]";
-                    
+                    org.json.JSONArray ingredientsArr = json.optJSONArray("ingredients");
+                    org.json.JSONArray similarArr = json.optJSONArray("similar_products");
+
                     runOnUiThread(() -> {
                         isCapturing = false;
                         setCaptureButtonEnabled(true);
-                        
-                        if (product.equals("fallback_product")) {
-                            showScanStatus("🔍 Manual Selection Required", true);
-                            Intent intent = new Intent(VerticalScannerActivity.this, ProductSelectionActivity.class);
-                            intent.putExtra("image_path", photoFile.getAbsolutePath());
-                            startActivity(intent);
-                        } else if (product != null && !product.equals("null") && !product.equals("Unknown")) {
-                            showScanStatus("✅ Product matched via OCR!", true);
-                            Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
-                            intent.putExtra("image_path", photoFile.getAbsolutePath());
-                            intent.putExtra("product", product);
-                            intent.putExtra("confidence", confidence);
-                            intent.putExtra("similar_products", similarProductsStr);
-                            if (nutrition != null) {
-                                intent.putExtra("nutrition_json", nutrition.toString());
-                            }
-                            startActivity(intent);
-                        } else {
-                            showScanStatus("🔍 Manual Selection Required", true);
-                            Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
-                            intent.putExtra("image_path", photoFile.getAbsolutePath());
-                            intent.putExtra("product", "Unknown");
-                            intent.putExtra("confidence", 0.0);
-                            intent.putExtra("similar_products", similarProductsStr);
-                            startActivity(intent);
-                        }
+
+                        Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
+                        intent.putExtra("image_path", photoFile.getAbsolutePath());
+                        intent.putExtra("product", product);
+                        intent.putExtra("confidence", confidence);
+                        if (nutrition != null) intent.putExtra("nutrition_json", nutrition.toString());
+                        if (ingredientsArr != null) intent.putExtra("ingredients_json", ingredientsArr.toString());
+                        if (similarArr != null) intent.putExtra("similar_products", similarArr.toString());
+                        startActivity(intent);
                     });
                 } catch (Exception e) {
                     runOnUiThread(() -> {
                         isCapturing = false;
                         setCaptureButtonEnabled(true);
-                        showScanStatus("❌ OCR Error parsing response", false);
+                        showScanStatus("❌ OCR parsing error", false);
                     });
                 }
             }
         });
     }
-    
+
     private void setCaptureButtonEnabled(boolean enabled) {
         if (cameraCaptureButton != null) {
             cameraCaptureButton.setEnabled(enabled);
@@ -725,37 +630,8 @@ public class VerticalScannerActivity extends BaseActivity {
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-
         builder.show();
     }
-    
-
-    private void navigateToProductDetails(String barcode) {
-        Log.d(TAG, "Navigating to product details with barcode: " + barcode);
-
-        // Add a small delay for better UX
-        if (scanStatusCard != null) {
-            scanStatusCard.postDelayed(() -> {
-                Intent intent = new Intent(this, ProductDetailsEnhancedActivity.class);
-                intent.putExtra("barcode", barcode);
-                Log.d(TAG, "Starting ProductDetailsEnhancedActivity with barcode: " + barcode);
-
-                startActivity(intent);
-                // Don't finish immediately to allow user to see the transition
-            }, 500); // 0.5 second delay to show success message
-        } else {
-            // Fallback if scanStatusCard is null
-            Intent intent = new Intent(this, ProductDetailsEnhancedActivity.class);
-            intent.putExtra("barcode", barcode);
-            Log.d(TAG, "Starting ProductDetailsEnhancedActivity immediately with barcode: " + barcode);
-
-            startActivity(intent);
-        }
-    }
-
-    // Removed complex overlay methods - now navigating directly to product details
-
-    // Health scoring and overlay methods moved to ProductDetailsActivitySimple
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -768,10 +644,8 @@ public class VerticalScannerActivity extends BaseActivity {
                 processImageForBarcode(imageUri);
             }
         }
-        
-        // Handle ZXing result
 
-        // Handle ZXing result from manual entry
+        // Handle ZXing result
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null && result.getContents() != null) {
             currentMode = ScanMode.BARCODE;
@@ -781,11 +655,11 @@ public class VerticalScannerActivity extends BaseActivity {
 
     private void processImageForBarcode(Uri imageUri) {
         try {
-            com.google.mlkit.vision.common.InputImage image = com.google.mlkit.vision.common.InputImage
-                    .fromFilePath(this, imageUri);
+            com.google.mlkit.vision.common.InputImage image =
+                    com.google.mlkit.vision.common.InputImage.fromFilePath(this, imageUri);
 
-            com.google.mlkit.vision.barcode.BarcodeScanner scanner = com.google.mlkit.vision.barcode.BarcodeScanning
-                    .getClient();
+            com.google.mlkit.vision.barcode.BarcodeScanner scanner =
+                    com.google.mlkit.vision.barcode.BarcodeScanning.getClient();
 
             scanner.process(image)
                     .addOnSuccessListener(barcodes -> {
@@ -804,7 +678,6 @@ public class VerticalScannerActivity extends BaseActivity {
                         Log.e(TAG, "Error processing image", e);
                         showScanStatus("Error processing image", false);
                     });
-
         } catch (Exception e) {
             Log.e(TAG, "Error loading image", e);
             showScanStatus("Error loading image", false);
@@ -819,8 +692,8 @@ public class VerticalScannerActivity extends BaseActivity {
         if (scanStatusCard != null) {
             scanStatusCard.setVisibility(View.VISIBLE);
 
-            // Auto-hide after 3 seconds if not scanning
-            if (!message.contains("detected") && !message.contains("Processing") && !message.contains("Ready")) {
+            if (!message.contains("detected") && !message.contains("Processing")
+                    && !message.contains("Ready") && !message.contains("Recognizing")) {
                 scanStatusCard.postDelayed(() -> {
                     if (scanStatusCard != null) {
                         scanStatusCard.setVisibility(View.GONE);
@@ -830,8 +703,8 @@ public class VerticalScannerActivity extends BaseActivity {
         }
 
         if (scanProgress != null) {
-            scanProgress.setVisibility((isSuccess && !message.contains("Ready")) ? View.VISIBLE : View.GONE);
-            scanProgress.setVisibility(isSuccess && !message.contains("Ready") ? View.VISIBLE : View.GONE);
+            scanProgress.setVisibility(
+                    isSuccess && !message.contains("Ready") ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -859,15 +732,10 @@ public class VerticalScannerActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Reset scanning state when returning to scanner
         isScanning = false;
-        
-        // Return capture button to enabled state just in case it got stuck disabled
         isCapturing = false;
         setCaptureButtonEnabled(true);
-        
         showScanStatus("Ready to scan", true);
-        Log.d(TAG, "Scanner resumed - ready for new scans");
     }
 
     @Override
