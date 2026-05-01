@@ -8,7 +8,7 @@ public class ApiConfig {
 
     // ==================== NURE Food Recognition API ====================
     // Backend server running the ML food classifier with RLHF
-    public static final String NURE_BASE_URL = "http://192.168.1.8:5000";
+    public static final String NURE_BASE_URL = "http://10.211.191.61:5000";
 
     // Food recognition via ML model (MobileNetV2 + Transfer Learning)
     public static final String API_URL_PREDICT = NURE_BASE_URL + "/predict";

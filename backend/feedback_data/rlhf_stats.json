@@ -1,0 +1,30 @@
+{
+  "total_feedback": 5,
+  "confirmations": 2,
+  "corrections": 3,
+  "retrains": 0,
+  "last_retrain": null,
+  "accuracy_history": [],
+  "reward_history": [
+    {
+      "reward": 1.0,
+      "timestamp": "2026-05-01T22:35:37.754050"
+    },
+    {
+      "reward": -0.5,
+      "timestamp": "2026-05-01T22:36:15.215057"
+    },
+    {
+      "reward": -0.5,
+      "timestamp": "2026-05-01T22:36:35.744656"
+    },
+    {
+      "reward": -0.5,
+      "timestamp": "2026-05-01T22:40:30.149147"
+    },
+    {
+      "reward": 1.0,
+      "timestamp": "2026-05-01T22:40:37.252706"
+    }
+  ]
+}

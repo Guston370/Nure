@@ -198,7 +198,7 @@ def health_check():
 
 
 if __name__ == "__main__":
-    print("\n🚀 Nure Food Recognition Server running on http://0.0.0.0:5000")
-    print(f"📊 Model: MobileNetV2 | Categories: {classifier.num_classes}")
-    print(f"🔄 RLHF Feedback entries: {len(rlhf.feedback_data)}\n")
+    print("\n[START] Nure Food Recognition Server running on http://0.0.0.0:5000")
+    print(f"[INFO] Model: MobileNetV2 | Categories: {classifier.num_classes}")
+    print(f"[INFO] RLHF Feedback entries: {len(rlhf.feedback_data)}\n")
     app.run(host="0.0.0.0", port=5000, debug=True)

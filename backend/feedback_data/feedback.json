@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "timestamp": "2026-05-01T22:35:37.754050",
+    "image_path": "C:\\Projects\\Nure\\backend\\feedback_data\\images\\feedback_1777655137_Mango.jpg",
+    "predicted_label": "Mango",
+    "correct_label": "Mango",
+    "is_correct": true,
+    "reward": 1.0,
+    "used_in_training": false
+  },
+  {
+    "id": 2,
+    "timestamp": "2026-05-01T22:36:15.215057",
+    "image_path": "C:\\Projects\\Nure\\backend\\feedback_data\\images\\feedback_1777655175_Banana.jpg",
+    "predicted_label": "Grapes",
+    "correct_label": "Banana",
+    "is_correct": false,
+    "reward": -0.5,
+    "used_in_training": false
+  },
+  {
+    "id": 3,
+    "timestamp": "2026-05-01T22:36:35.744656",
+    "image_path": "C:\\Projects\\Nure\\backend\\feedback_data\\images\\feedback_1777655195_Banana.jpg",
+    "predicted_label": "Grapes",
+    "correct_label": "Banana",
+    "is_correct": false,
+    "reward": -0.5,
+    "used_in_training": false
+  },
+  {
+    "id": 4,
+    "timestamp": "2026-05-01T22:40:30.149147",
+    "image_path": "C:\\Projects\\Nure\\backend\\feedback_data\\images\\feedback_1777655430_Apple.jpg",
+    "predicted_label": "",
+    "correct_label": "Apple",
+    "is_correct": "",
+    "reward": -0.5,
+    "used_in_training": false
+  },
+  {
+    "id": 5,
+    "timestamp": "2026-05-01T22:40:37.252706",
+    "image_path": "C:\\Projects\\Nure\\backend\\feedback_data\\images\\feedback_1777655437_Apple.jpg",
+    "predicted_label": "Apple",
+    "correct_label": "Apple",
+    "is_correct": true,
+    "reward": 1.0,
+    "used_in_training": false
+  }
+]

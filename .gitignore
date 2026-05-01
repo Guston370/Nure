@@ -103,3 +103,15 @@ Thumbs.db
 # app/google-services.json
 generate_sha_keys.bat
 generate_sha_keys.sh
+
+# Python / Backend
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+
+# ML Models & Uploads
+backend/models/*.pth
+backend/uploads/
