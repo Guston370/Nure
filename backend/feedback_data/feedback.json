@@ -7,7 +7,7 @@
     "correct_label": "Mango",
     "is_correct": true,
     "reward": 1.0,
-    "used_in_training": false
+    "used_in_training": true
   },
   {
     "id": 2,
@@ -17,7 +17,7 @@
     "correct_label": "Banana",
     "is_correct": false,
     "reward": -0.5,
-    "used_in_training": false
+    "used_in_training": true
   },
   {
     "id": 3,
@@ -27,7 +27,7 @@
     "correct_label": "Banana",
     "is_correct": false,
     "reward": -0.5,
-    "used_in_training": false
+    "used_in_training": true
   },
   {
     "id": 4,
@@ -37,7 +37,7 @@
     "correct_label": "Apple",
     "is_correct": "",
     "reward": -0.5,
-    "used_in_training": false
+    "used_in_training": true
   },
   {
     "id": 5,
@@ -47,6 +47,6 @@
     "correct_label": "Apple",
     "is_correct": true,
     "reward": 1.0,
-    "used_in_training": false
+    "used_in_training": true
   }
 ]
