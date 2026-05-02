@@ -15,7 +15,7 @@ FEEDBACK_FILE = os.path.join(FEEDBACK_DIR, "feedback.json")
 STATS_FILE = os.path.join(FEEDBACK_DIR, "rlhf_stats.json")
 
 # Minimum feedback samples before retraining
-MIN_RETRAIN_SAMPLES = 5
+MIN_RETRAIN_SAMPLES = 50
 
 
 class RLHFManager:
