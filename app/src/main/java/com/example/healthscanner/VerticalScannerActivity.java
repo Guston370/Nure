@@ -29,97 +29,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
-import com.google.mlkit.vision.text.TextRecognition;
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-
-import ai.onnxruntime.OnnxTensor;
-import ai.onnxruntime.OrtEnvironment;
-import ai.onnxruntime.OrtSession;
-import java.io.InputStream;
-import java.nio.FloatBuffer;
-import java.util.Collections;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-/**
- * Vertical Scanner Activity with modern camera interface
- * Supports both Barcode Scanning and Product Detection via Food Recognition API
- */
-public class VerticalScannerActivity extends BaseActivity {
-
-    private static final String TAG = "VerticalScanner";
-    private static final int CAMERA_PERMISSION_REQUEST = 100;
-    private static final int GALLERY_REQUEST_CODE = 101;
-
-    private enum ScanMode {
-        BARCODE, PRODUCT_DETECT
-    }
-    private ScanMode currentMode = ScanMode.BARCODE;
-
-    // UI Elements
-    private PreviewView cameraPreview;
-    private ImageView backButton, flashToggle, detectCrosshair, captureButtonIcon;
-    private CardView galleryButton, cameraCaptureButton, scanStatusCard, manualEntryButton;
-    private TextView instructionsText, scanStatusText, modeBarcodeText, modeDetectText;
-    private ProgressBar scanProgress;
-    private View scanningLine, scanningFrame;
-
-    // Camera
-    private ProcessCameraProvider cameraProvider;
-    private Preview preview;
-    private ImageAnalysis imageAnalysis;
-package com.example.healthscanner;
-
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.camera.core.CameraSelector;
-import androidx.camera.core.ImageAnalysis;
-import androidx.camera.core.ImageCapture;
-import androidx.camera.core.ImageCaptureException;
-import androidx.camera.core.Preview;
-import androidx.camera.lifecycle.ProcessCameraProvider;
-import androidx.camera.view.PreviewView;
-import androidx.cardview.widget.CardView;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
-
 import okhttp3.OkHttpClient;
 
 import com.google.mlkit.vision.text.TextRecognition;
@@ -607,6 +516,72 @@ public class VerticalScannerActivity extends BaseActivity {
             Log.d(TAG, "ONNX model and ImageNet mapping loaded.");
         } catch (Exception e) {
             Log.e(TAG, "ONNX init failed", e);
+        }
+    }
+
+    private void runOcrFallback(File photoFile) {
+        try {
+            Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
+            if (bitmap == null) throw new Exception("Failed to decode image");
+
+            com.google.mlkit.vision.common.InputImage image =
+                    com.google.mlkit.vision.common.InputImage.fromBitmap(bitmap, 0);
+            com.google.mlkit.vision.text.TextRecognizer recognizer =
+                    TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+
+            recognizer.process(image)
+                    .addOnSuccessListener(visionText -> {
+                        String text = visionText.getText();
+                        if (text != null && !text.trim().isEmpty()) {
+                            sendOcrToApi(text, photoFile);
+                        } else {
+                            isCapturing = false;
+                            setCaptureButtonEnabled(true);
+                            showScanStatus("❌ Could not recognize food", false);
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "OCR processing failed", e);
+                        isCapturing = false;
+                        setCaptureButtonEnabled(true);
+                        showScanStatus("❌ OCR Failed", false);
+                    });
+        } catch (Exception e) {
+            Log.e(TAG, "OCR initialization failed", e);
+            isCapturing = false;
+            setCaptureButtonEnabled(true);
+            showScanStatus("❌ Error starting OCR", false);
+        }
+    }
+
+    private void sendOcrToApi(String text, File photoFile) {
+        String lowerText = text.toLowerCase();
+        String detectedFood = "Unknown";
+        for (String food : imagenetFoodMap.values()) {
+            if (lowerText.contains(food.replace("_", " "))) {
+                detectedFood = food;
+                break;
+            }
+        }
+        
+        if (!detectedFood.equals("Unknown")) {
+            String finalFood = detectedFood;
+            runOnUiThread(() -> {
+                isCapturing = false;
+                setCaptureButtonEnabled(true);
+                showScanStatus("✅ OCR Matched: " + finalFood.replace("_", " "), true);
+                Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
+                intent.putExtra("image_path", photoFile.getAbsolutePath());
+                intent.putExtra("product", finalFood);
+                intent.putExtra("confidence", 0.9); // OCR is high confidence
+                startActivity(intent);
+            });
+        } else {
+            runOnUiThread(() -> {
+                isCapturing = false;
+                setCaptureButtonEnabled(true);
+                showScanStatus("❌ OCR could not find food", false);
+            });
         }
     }
     private void setCaptureButtonEnabled(boolean enabled) {
