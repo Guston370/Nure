@@ -274,10 +274,10 @@ public class ApiDetectionResultActivity extends AppCompatActivity {
         }
 
         // Show RLHF feedback dialog after a short delay
-        if (capturedImageView != null) {
-            capturedImageView.postDelayed(() ->
-                    showRLHFFeedbackDialog(currentProduct, imagePath, similarProducts), 1200);
-        }
+        // if (capturedImageView != null) {
+        //     capturedImageView.postDelayed(() ->
+        //             showRLHFFeedbackDialog(currentProduct, imagePath, similarProducts), 1200);
+        // }
     }
 
     /**

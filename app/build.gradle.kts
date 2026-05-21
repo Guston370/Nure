@@ -111,6 +111,9 @@ dependencies {
     // Lottie for animations
     implementation("com.airbnb.android:lottie:6.2.0")
 
+    // ONNX Runtime
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.17.1")
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

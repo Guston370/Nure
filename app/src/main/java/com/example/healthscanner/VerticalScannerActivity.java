@@ -50,6 +50,102 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
+import ai.onnxruntime.OnnxTensor;
+import ai.onnxruntime.OrtEnvironment;
+import ai.onnxruntime.OrtSession;
+import java.io.InputStream;
+import java.nio.FloatBuffer;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+/**
+ * Vertical Scanner Activity with modern camera interface
+ * Supports both Barcode Scanning and Product Detection via Food Recognition API
+ */
+public class VerticalScannerActivity extends BaseActivity {
+
+    private static final String TAG = "VerticalScanner";
+    private static final int CAMERA_PERMISSION_REQUEST = 100;
+    private static final int GALLERY_REQUEST_CODE = 101;
+
+    private enum ScanMode {
+        BARCODE, PRODUCT_DETECT
+    }
+    private ScanMode currentMode = ScanMode.BARCODE;
+
+    // UI Elements
+    private PreviewView cameraPreview;
+    private ImageView backButton, flashToggle, detectCrosshair, captureButtonIcon;
+    private CardView galleryButton, cameraCaptureButton, scanStatusCard, manualEntryButton;
+    private TextView instructionsText, scanStatusText, modeBarcodeText, modeDetectText;
+    private ProgressBar scanProgress;
+    private View scanningLine, scanningFrame;
+
+    // Camera
+    private ProcessCameraProvider cameraProvider;
+    private Preview preview;
+    private ImageAnalysis imageAnalysis;
+package com.example.healthscanner;
+
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.Preview;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.PreviewView;
+import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
+import okhttp3.OkHttpClient;
+
+import com.google.mlkit.vision.text.TextRecognition;
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
+import java.io.File;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+
+import ai.onnxruntime.OnnxTensor;
+import ai.onnxruntime.OrtEnvironment;
+import ai.onnxruntime.OrtSession;
+import java.nio.FloatBuffer;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Iterator;
+import org.json.JSONObject;
+
 /**
  * Vertical Scanner Activity with modern camera interface
  * Supports both Barcode Scanning and Product Detection via Food Recognition API
@@ -84,6 +180,9 @@ public class VerticalScannerActivity extends BaseActivity {
     private boolean isCapturing = false;
 
     private OkHttpClient httpClient;
+    private OrtEnvironment ortEnv;
+    private OrtSession ortSession;
+    private Map<Integer, String> imagenetFoodMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +190,7 @@ public class VerticalScannerActivity extends BaseActivity {
         setContentView(R.layout.activity_scanner_simple);
 
         httpClient = new OkHttpClient();
+        initONNX();
 
         // Initialize views
         initializeViews();
@@ -374,7 +474,7 @@ public class VerticalScannerActivity extends BaseActivity {
                     @Override
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                         Log.d(TAG, "Photo captured: " + photoFile.getAbsolutePath());
-                        detectFoodViaApi(photoFile);
+                        detectFoodLocally(photoFile);
                     }
 
                     @Override
@@ -387,216 +487,128 @@ public class VerticalScannerActivity extends BaseActivity {
                 });
     }
 
-    /**
-     * Send captured image to the Food Recognition API for ML-based identification.
-     */
-    private void detectFoodViaApi(File photoFile) {
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("image", photoFile.getName(),
-                        RequestBody.create(photoFile, MediaType.parse("image/jpeg")))
-                .build();
+    private void detectFoodLocally(File photoFile) {
+        new Thread(() -> {
+            try {
+                Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
+                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, 224, 224, true);
+                
+                FloatBuffer imgData = FloatBuffer.allocate(1 * 3 * 224 * 224);
+                imgData.rewind();
+                
+                float[] mean = {0.485f, 0.456f, 0.406f};
+                float[] std = {0.229f, 0.224f, 0.225f};
 
-        Request request = new Request.Builder()
-                .url(ApiConfig.API_URL_PREDICT)
-                .post(requestBody)
-                .build();
-
-        httpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                Log.e(TAG, "API call failed", e);
+                int[] pixels = new int[224 * 224];
+                scaledBitmap.getPixels(pixels, 0, 224, 0, 0, 224, 224);
+                
+                for (int c = 0; c < 3; c++) {
+                    for (int i = 0; i < 224 * 224; i++) {
+                        int val = pixels[i];
+                        float p = 0;
+                        if (c == 0) p = ((val >> 16) & 0xFF) / 255.0f; // R
+                        if (c == 1) p = ((val >> 8) & 0xFF) / 255.0f;  // G
+                        if (c == 2) p = (val & 0xFF) / 255.0f;         // B
+                        
+                        p = (p - mean[c]) / std[c];
+                        imgData.put(p);
+                    }
+                }
+                
+                imgData.rewind();
+                long[] shape = {1, 3, 224, 224};
+                
+                if (ortEnv == null || ortSession == null) {
+                    throw new Exception("ONNX not initialized");
+                }
+                OnnxTensor tensor = OnnxTensor.createTensor(ortEnv, imgData, shape);
+                
+                Map<String, OnnxTensor> inputs = Collections.singletonMap("input", tensor);
+                OrtSession.Result result = ortSession.run(inputs);
+                float[][] output = (float[][]) result.get(0).getValue();
+                
+                float[] probs = softmax(output[0]);
+                
+                int maxIdx = -1;
+                float maxConf = 0.05f; // Require at least 5% confidence
+                for (int i = 0; i < probs.length; i++) {
+                    if (imagenetFoodMap.containsKey(i)) {
+                        if (probs[i] > maxConf) {
+                            maxConf = probs[i];
+                            maxIdx = i;
+                        }
+                    }
+                }
+                
+                String predictedProduct = maxIdx != -1 ? imagenetFoodMap.get(maxIdx) : "unknown";
+                float finalConfidence = maxConf;
+                
                 runOnUiThread(() -> {
                     isCapturing = false;
                     setCaptureButtonEnabled(true);
-                    showScanStatus("❌ Network error. Check connection.", false);
-
-                    Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
-                    intent.putExtra("image_path", photoFile.getAbsolutePath());
-                    intent.putExtra("error", "Network Error: " + e.getMessage());
-                    startActivity(intent);
+                    
+                    if (!predictedProduct.equals("unknown")) {
+                        showScanStatus("✅ Food recognized: " + predictedProduct.replace("_", " "), true);
+                        Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
+                        intent.putExtra("image_path", photoFile.getAbsolutePath());
+                        intent.putExtra("product", predictedProduct);
+                        intent.putExtra("confidence", (double) finalConfidence);
+                        startActivity(intent);
+                    } else {
+                        showScanStatus("⚠️ Low confidence, trying OCR...", true);
+                        runOcrFallback(photoFile);
+                    }
+                });
+                
+            } catch (Exception e) {
+                Log.e(TAG, "Local detection failed", e);
+                 runOnUiThread(() -> {
+                    isCapturing = false;
+                    setCaptureButtonEnabled(true);
+                    showScanStatus("❌ Local detection failed", false);
                 });
             }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    String errBody = response.body() != null ? response.body().string() : "Unknown Error";
-                    runOnUiThread(() -> {
-                        isCapturing = false;
-                        setCaptureButtonEnabled(true);
-                        showScanStatus("❌ API Error", false);
-
-                        Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
-                        intent.putExtra("image_path", photoFile.getAbsolutePath());
-                        intent.putExtra("error", "API Error HTTP " + response.code() + ": " + errBody);
-                        startActivity(intent);
-                    });
-                    return;
-                }
-
-                String responseData = response.body().string();
-                Log.d(TAG, "API Response: " + responseData);
-
-                try {
-                    org.json.JSONObject json = new org.json.JSONObject(responseData);
-                    String product = json.optString("product", "Unknown");
-                    double confidence = json.optDouble("confidence", 0.0);
-                    org.json.JSONObject nutrition = json.optJSONObject("nutrition");
-                    org.json.JSONArray ingredientsArr = json.optJSONArray("ingredients");
-                    String servingSize = json.optString("serving_size", "1 serving");
-                    int healthScore = json.optInt("health_score", 50);
-                    org.json.JSONArray healthTags = json.optJSONArray("health_tags");
-                    org.json.JSONArray allergens = json.optJSONArray("allergens");
-                    boolean isVeg = json.optBoolean("is_vegetarian", false);
-                    org.json.JSONArray similarArr = json.optJSONArray("similar_products");
-
-                    runOnUiThread(() -> {
-                        isCapturing = false;
-                        setCaptureButtonEnabled(true);
-
-                        if (product.equals("fallback_product")) {
-                            showScanStatus("🔍 Manual Selection Required", true);
-                            Intent intent = new Intent(VerticalScannerActivity.this, ProductSelectionActivity.class);
-                            intent.putExtra("image_path", photoFile.getAbsolutePath());
-                            startActivity(intent);
-                        } else if (confidence > 0.3) {
-                            showScanStatus("✅ Food recognized: " + product, true);
-
-                            Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
-                            intent.putExtra("image_path", photoFile.getAbsolutePath());
-                            intent.putExtra("product", product);
-                            intent.putExtra("confidence", confidence);
-                            intent.putExtra("serving_size", servingSize);
-                            intent.putExtra("health_score", healthScore);
-                            intent.putExtra("is_vegetarian", isVeg);
-                            if (nutrition != null) intent.putExtra("nutrition_json", nutrition.toString());
-                            if (ingredientsArr != null) intent.putExtra("ingredients_json", ingredientsArr.toString());
-                            if (healthTags != null) intent.putExtra("health_tags_json", healthTags.toString());
-                            if (allergens != null) intent.putExtra("allergens_json", allergens.toString());
-                            if (similarArr != null) intent.putExtra("similar_products", similarArr.toString());
-                            startActivity(intent);
-                        } else {
-                            showScanStatus("🔍 Low confidence, trying OCR...", true);
-                            runOcrFallback(photoFile);
-                        }
-                    });
-
-                } catch (Exception e) {
-                    Log.e(TAG, "JSON parsing error", e);
-                    runOnUiThread(() -> {
-                        isCapturing = false;
-                        setCaptureButtonEnabled(true);
-
-                        Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
-                        intent.putExtra("image_path", photoFile.getAbsolutePath());
-                        intent.putExtra("error", "Error parsing response: " + e.getMessage());
-                        startActivity(intent);
-                    });
-                }
-            }
-        });
+        }).start();
+    }
+    
+    private float[] softmax(float[] input) {
+        float max = input[0];
+        for (int i = 1; i < input.length; i++) if (input[i] > max) max = input[i];
+        float sum = 0;
+        float[] result = new float[input.length];
+        for (int i = 0; i < input.length; i++) {
+            result[i] = (float) Math.exp(input[i] - max);
+            sum += result[i];
+        }
+        for (int i = 0; i < input.length; i++) result[i] /= sum;
+        return result;
     }
 
-    private void runOcrFallback(File photoFile) {
+    private void initONNX() {
         try {
-            Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-            if (bitmap == null) throw new Exception("Failed to decode image");
-
-            com.google.mlkit.vision.common.InputImage image =
-                    com.google.mlkit.vision.common.InputImage.fromBitmap(bitmap, 0);
-            com.google.mlkit.vision.text.TextRecognizer recognizer =
-                    TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
-
-            recognizer.process(image)
-                    .addOnSuccessListener(visionText -> {
-                        String text = visionText.getText();
-                        if (text != null && !text.trim().isEmpty()) {
-                            sendOcrToApi(text, photoFile);
-                        } else {
-                            isCapturing = false;
-                            setCaptureButtonEnabled(true);
-                            showScanStatus("❌ Could not recognize food", false);
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e(TAG, "OCR processing failed", e);
-                        isCapturing = false;
-                        setCaptureButtonEnabled(true);
-                        showScanStatus("❌ OCR Failed", false);
-                    });
+            ortEnv = OrtEnvironment.getEnvironment();
+            InputStream is = getAssets().open("food_classifier.onnx");
+            byte[] modelData = new byte[is.available()];
+            is.read(modelData);
+            is.close();
+            ortSession = ortEnv.createSession(modelData, new OrtSession.SessionOptions());
+            
+            InputStream js = getAssets().open("imagenet_food_map.json");
+            byte[] jsonBytes = new byte[js.available()];
+            js.read(jsonBytes);
+            js.close();
+            String jsonStr = new String(jsonBytes, "UTF-8");
+            JSONObject json = new JSONObject(jsonStr);
+            Iterator<String> keys = json.keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                imagenetFoodMap.put(Integer.parseInt(key), json.getString(key));
+            }
+            Log.d(TAG, "ONNX model and ImageNet mapping loaded.");
         } catch (Exception e) {
-            Log.e(TAG, "OCR initialization failed", e);
-            isCapturing = false;
-            setCaptureButtonEnabled(true);
-            showScanStatus("❌ Error starting OCR", false);
+            Log.e(TAG, "ONNX init failed", e);
         }
     }
-
-    private void sendOcrToApi(String text, File photoFile) {
-        RequestBody requestBody = new okhttp3.FormBody.Builder()
-                .add("text", text)
-                .build();
-
-        Request request = new Request.Builder()
-                .url(ApiConfig.API_URL_OCR_DETECT)
-                .post(requestBody)
-                .build();
-
-        httpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                runOnUiThread(() -> {
-                    isCapturing = false;
-                    setCaptureButtonEnabled(true);
-                    showScanStatus("❌ OCR Network error", false);
-                });
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    runOnUiThread(() -> {
-                        isCapturing = false;
-                        setCaptureButtonEnabled(true);
-                        showScanStatus("❌ OCR API Error", false);
-                    });
-                    return;
-                }
-
-                String responseData = response.body() != null ? response.body().string() : "{}";
-                try {
-                    org.json.JSONObject json = new org.json.JSONObject(responseData);
-                    String product = json.optString("product", "Unknown");
-                    double confidence = json.optDouble("confidence", 0.0);
-                    org.json.JSONObject nutrition = json.optJSONObject("nutrition");
-                    org.json.JSONArray ingredientsArr = json.optJSONArray("ingredients");
-                    org.json.JSONArray similarArr = json.optJSONArray("similar_products");
-
-                    runOnUiThread(() -> {
-                        isCapturing = false;
-                        setCaptureButtonEnabled(true);
-
-                        Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
-                        intent.putExtra("image_path", photoFile.getAbsolutePath());
-                        intent.putExtra("product", product);
-                        intent.putExtra("confidence", confidence);
-                        if (nutrition != null) intent.putExtra("nutrition_json", nutrition.toString());
-                        if (ingredientsArr != null) intent.putExtra("ingredients_json", ingredientsArr.toString());
-                        if (similarArr != null) intent.putExtra("similar_products", similarArr.toString());
-                        startActivity(intent);
-                    });
-                } catch (Exception e) {
-                    runOnUiThread(() -> {
-                        isCapturing = false;
-                        setCaptureButtonEnabled(true);
-                        showScanStatus("❌ OCR parsing error", false);
-                    });
-                }
-            }
-        });
-    }
-
     private void setCaptureButtonEnabled(boolean enabled) {
         if (cameraCaptureButton != null) {
             cameraCaptureButton.setEnabled(enabled);
