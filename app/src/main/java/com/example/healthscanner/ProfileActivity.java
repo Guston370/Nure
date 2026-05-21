@@ -419,7 +419,7 @@ public class ProfileActivity extends BaseActivity {
         }
 
         // Edit profile menu
-        ImageView editProfileMenu = findViewById(R.id.edit_profile_menu);
+        View editProfileMenu = findViewById(R.id.edit_profile_menu);
         if (editProfileMenu != null) {
             editProfileMenu.setOnClickListener(v -> {
                 animateClick(v);
