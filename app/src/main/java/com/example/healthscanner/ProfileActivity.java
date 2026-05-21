@@ -11,19 +11,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
@@ -48,11 +46,9 @@ public class ProfileActivity extends BaseActivity {
     private static final String PREFS_NAME = "HealthScannerPrefs";
 
     // UI Components
-    private CollapsingToolbarLayout collapsingToolbar;
     private SyncManager syncManager;
     private DarkModeManager darkModeManager;
     private DataResetManager dataResetManager;
-    private Toolbar toolbar;
     private ImageView profileAvatar;
     private TextView userName;
     private TextView userEmail;
@@ -60,7 +56,6 @@ public class ProfileActivity extends BaseActivity {
     private TextView totalScans;
     private TextView healthyChoices;
     private TextView healthScore;
-    private TextView statsPeriod;
     private RecyclerView recentScansRecycler;
     private SwitchMaterial notificationsSwitch;
     private SwitchMaterial darkModeSwitch;
@@ -69,8 +64,8 @@ public class ProfileActivity extends BaseActivity {
     // Health Concerns & Preferences
     private com.google.android.material.chip.ChipGroup healthConcernsChipGroup;
     private com.google.android.material.chip.ChipGroup dietaryPreferencesChipGroup;
-    private MaterialButton addConcernButton;
-    private MaterialButton addPreferenceButton;
+    private View addConcernButton;
+    private View addPreferenceButton;
     private ImageView editHealthConcerns;
     private ImageView editDietaryPreferences;
 
@@ -117,10 +112,6 @@ public class ProfileActivity extends BaseActivity {
     }
 
     private void initializeViews() {
-        // Toolbar and collapsing layout
-        collapsingToolbar = findViewById(R.id.collapsing_toolbar);
-        toolbar = findViewById(R.id.toolbar);
-
         // Profile header
         profileAvatar = findViewById(R.id.profile_avatar);
         userName = findViewById(R.id.user_name);
@@ -131,7 +122,6 @@ public class ProfileActivity extends BaseActivity {
         totalScans = findViewById(R.id.total_scans);
         healthyChoices = findViewById(R.id.healthy_choices);
         healthScore = findViewById(R.id.health_score);
-        statsPeriod = findViewById(R.id.stats_period);
 
         // Recent scans
         recentScansRecycler = findViewById(R.id.recent_scans_recycler);
@@ -155,36 +145,12 @@ public class ProfileActivity extends BaseActivity {
     }
 
     private void setupToolbar() {
-        try {
-            if (toolbar != null) {
-                Log.d(TAG, "Setting up toolbar");
-                setSupportActionBar(toolbar);
-
-                if (getSupportActionBar() != null) {
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                    getSupportActionBar().setDisplayShowHomeEnabled(true);
-                    Log.d(TAG, "Toolbar setup successful");
-                }
-            } else {
-                Log.w(TAG, "Toolbar is null, skipping setup");
-            }
-
-            if (collapsingToolbar != null) {
-                collapsingToolbar.setTitle("Profile");
-                Log.d(TAG, "Collapsing toolbar title set");
-            } else {
-                Log.w(TAG, "Collapsing toolbar is null");
-            }
-        } catch (IllegalStateException e) {
-            Log.e(TAG, "Action bar conflict: " + e.getMessage());
-            // Skip toolbar setup if there's a conflict
-            if (collapsingToolbar != null) {
-                collapsingToolbar.setTitle("Profile");
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error setting up toolbar: " + e.getMessage(), e);
-            // Continue without toolbar if there's an issue
+        // Setup back button
+        FrameLayout backButton = findViewById(R.id.backButton);
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> onBackPressed());
         }
+        Log.d(TAG, "Toolbar setup successful");
     }
 
     @Override
@@ -545,21 +511,21 @@ public class ProfileActivity extends BaseActivity {
     }
 
     private void setupAnimations() {
-        // Staggered entrance animations for cards
-        MaterialCardView healthStatsCard = findViewById(R.id.health_stats_card);
-        MaterialCardView recentActivityCard = findViewById(R.id.recent_activity_card);
-        MaterialCardView healthConcernsCard = findViewById(R.id.health_concerns_card);
-        MaterialCardView dietaryPreferencesCard = findViewById(R.id.dietary_preferences_card);
-        MaterialCardView settingsCard = findViewById(R.id.settings_card);
-        MaterialCardView supportCard = findViewById(R.id.support_card);
+        // Staggered entrance animations for sections
+        View profileHeader = findViewById(R.id.profile_header_card);
+        View healthStatsCard = findViewById(R.id.health_stats_card);
+        View recentActivityCard = findViewById(R.id.recent_activity_card);
+        View healthConcernsCard = findViewById(R.id.health_concerns_card);
+        View dietaryPreferencesCard = findViewById(R.id.dietary_preferences_card);
+        View settingsCard = findViewById(R.id.settings_card);
 
-        // Animate cards with delays
+        // Animate sections with delays
+        animateCardEntrance(profileHeader, 100);
         animateCardEntrance(healthStatsCard, 200);
         animateCardEntrance(recentActivityCard, 400);
         animateCardEntrance(healthConcernsCard, 600);
         animateCardEntrance(dietaryPreferencesCard, 800);
         animateCardEntrance(settingsCard, 1000);
-        animateCardEntrance(supportCard, 1200);
     }
 
     private void animateCardEntrance(View view, long delay) {
