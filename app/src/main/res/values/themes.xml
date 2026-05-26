@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Nure Health Scanner - Professional Health-Tech Theme -->
+    <!-- Nure Health Scanner - Premium Health-Tech Theme -->
     
     <!-- Base Light Theme -->
     <style name="Base.Theme.HealthScanner" parent="Theme.Material3.DayNight">
@@ -45,15 +45,15 @@
         <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
         
-        <!-- Status Bar -->
-        <item name="android:statusBarColor">@color/status_bar_light</item>
+        <!-- Status Bar - Edge-to-edge -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
         
         <!-- Navigation Bar -->
         <item name="android:navigationBarColor">@color/navigation_bar_light</item>
         
         <!-- Window Background -->
-        <item name="android:windowBackground">@drawable/health_gradient_background</item>
+        <item name="android:windowBackground">@color/md_theme_light_background</item>
         
         <!-- Action Bar -->
         <item name="colorControlNormal">@color/md_theme_light_onSurfaceVariant</item>

@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Nure Health Scanner - Professional Health-Tech Color Palette -->
+    <!-- Nure Health Scanner - Premium Health-Tech Color Palette -->
     
-    <!-- Primary Colors - Mint Green to Teal Gradient -->
-    <color name="md_theme_light_primary">#0FB8AD</color>
+    <!-- Primary Colors - Refined Mint-Teal -->
+    <color name="md_theme_light_primary">#0EA99F</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
-    <color name="md_theme_light_primaryContainer">#B2F2EF</color>
-    <color name="md_theme_light_onPrimaryContainer">#003A36</color>
+    <color name="md_theme_light_primaryContainer">#C5F5F1</color>
+    <color name="md_theme_light_onPrimaryContainer">#00332F</color>
     
-    <color name="md_theme_dark_primary">#3CCF91</color>
-    <color name="md_theme_dark_onPrimary">#003A36</color>
+    <color name="md_theme_dark_primary">#5EEDC7</color>
+    <color name="md_theme_dark_onPrimary">#00332F</color>
     <color name="md_theme_dark_primaryContainer">#005B54</color>
-    <color name="md_theme_dark_onPrimaryContainer">#B2F2EF</color>
+    <color name="md_theme_dark_onPrimaryContainer">#C5F5F1</color>
 
     <!-- Home Page Specific Colors -->
-    <color name="health_mint_green">#3CCF91</color>
-    <color name="health_teal">#0FB8AD</color>
-    <color name="health_soft_blue">#4DB6E3</color>
-    <color name="home_gradient_start">#F8FFFC</color>
-    <color name="home_gradient_end">#E6F7F3</color>
-    <color name="card_shadow">#1A000000</color>
+    <color name="health_mint_green">#34D399</color>
+    <color name="health_teal">#0EA99F</color>
+    <color name="health_soft_blue">#38BDF8</color>
+    <color name="home_gradient_start">#F0FDFA</color>
+    <color name="home_gradient_end">#ECFDF5</color>
+    <color name="card_shadow">#14000000</color>
 
     <!-- Secondary Colors - Soft Blue -->
-    <color name="md_theme_light_secondary">#4DB6E3</color>
+    <color name="md_theme_light_secondary">#38BDF8</color>
     <color name="md_theme_light_onSecondary">#FFFFFF</color>
-    <color name="md_theme_light_secondaryContainer">#D1ECFF</color>
-    <color name="md_theme_light_onSecondaryContainer">#001D33</color>
+    <color name="md_theme_light_secondaryContainer">#E0F2FE</color>
+    <color name="md_theme_light_onSecondaryContainer">#0C4A6E</color>
     
     <color name="md_theme_dark_secondary">#9CCCFF</color>
     <color name="md_theme_dark_onSecondary">#003258</color>
@@ -55,18 +55,18 @@
     <color name="md_theme_dark_onErrorContainer">#FFEBEE</color>
 
     <!-- Background Colors -->
-    <color name="md_theme_light_background">#FAFAFA</color>
-    <color name="md_theme_light_onBackground">#212121</color>
+    <color name="md_theme_light_background">#F8FAFB</color>
+    <color name="md_theme_light_onBackground">#1A1C1E</color>
     
-    <color name="md_theme_dark_background">#121212</color>
-    <color name="md_theme_dark_onBackground">#E0E0E0</color>
+    <color name="md_theme_dark_background">#0F1419</color>
+    <color name="md_theme_dark_onBackground">#E2E3E8</color>
 
     <!-- Surface Colors -->
     <color name="md_theme_light_surface">#FFFFFF</color>
-    <color name="md_theme_light_onSurface">#212121</color>
-    <color name="md_theme_light_surfaceVariant">#F5F5F5</color>
-    <color name="md_theme_light_onSurfaceVariant">#616161</color>
-    <color name="md_theme_light_surfaceContainer">#F8F9FA</color>
+    <color name="md_theme_light_onSurface">#1A1C1E</color>
+    <color name="md_theme_light_surfaceVariant">#F1F5F9</color>
+    <color name="md_theme_light_onSurfaceVariant">#64748B</color>
+    <color name="md_theme_light_surfaceContainer">#F8FAFC</color>
     
     <color name="md_theme_dark_surface">#1E1E1E</color>
     <color name="md_theme_dark_onSurface">#E0E0E0</color>
@@ -75,7 +75,7 @@
     <color name="md_theme_dark_surfaceContainer">#262626</color>
 
     <!-- Outline Colors -->
-    <color name="md_theme_light_outline">#E0E0E0</color>
+    <color name="md_theme_light_outline">#E2E8F0</color>
     <color name="md_theme_light_inverseOnSurface">#F5F5F5</color>
     <color name="md_theme_light_inverseSurface">#2C2C2C</color>
     <color name="md_theme_light_inversePrimary">#3CCF91</color>
@@ -103,18 +103,18 @@
     <color name="vitamin_color">#26C6DA</color>
 
     <!-- Gradient Colors -->
-    <color name="gradient_primary_start">#3CCF91</color>
-    <color name="gradient_primary_end">#0FB8AD</color>
-    <color name="gradient_secondary_start">#4DB6E3</color>
-    <color name="gradient_secondary_end">#2196F3</color>
-    <color name="gradient_accent_start">#FFD166</color>
-    <color name="gradient_accent_end">#FFB74D</color>
+    <color name="gradient_primary_start">#34D399</color>
+    <color name="gradient_primary_end">#0EA99F</color>
+    <color name="gradient_secondary_start">#38BDF8</color>
+    <color name="gradient_secondary_end">#3B82F6</color>
+    <color name="gradient_accent_start">#FBBF24</color>
+    <color name="gradient_accent_end">#F59E0B</color>
 
     <!-- Background Gradients -->
-    <color name="background_gradient_start">#F0FDFC</color>
+    <color name="background_gradient_start">#F0FDFA</color>
     <color name="background_gradient_end">#FFFFFF</color>
-    <color name="background_gradient_dark_start">#0D1B1A</color>
-    <color name="background_gradient_dark_end">#121212</color>
+    <color name="background_gradient_dark_start">#0A1A18</color>
+    <color name="background_gradient_dark_end">#0F1419</color>
 
     <!-- Card and Component Colors -->
     <color name="card_background_light">#FFFFFF</color>
@@ -123,24 +123,24 @@
     <color name="card_shadow_dark">#0A0A0A</color>
 
     <!-- Text Colors -->
-    <color name="text_primary_light">#212121</color>
-    <color name="text_secondary_light">#616161</color>
-    <color name="text_hint_light">#9E9E9E</color>
-    <color name="text_primary_dark">#E0E0E0</color>
-    <color name="text_secondary_dark">#BDBDBD</color>
-    <color name="text_hint_dark">#757575</color>
+    <color name="text_primary_light">#1E293B</color>
+    <color name="text_secondary_light">#64748B</color>
+    <color name="text_hint_light">#94A3B8</color>
+    <color name="text_primary_dark">#E2E8F0</color>
+    <color name="text_secondary_dark">#94A3B8</color>
+    <color name="text_hint_dark">#64748B</color>
 
     <!-- Interactive States -->
-    <color name="ripple_light">#1A0FB8AD</color>
-    <color name="ripple_dark">#1A3CCF91</color>
-    <color name="pressed_light">#0D0FB8AD</color>
-    <color name="pressed_dark">#0D3CCF91</color>
+    <color name="ripple_light">#1A0EA99F</color>
+    <color name="ripple_dark">#1A5EEDC7</color>
+    <color name="pressed_light">#0D0EA99F</color>
+    <color name="pressed_dark">#0D5EEDC7</color>
 
     <!-- Status Bar and Navigation -->
-    <color name="status_bar_light">#0FB8AD</color>
-    <color name="status_bar_dark">#003A36</color>
+    <color name="status_bar_light">#0EA99F</color>
+    <color name="status_bar_dark">#00332F</color>
     <color name="navigation_bar_light">#FFFFFF</color>
-    <color name="navigation_bar_dark">#121212</color>
+    <color name="navigation_bar_dark">#0F1419</color>
 
     <!-- Scan Theme Colors -->
     <color name="scan_active">#3CCF91</color>

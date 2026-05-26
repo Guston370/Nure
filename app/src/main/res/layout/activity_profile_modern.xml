@@ -137,7 +137,7 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/bottom_nav_height_enhanced"
+        android:background="@drawable/home_background_gradient"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -145,7 +145,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="@dimen/spacing_lg"
-            android:paddingBottom="@dimen/spacing_xxxl">
+            android:clipToPadding="false"
+            android:paddingBottom="100dp">
 
             <!-- Health Statistics Card -->
             <com.google.android.material.card.MaterialCardView
@@ -864,29 +865,11 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Bottom Navigation -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
+    <!-- Classy Bottom Navigation -->
+    <include
+        layout="@layout/bottom_nav_classy"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_nav_height_enhanced"
-        android:layout_gravity="bottom"
-        android:background="@color/bottom_nav_background"
-        android:elevation="@dimen/elevation_lg"
-        android:animateLayoutChanges="true"
-        android:paddingTop="16dp"
-        android:paddingBottom="20dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        app:itemIconTint="@drawable/bottom_nav_icon_enhanced_selector"
-        app:itemTextColor="@drawable/bottom_nav_text_enhanced_selector"
-        app:itemTextAppearanceActive="@style/BottomNavTextEnhancedActive"
-        app:itemTextAppearanceInactive="@style/BottomNavTextEnhancedInactive"
-        app:itemIconSize="@dimen/bottom_nav_icon_size"
-        app:labelVisibilityMode="selected"
-        app:itemRippleColor="@color/health_mint_green"
-        app:itemPaddingTop="8dp"
-        app:itemPaddingBottom="8dp"
-        app:itemActiveIndicatorStyle="@style/BottomNavActiveIndicator"
-        app:menu="@menu/bottom_navigation_menu" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

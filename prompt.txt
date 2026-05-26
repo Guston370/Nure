@@ -1,0 +1,1 @@
+i want to improve the home page for my application. currently it is very basic and does not follow the current scheme too. the theme of the app is properly depicted in the logo with a light green colour. i have added the reference. you dont need to exactly follow it but the UI needs to be clean and attractive.
