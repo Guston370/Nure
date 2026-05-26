@@ -21,9 +21,11 @@ public class DataQueueEntity {
     // Status can be: 'pending', 'uploading', 'failed'
     public String status;
 
+    public double yoloConfidence;
+
     public DataQueueEntity(@NonNull String uuid, String label, String barcode, 
                            String localImagePath, long timestamp, String source, 
-                           String deviceId, String status) {
+                           String deviceId, String status, double yoloConfidence) {
         this.uuid = uuid;
         this.label = label;
         this.barcode = barcode;
@@ -32,5 +34,6 @@ public class DataQueueEntity {
         this.source = source;
         this.deviceId = deviceId;
         this.status = status;
+        this.yoloConfidence = yoloConfidence;
     }
 }

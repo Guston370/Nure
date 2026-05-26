@@ -87,6 +87,9 @@ public class VerticalScannerActivity extends BaseActivity {
     private boolean isFlashOn = false;
     private boolean isScanning = false;
     private boolean isCapturing = false;
+
+    private File fallbackPhotoFile = null;
+    private double fallbackYoloConfidence = 0.0;
     
     private OkHttpClient httpClient;
     
@@ -345,10 +348,29 @@ public class VerticalScannerActivity extends BaseActivity {
         
         com.example.healthscanner.network.PipelineManager.verifyBarcodeStrictly(barcode, new com.example.healthscanner.network.PipelineManager.VerificationCallback() {
             @Override
-            public void onVerified(String label, String source) {
+            public void onVerified(String label, String apiSource) {
                 runOnUiThread(() -> {
-                    showScanStatus("✅ Label Secured! Capturing Image automatically...", true);
-                    capturePhotoForOfflineSync(label, barcode, source);
+                    showScanStatus("✅ Label Secured! Syncing data...", true);
+                    
+                    String actualSource = apiSource;
+                    boolean isFallback = (fallbackPhotoFile != null);
+                    String fallbackPath = isFallback ? fallbackPhotoFile.getAbsolutePath() : null;
+                    double fallbackConf = fallbackYoloConfidence;
+
+                    if (isFallback) {
+                        actualSource = "barcode_fallback";
+                    }
+                    
+                    capturePhotoForOfflineSync(label, barcode, actualSource);
+                    
+                    if (isFallback) {
+                        // Display product details immediately as requested
+                        Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
+                        intent.putExtra("image_path", fallbackPath);
+                        intent.putExtra("product", label);
+                        intent.putExtra("confidence", fallbackConf);
+                        startActivity(intent);
+                    }
                 });
             }
 
@@ -391,6 +413,22 @@ public class VerticalScannerActivity extends BaseActivity {
     }
 
     private void capturePhotoForOfflineSync(String label, String barcode, String source) {
+        if (fallbackPhotoFile != null) {
+            try {
+                android.graphics.Bitmap bitmap = android.graphics.BitmapFactory.decodeFile(fallbackPhotoFile.getAbsolutePath());
+                com.example.healthscanner.network.PipelineManager.commitToOfflineQueue(VerticalScannerActivity.this, label, barcode, bitmap, source, fallbackYoloConfidence);
+                
+                showScanStatus("✅ Locked in SQLite offline queue! Syncing invisibly.", true);
+                
+                scanStatusCard.postDelayed(() -> {
+                    isScanning = false;
+                    setCaptureButtonEnabled(true);
+                    showScanStatus("Ready", true);
+                }, 3000);
+            } catch (Exception e) {}
+            return;
+        }
+
         if (imageCapture == null) {
             isScanning = false;
             return;
@@ -410,7 +448,7 @@ public class VerticalScannerActivity extends BaseActivity {
                     public void onImageSaved(@androidx.annotation.NonNull androidx.camera.core.ImageCapture.OutputFileResults outputFileResults) {
                         try {
                             android.graphics.Bitmap bitmap = android.graphics.BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-                            com.example.healthscanner.network.PipelineManager.commitToOfflineQueue(VerticalScannerActivity.this, label, barcode, bitmap, source);
+                            com.example.healthscanner.network.PipelineManager.commitToOfflineQueue(VerticalScannerActivity.this, label, barcode, bitmap, source, 0.0);
                             
                             showScanStatus("✅ Locked in SQLite offline queue! Syncing invisibly.", true);
                             
@@ -459,8 +497,40 @@ public class VerticalScannerActivity extends BaseActivity {
      * Capture a photo and send it to the YOLO API.
      */
     private void capturePhotoForDetection() {
-        // Disabled YOLO bounding fallback explicitly due to Cloud Firestore constraint requirements.
-        showScanStatus("❌ YOLO Detection disabled. Strict Barcode scanning is mandatory.", false);
+        if (imageCapture == null) {
+            isCapturing = false;
+            showScanStatus("❌ Camera not ready", false);
+            return;
+        }
+
+        isCapturing = true;
+        setCaptureButtonEnabled(false);
+        showScanStatus("📸 Capturing image for detection...", true);
+
+        File photoFile = new File(getCacheDir(), "DETECT_" + System.currentTimeMillis() + ".jpg");
+        androidx.camera.core.ImageCapture.OutputFileOptions options = 
+                new androidx.camera.core.ImageCapture.OutputFileOptions.Builder(photoFile).build();
+
+        imageCapture.takePicture(options, androidx.core.content.ContextCompat.getMainExecutor(this),
+                new androidx.camera.core.ImageCapture.OnImageSavedCallback() {
+                    @Override
+                    public void onImageSaved(@NonNull androidx.camera.core.ImageCapture.OutputFileResults outputFileResults) {
+                        runOnUiThread(() -> {
+                            showScanStatus("🔍 Analyzing image with YOLO...", true);
+                            detectProductViaApi(photoFile);
+                        });
+                    }
+
+                    @Override
+                    public void onError(@NonNull androidx.camera.core.ImageCaptureException exception) {
+                        Log.e(TAG, "Photo capture failed: " + exception.getMessage(), exception);
+                        runOnUiThread(() -> {
+                            isCapturing = false;
+                            setCaptureButtonEnabled(true);
+                            showScanStatus("❌ Capture failed", false);
+                        });
+                    }
+                });
     }
 
     private void detectProductViaApi(File photoFile) {
@@ -528,7 +598,7 @@ public class VerticalScannerActivity extends BaseActivity {
                             Intent intent = new Intent(VerticalScannerActivity.this, ProductSelectionActivity.class);
                             intent.putExtra("image_path", photoFile.getAbsolutePath());
                             startActivity(intent);
-                        } else if (confidence > 0.8) {
+                        } else if (confidence >= 0.6) {
                             showScanStatus("✅ Product detected!", true);
                             
                             Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
@@ -540,22 +610,33 @@ public class VerticalScannerActivity extends BaseActivity {
                             }
                             startActivity(intent);
                         } else {
-                            showScanStatus("🔍 Low confidence, falling back to OCR...", true);
-                            runOcrFallback(photoFile);
+                            showScanStatus("🔍 Low confidence. Falling back to Barcode Scanner...", true);
+                            fallbackPhotoFile = photoFile;
+                            fallbackYoloConfidence = confidence;
+                            
+                            // Immediately force barcode mode
+                            if (currentMode != ScanMode.BARCODE) {
+                                currentMode = ScanMode.BARCODE;
+                                updateModeUI();
+                                bindCameraUseCases();
+                            }
                         }
                     });
 
                 } catch (Exception e) {
-                    Log.e(TAG, "JSON parsing error", e);
+                    Log.e(TAG, "JSON parsing error / Invalid Detection", e);
                     runOnUiThread(() -> {
                         isCapturing = false;
                         setCaptureButtonEnabled(true);
-                        showScanStatus("❌ Error parsing response", false);
+                        showScanStatus("🔍 Detection failed. Falling back to Barcode Scanner...", true);
+                        fallbackPhotoFile = photoFile;
+                        fallbackYoloConfidence = 0.0;
                         
-                        Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
-                        intent.putExtra("image_path", photoFile.getAbsolutePath());
-                        intent.putExtra("error", "Error parsing response: " + e.getMessage());
-                        startActivity(intent);
+                        if (currentMode != ScanMode.BARCODE) {
+                            currentMode = ScanMode.BARCODE;
+                            updateModeUI();
+                            bindCameraUseCases();
+                        }
                     });
                 }
             }

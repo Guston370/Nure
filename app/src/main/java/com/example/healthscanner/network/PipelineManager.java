@@ -50,7 +50,7 @@ public class PipelineManager {
     }
 
     // Phase 2: Capture Image & Commit Offline Queue
-    public static void commitToOfflineQueue(Context context, String label, String barcode, Bitmap bitmap, String source) {
+    public static void commitToOfflineQueue(Context context, String label, String barcode, Bitmap bitmap, String source, double yoloConfidence) {
         new Thread(() -> {
             try {
                 // 1. Label Validation & Sanitization
@@ -93,7 +93,8 @@ public class PipelineManager {
                         timestampMs,
                         source,
                         deviceId,
-                        "pending"
+                        "pending",
+                        yoloConfidence
                 );
 
                 AppDatabase.getDatabase(context).queueDao().insert(entity);
