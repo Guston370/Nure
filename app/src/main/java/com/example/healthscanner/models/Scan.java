@@ -16,7 +16,7 @@ public class Scan {
     private String category; // "food", "cosmetics", "beverages", etc.
     private String subCategory; // "snacks", "skincare", "makeup", etc.
     private Date scanDate;
-    private double healthScore; // 0-10 scale
+    private double healthScore; // 0-100 scale
     private int calories;
     private String brand;
     private String imageUrl;

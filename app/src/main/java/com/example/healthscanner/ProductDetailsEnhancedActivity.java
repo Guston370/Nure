@@ -578,7 +578,7 @@ public class ProductDetailsEnhancedActivity extends AppCompatActivity {
                 
                 // Calculate if this is a healthy choice (health score >= 7.0)
                 double healthScore = scanData.getDouble("healthScore");
-                if (healthScore >= 70.0) { // Assuming health score is 0-100
+                if (healthScore >= 70.0) { // Health score is on 0-100 scale
                     SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
                     int currentHealthyChoices = prefs.getInt("healthy_choices", 0);
                     updates.put("healthyChoices", currentHealthyChoices + 1);
@@ -602,7 +602,7 @@ public class ProductDetailsEnhancedActivity extends AppCompatActivity {
                 
                 if (validScans > 0) {
                     double avgHealthScore = totalHealthScore / validScans;
-                    updates.put("averageHealthScore", avgHealthScore / 10.0); // Convert to 0-10 scale
+                    updates.put("averageHealthScore", avgHealthScore); // Keep on 0-100 scale
                 }
                 
                 // Use FirebaseManager to update user statistics

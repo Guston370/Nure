@@ -51,8 +51,62 @@ def _load_categories():
     return data["categories"], data.get("display_names", {})
 
 
+class CustomCNN(nn.Module):
+    """Custom Convolutional Neural Network (CNN) for Food Classification."""
+    def __init__(self, num_classes):
+        super(CustomCNN, self).__init__()
+        self.features = nn.Sequential(
+            # Block 1: Input 3x224x224 -> Conv 32x224x224 -> MaxPool 32x112x112
+            nn.Conv2d(3, 32, kernel_size=3, padding=1),
+            nn.BatchNorm2d(32),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(32, 32, kernel_size=3, padding=1),
+            nn.BatchNorm2d(32),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            
+            # Block 2: Input 32x112x112 -> Conv 64x112x112 -> MaxPool 64x56x56
+            nn.Conv2d(32, 64, kernel_size=3, padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(64, 64, kernel_size=3, padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            
+            # Block 3: Input 64x56x56 -> Conv 128x56x56 -> MaxPool 128x28x28
+            nn.Conv2d(64, 128, kernel_size=3, padding=1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(128, 128, kernel_size=3, padding=1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            
+            # Block 4: Input 128x28x28 -> Conv 256x28x28 -> MaxPool 256x14x14
+            nn.Conv2d(128, 256, kernel_size=3, padding=1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=2, stride=2)
+        )
+        
+        self.classifier = nn.Sequential(
+            nn.AdaptiveAvgPool2d((7, 7)),
+            nn.Flatten(),
+            nn.Linear(256 * 7 * 7, 512),
+            nn.ReLU(inplace=True),
+            nn.Dropout(0.5),
+            nn.Linear(512, num_classes)
+        )
+        
+    def forward(self, x):
+        x = self.features(x)
+        x = self.classifier(x)
+        return x
+
+
 class FoodClassifier:
-    """MobileNetV2-based food classifier with RLHF fine-tuning support."""
+    """Custom CNN-based food classifier with RLHF fine-tuning support."""
 
     def __init__(self):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -82,33 +136,21 @@ class FoodClassifier:
         print(f"[FoodClassifier] Loaded with {self.num_classes} food categories on {self.device}")
 
     def _build_model(self):
-        """Build MobileNetV2 with custom food classifier head."""
-        self.model = models.mobilenet_v2(pretrained=True)
-
-        # Freeze feature extractor layers
-        for param in self.model.features.parameters():
-            param.requires_grad = False
-
-        # Replace classifier head for our food categories
-        in_features = self.model.classifier[1].in_features
-        self.model.classifier = nn.Sequential(
-            nn.Dropout(0.3),
-            nn.Linear(in_features, 512),
-            nn.ReLU(),
-            nn.Dropout(0.2),
-            nn.Linear(512, self.num_classes)
-        )
-
+        """Build Custom CNN classifier."""
+        self.model = CustomCNN(self.num_classes)
         self.model = self.model.to(self.device)
 
         # Try loading saved weights
         weights_path = os.path.join(MODEL_DIR, "food_classifier.pth")
         if os.path.exists(weights_path):
-            state = torch.load(weights_path, map_location=self.device)
-            self.model.load_state_dict(state)
-            print("[FoodClassifier] Loaded fine-tuned weights")
+            try:
+                state = torch.load(weights_path, map_location=self.device)
+                self.model.load_state_dict(state)
+                print("[FoodClassifier] Loaded custom CNN fine-tuned weights")
+            except Exception as e:
+                print(f"[FoodClassifier] Error loading custom CNN weights: {e}. Starting fresh.")
         else:
-            print("[FoodClassifier] No fine-tuned weights found, using ImageNet fallback")
+            print("[FoodClassifier] No custom CNN weights found, using fresh initialization")
 
     def _load_imagenet_labels(self):
         """Load ImageNet class labels for fallback classification."""
@@ -196,15 +238,15 @@ class FoodClassifier:
 
     def fine_tune(self, images_and_labels, epochs=5, lr=0.001):
         """
-        Fine-tune the classifier head using RLHF feedback data.
+        Fine-tune the custom CNN model using RLHF feedback data.
         images_and_labels: list of (image_path, label_index) tuples
         """
         if not images_and_labels:
             return {"status": "no_data"}
 
         self.model.train()
-        # Only train classifier head
-        optimizer = torch.optim.Adam(self.model.classifier.parameters(), lr=lr)
+        # Train all parameters of our custom CNN
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=lr)
         criterion = nn.CrossEntropyLoss()
 
         total_loss = 0

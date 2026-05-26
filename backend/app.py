@@ -137,7 +137,7 @@ def retrain():
 def model_stats():
     """Get current model performance and RLHF statistics."""
     stats = rlhf.get_stats()
-    stats["model"] = "MobileNetV2 (Transfer Learning)"
+    stats["model"] = "Custom CNN (PyTorch)"
     stats["num_categories"] = classifier.num_classes
     stats["device"] = str(classifier.device)
     return jsonify(stats)

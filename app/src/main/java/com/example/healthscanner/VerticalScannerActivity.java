@@ -29,7 +29,15 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import java.io.IOException;
 
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
@@ -458,11 +466,7 @@ public class VerticalScannerActivity extends BaseActivity {
                     
                     if (!predictedProduct.equals("unknown")) {
                         showScanStatus("✅ Food recognized: " + predictedProduct.replace("_", " "), true);
-                        Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
-                        intent.putExtra("image_path", photoFile.getAbsolutePath());
-                        intent.putExtra("product", predictedProduct);
-                        intent.putExtra("confidence", (double) finalConfidence);
-                        startActivity(intent);
+                        fetchNutritionAndLaunchResult(photoFile, predictedProduct, (double) finalConfidence);
                     } else {
                         showScanStatus("⚠️ Low confidence, trying OCR...", true);
                         runOcrFallback(photoFile);
@@ -570,11 +574,7 @@ public class VerticalScannerActivity extends BaseActivity {
                 isCapturing = false;
                 setCaptureButtonEnabled(true);
                 showScanStatus("✅ OCR Matched: " + finalFood.replace("_", " "), true);
-                Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
-                intent.putExtra("image_path", photoFile.getAbsolutePath());
-                intent.putExtra("product", finalFood);
-                intent.putExtra("confidence", 0.9); // OCR is high confidence
-                startActivity(intent);
+                fetchNutritionAndLaunchResult(photoFile, finalFood, 0.9);
             });
         } else {
             runOnUiThread(() -> {
@@ -732,4 +732,107 @@ public class VerticalScannerActivity extends BaseActivity {
             cameraProvider.unbindAll();
         }
     }
+
+    private void fetchNutritionAndLaunchResult(File photoFile, String foodKey, double confidence) {
+        showScanStatus("🔍 Loading nutrition from database...", true);
+        if (scanProgress != null) scanProgress.setVisibility(View.VISIBLE);
+
+        String cleanKey = foodKey.toLowerCase().replace(" ", "_");
+        com.google.firebase.firestore.FirebaseFirestore db = com.google.firebase.firestore.FirebaseFirestore.getInstance();
+
+        db.collection("nutrition_dataset").document(cleanKey).get()
+            .addOnCompleteListener(task -> {
+                if (scanProgress != null) scanProgress.setVisibility(View.GONE);
+                
+                boolean isVegetarian = true;
+                boolean isVegan = true;
+                int healthScore = 80;
+                String servingSize = "1 serving (100g)";
+                String ingredientsJson = "[\"" + foodKey.replace("_", " ").substring(0, 1).toUpperCase() + foodKey.replace("_", " ").substring(1) + "\"]";
+                String nutritionJson = "{}";
+                String healthTagsJson = "[]";
+                String allergensJson = "[]";
+                String similarProductsStr = "[]";
+
+                // Standard vegetarianness logic as fallback
+                String lowerLabel = cleanKey.toLowerCase();
+                if (lowerLabel.contains("chicken") || lowerLabel.contains("beef") || 
+                    lowerLabel.contains("fish") || lowerLabel.contains("mutton") || 
+                    lowerLabel.contains("meat") || lowerLabel.contains("prawn") ||
+                    lowerLabel.contains("egg") || lowerLabel.contains("omelette")) {
+                    isVegetarian = false;
+                    isVegan = false;
+                } else if (lowerLabel.contains("milk") || lowerLabel.contains("butter") || 
+                           lowerLabel.contains("paneer") || lowerLabel.contains("cheese") || 
+                           lowerLabel.contains("cream") || lowerLabel.contains("lassi") || 
+                           lowerLabel.contains("kheer") || lowerLabel.contains("yogurt")) {
+                    isVegan = false;
+                }
+
+                if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
+                    com.google.firebase.firestore.DocumentSnapshot doc = task.getResult();
+                    Log.d(TAG, "✅ Loaded nutrition from Firestore for: " + cleanKey);
+                    
+                    isVegetarian = doc.getBoolean("is_vegetarian") != null ? doc.getBoolean("is_vegetarian") : isVegetarian;
+                    isVegan = doc.getBoolean("is_vegan") != null ? doc.getBoolean("is_vegan") : isVegan;
+                    
+                    double calories = doc.getDouble("calories") != null ? doc.getDouble("calories") : 0.0;
+                    double protein = doc.getDouble("protein_g") != null ? doc.getDouble("protein_g") : 0.0;
+                    double fat = doc.getDouble("fat_g") != null ? doc.getDouble("fat_g") : 0.0;
+                    double carbs = doc.getDouble("carbohydrates_g") != null ? doc.getDouble("carbohydrates_g") : 0.0;
+                    double fiber = doc.getDouble("fiber_g") != null ? doc.getDouble("fiber_g") : 0.0;
+
+                    healthScore = isVegetarian ? (calories < 100 ? 90 : 80) : 60;
+
+                    // Build nutrition JSON mapping
+                    try {
+                        org.json.JSONObject nutrObj = new org.json.JSONObject();
+                        nutrObj.put("calories", String.format(Locale.getDefault(), "%.0f kcal", calories));
+                        nutrObj.put("protein", String.format(Locale.getDefault(), "%.1fg", protein));
+                        nutrObj.put("total_fat", String.format(Locale.getDefault(), "%.1fg", fat));
+                        nutrObj.put("carbohydrates", String.format(Locale.getDefault(), "%.1fg", carbs));
+                        nutrObj.put("fiber", String.format(Locale.getDefault(), "%.1fg", fiber));
+                        nutritionJson = nutrObj.toString();
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error building nutrition JSON", e);
+                    }
+
+                    // Build health tags
+                    try {
+                        org.json.JSONArray tags = new org.json.JSONArray();
+                        if (calories < 100) tags.put("Low Calorie");
+                        if (fiber > 2.0) tags.put("High Fiber");
+                        if (protein > 5.0) tags.put("Good Protein Source");
+                        healthTagsJson = tags.toString();
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error building tags", e);
+                    }
+
+                } else {
+                    Log.d(TAG, "⚠️ Firestore doc not found for: " + cleanKey + ". Using standard defaults.");
+                    try {
+                        org.json.JSONObject nutrObj = new org.json.JSONObject();
+                        nutrObj.put("calories", "—");
+                        nutritionJson = nutrObj.toString();
+                    } catch (Exception e) {}
+                }
+
+                Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
+                intent.putExtra("image_path", photoFile.getAbsolutePath());
+                intent.putExtra("product", foodKey);
+                intent.putExtra("confidence", confidence);
+                intent.putExtra("is_vegetarian", isVegetarian);
+                intent.putExtra("is_vegan", isVegan);
+                intent.putExtra("health_score", healthScore);
+                intent.putExtra("serving_size", servingSize);
+                intent.putExtra("ingredients_json", ingredientsJson);
+                intent.putExtra("nutrition_json", nutritionJson);
+                intent.putExtra("health_tags_json", healthTagsJson);
+                intent.putExtra("allergens_json", allergensJson);
+                intent.putExtra("similar_products", similarProductsStr);
+
+                startActivity(intent);
+            });
+    }
+
 }

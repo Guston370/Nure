@@ -320,16 +320,16 @@ public class AnalyticsActivity extends BaseActivity {
                 return;
             }
 
-            // Animate the score number
+            // Animate the score number (0-100 scale)
             ValueAnimator scoreAnimator = ValueAnimator.ofFloat(0f, (float) targetScore);
             scoreAnimator.setDuration(2000);
             scoreAnimator.addUpdateListener(animation -> {
                 float value = (float) animation.getAnimatedValue();
-                avgHealthScoreNumber.setText(String.format("%.1f", value));
+                avgHealthScoreNumber.setText(String.format("%.0f", value));
             });
 
-            // Animate the progress bar
-            int progressTarget = (int) (targetScore * 10); // Convert to 0-100 scale
+            // Animate the progress bar (already 0-100 scale)
+            int progressTarget = (int) targetScore;
             ValueAnimator progressAnimator = ValueAnimator.ofInt(0, progressTarget);
             progressAnimator.setDuration(2000);
             progressAnimator.addUpdateListener(animation -> {
@@ -359,19 +359,19 @@ public class AnalyticsActivity extends BaseActivity {
                     .append(totalScans > 1 ? "s" : "")
                     .append(". Keep scanning to build your health profile and get more detailed insights!");
         } else {
-            // Generate insights based on real data
-            if (avgHealthScore >= 7.0) {
+            // Generate insights based on real data (health score is 0-100 scale)
+            if (avgHealthScore >= 70) {
                 insights.append("🌟 Excellent choices! Your average health score of ")
-                        .append(String.format("%.1f", avgHealthScore))
-                        .append(" shows you're making great nutritional decisions. ");
-            } else if (avgHealthScore >= 5.0) {
+                        .append(String.format("%.0f", avgHealthScore))
+                        .append("/100 shows you're making great nutritional decisions. ");
+            } else if (avgHealthScore >= 50) {
                 insights.append("👍 Good progress! Your average health score is ")
-                        .append(String.format("%.1f", avgHealthScore))
-                        .append(". Consider choosing more products with higher nutritional value. ");
+                        .append(String.format("%.0f", avgHealthScore))
+                        .append("/100. Consider choosing more products with higher nutritional value. ");
             } else if (avgHealthScore > 0) {
                 insights.append("💪 Room for improvement! Your average health score is ")
-                        .append(String.format("%.1f", avgHealthScore))
-                        .append(". Try scanning more fruits, vegetables, and whole grain products. ");
+                        .append(String.format("%.0f", avgHealthScore))
+                        .append("/100. Try scanning more fruits, vegetables, and whole grain products. ");
             }
 
             if (avgCalories > 400) {
@@ -527,10 +527,9 @@ public class AnalyticsActivity extends BaseActivity {
         // Animate total scans
         animateCounterValue(totalScansNumber, stats.totalScans);
 
-        // Animate health score
+        // Animate health score (0-100 scale)
         if (stats.averageHealthScore > 0) {
             animateHealthScore(stats.averageHealthScore);
-            animateCounterValue(avgHealthScoreNumber, (int) (stats.averageHealthScore * 10));
         } else {
             if (avgHealthScoreNumber != null)
                 avgHealthScoreNumber.setText("--");
@@ -698,19 +697,19 @@ public class AnalyticsActivity extends BaseActivity {
                     .append(stats.totalScans > 1 ? "s" : "")
                     .append(". Keep scanning to build your health profile and get more detailed insights!");
         } else {
-            // Generate insights based on real data
-            if (stats.averageHealthScore >= 7.0) {
+            // Generate insights based on real data (health score is 0-100 scale)
+            if (stats.averageHealthScore >= 70) {
                 insights.append("🌟 Excellent choices! Your average health score of ")
-                        .append(String.format("%.1f", stats.averageHealthScore))
-                        .append(" shows you're making great nutritional decisions. ");
-            } else if (stats.averageHealthScore >= 5.0) {
+                        .append(String.format("%.0f", stats.averageHealthScore))
+                        .append("/100 shows you're making great nutritional decisions. ");
+            } else if (stats.averageHealthScore >= 50) {
                 insights.append("👍 Good progress! Your average health score is ")
-                        .append(String.format("%.1f", stats.averageHealthScore))
-                        .append(". Consider choosing more products with higher nutritional value. ");
+                        .append(String.format("%.0f", stats.averageHealthScore))
+                        .append("/100. Consider choosing more products with higher nutritional value. ");
             } else if (stats.averageHealthScore > 0) {
                 insights.append("💪 Room for improvement! Your average health score is ")
-                        .append(String.format("%.1f", stats.averageHealthScore))
-                        .append(". Try scanning more fruits, vegetables, and whole grain products. ");
+                        .append(String.format("%.0f", stats.averageHealthScore))
+                        .append("/100. Try scanning more fruits, vegetables, and whole grain products. ");
             }
 
             if (stats.averageCalories > 400) {

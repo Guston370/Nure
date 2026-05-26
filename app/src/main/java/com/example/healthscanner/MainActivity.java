@@ -186,6 +186,9 @@ public class MainActivity extends BaseActivity {
             // Start automatic sync service
             startAutoSync();
 
+            // Populate initial nutrition dataset in Firestore if needed
+            checkAndPopulateNutritionDataset();
+
         } catch (Exception e) {
             Log.e(TAG, "Error initializing components: " + e.getMessage(), e);
         }
@@ -1157,6 +1160,100 @@ public class MainActivity extends BaseActivity {
         } catch (Exception e) {
             Log.e(TAG, "Error ensuring Google user in Firebase: " + e.getMessage(), e);
         }
+    }
+
+    private void checkAndPopulateNutritionDataset() {
+        com.google.firebase.firestore.FirebaseFirestore db = com.google.firebase.firestore.FirebaseFirestore.getInstance();
+        
+        db.collection("nutrition_dataset").document("apple").get()
+            .addOnCompleteListener(task -> {
+                if (task.isSuccessful() && !task.getResult().exists()) {
+                    Log.d(TAG, "Nutrition dataset collection is empty. Populating from CSV...");
+                    populateNutritionDatasetFromCSV(db);
+                } else {
+                    Log.d(TAG, "Nutrition dataset already populated.");
+                }
+            });
+    }
+
+    private void populateNutritionDatasetFromCSV(com.google.firebase.firestore.FirebaseFirestore db) {
+        try {
+            java.io.InputStream is = getAssets().open("nutrition_dataset.csv");
+            java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(is));
+            String line;
+            
+            // Skip header
+            reader.readLine();
+            
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+                
+                String[] parts = parseCsvLine(line);
+                if (parts.length < 7) continue;
+                
+                String rawLabel = parts[0].trim();
+                String label = rawLabel.toLowerCase().replace(" ", "_");
+                double calories = Double.parseDouble(parts[2]);
+                double protein = Double.parseDouble(parts[3]);
+                double fat = Double.parseDouble(parts[4]);
+                double carbs = Double.parseDouble(parts[5]);
+                double fiber = Double.parseDouble(parts[6]);
+                
+                java.util.Map<String, Object> food = new java.util.HashMap<>();
+                food.put("label", rawLabel);
+                food.put("calories", calories);
+                food.put("protein_g", protein);
+                food.put("fat_g", fat);
+                food.put("carbohydrates_g", carbs);
+                food.put("fiber_g", fiber);
+                
+                boolean isVeg = true;
+                boolean isVegan = true;
+                String lowerLabel = rawLabel.toLowerCase();
+                if (lowerLabel.contains("chicken") || lowerLabel.contains("beef") || 
+                    lowerLabel.contains("fish") || lowerLabel.contains("mutton") || 
+                    lowerLabel.contains("meat") || lowerLabel.contains("prawn") ||
+                    lowerLabel.contains("egg") || lowerLabel.contains("omelette")) {
+                    isVeg = false;
+                    isVegan = false;
+                } else if (lowerLabel.contains("milk") || lowerLabel.contains("butter") || 
+                           lowerLabel.contains("paneer") || lowerLabel.contains("cheese") || 
+                           lowerLabel.contains("cream") || lowerLabel.contains("lassi") || 
+                           lowerLabel.contains("kheer") || lowerLabel.contains("yogurt") || 
+                           lowerLabel.contains("kulfi")) {
+                    isVegan = false;
+                }
+                
+                food.put("is_vegetarian", isVeg);
+                food.put("is_vegan", isVegan);
+                
+                db.collection("nutrition_dataset").document(label).set(food)
+                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Uploaded " + label + " to nutrition_dataset"))
+                    .addOnFailureListener(e -> Log.e(TAG, "Failed uploading " + label, e));
+            }
+            reader.close();
+        } catch (Exception e) {
+            Log.e(TAG, "Error populating from CSV", e);
+        }
+    }
+
+    private String[] parseCsvLine(String line) {
+        java.util.List<String> list = new java.util.ArrayList<>();
+        boolean inQuotes = false;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (c == '"') {
+                inQuotes = !inQuotes;
+            } else if (c == ',' && !inQuotes) {
+                list.add(sb.toString());
+                sb.setLength(0);
+            } else {
+                sb.append(c);
+            }
+        }
+        list.add(sb.toString());
+        return list.toArray(new String[0]);
     }
 
 }
