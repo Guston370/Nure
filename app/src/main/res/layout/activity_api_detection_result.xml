@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_page_background"
+    android:background="@color/md_theme_light_background"
     android:fillViewport="true">
 
     <LinearLayout
@@ -17,33 +17,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingTop="52dp"
-            android:paddingBottom="16dp"
+            android:padding="16dp"
+            android:paddingTop="40dp"
             android:gravity="center_vertical"
-            android:background="@drawable/scanner_top_gradient_enhanced">
+            android:background="@color/md_theme_light_primary">
 
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="8dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="#1FFFFFFF"
-                app:cardBackgroundColor="#BF141419">
-
-                <ImageView
-                    android:id="@+id/btn_back"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_arrow_back"
-                    android:contentDescription="Back"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:tint="@color/white" />
-
-            </com.google.android.material.card.MaterialCardView>
+            <ImageView
+                android:id="@+id/btn_back"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_arrow_back"
+                android:contentDescription="Back"
+                android:padding="8dp"
+                app:tint="@color/white" />
 
             <TextView
                 android:layout_width="0dp"
@@ -54,20 +40,18 @@
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:gravity="center"
-                android:layout_marginEnd="48dp" />
+                android:layout_marginEnd="40dp" />
 
         </LinearLayout>
 
         <!-- Captured Image Preview -->
-        <com.google.android.material.card.MaterialCardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/glass_card_stroke"
-            app:cardBackgroundColor="@color/glass_card_background">
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
+            app:cardBackgroundColor="@color/white">
 
             <ImageView
                 android:id="@+id/capturedImageView"
@@ -77,25 +61,18 @@
                 android:contentDescription="Captured product image"
                 android:background="@color/md_theme_light_surfaceVariant" />
 
-        </com.google.android.material.card.MaterialCardView>
+        </androidx.cardview.widget.CardView>
 
-<<<<<<< Updated upstream
         <!-- Product Name Card -->
         <androidx.cardview.widget.CardView
-=======
-        <!-- Product Name + Confidence Card -->
-        <com.google.android.material.card.MaterialCardView
->>>>>>> Stashed changes
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="12dp"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/glass_card_stroke"
-            app:cardBackgroundColor="@color/glass_card_background">
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/white">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -106,15 +83,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-<<<<<<< Updated upstream
                     android:text="Detected Product"
                     android:textColor="@color/text_secondary_light"
                     android:textSize="13sp"
-=======
-                    android:text="RECOGNIZED FOOD"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp"
->>>>>>> Stashed changes
                     android:textAllCaps="true"
                     android:letterSpacing="0.08" />
 
@@ -123,49 +94,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="—"
-<<<<<<< Updated upstream
                     android:textColor="@color/text_primary_light"
                     android:textSize="28sp"
                     android:textStyle="bold"
                     android:layout_marginTop="6dp" />
 
-=======
-                    android:textColor="@color/text_primary"
-                    android:textSize="26sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="6dp" />
-
-                <!-- Diet Badge + Serving Size Row -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginTop="8dp">
-
-                    <TextView
-                        android:id="@+id/dietBadgeText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        android:visibility="gone" />
-
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
-
-                    <TextView
-                        android:id="@+id/servingSizeText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="13sp"
-                        android:textColor="@color/text_secondary"
-                        android:visibility="gone" />
-                </LinearLayout>
-
->>>>>>> Stashed changes
                 <!-- Confidence Bar -->
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -177,13 +110,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-<<<<<<< Updated upstream
                         android:text="Confidence"
                         android:textColor="@color/text_secondary_light"
-=======
-                        android:text="AI Confidence"
-                        android:textColor="@color/text_secondary"
->>>>>>> Stashed changes
                         android:textSize="14sp" />
 
                     <ProgressBar
@@ -212,154 +140,10 @@
 
             </LinearLayout>
 
-        </com.google.android.material.card.MaterialCardView>
+        </androidx.cardview.widget.CardView>
 
-<<<<<<< Updated upstream
-=======
-        <!-- Health Score + Tags Card -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/healthInfoCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="12dp"
-            android:visibility="gone"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/glass_card_stroke"
-            app:cardBackgroundColor="@color/glass_card_background">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="HEALTH SCORE"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp"
-                        android:textAllCaps="true"
-                        android:letterSpacing="0.08" />
-
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
-
-                    <TextView
-                        android:id="@+id/healthScoreText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="—"
-                        android:textSize="28sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/health_excellent" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="/100"
-                        android:textSize="14sp"
-                        android:textColor="@color/text_secondary"
-                        android:layout_marginStart="2dp" />
-
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="12dp"
-                    android:background="@color/divider_light" />
-
-                <!-- Health Tags (FlowLayout-like) -->
-                <LinearLayout
-                    android:id="@+id/healthTagsContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="start"
-                    android:baselineAligned="false" />
-
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-        <!-- Ingredients Card -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/ingredientsCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="12dp"
-            android:visibility="gone"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/glass_card_stroke"
-            app:cardBackgroundColor="@color/glass_card_background">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🥘"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="INGREDIENTS"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp"
-                        android:textAllCaps="true"
-                        android:letterSpacing="0.08"
-                        android:layout_marginStart="8dp" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="6dp"
-                    android:background="@color/divider_light" />
-
-                <!-- Ingredients populated dynamically -->
-                <LinearLayout
-                    android:id="@+id/ingredientsContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" />
-
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
->>>>>>> Stashed changes
         <!-- Nutrition Card -->
-        <com.google.android.material.card.MaterialCardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/nutritionCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -367,11 +151,9 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="12dp"
             android:visibility="gone"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/glass_card_stroke"
-            app:cardBackgroundColor="@color/glass_card_background">
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/white">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -382,15 +164,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-<<<<<<< Updated upstream
                     android:text="Nutrition Facts"
                     android:textColor="@color/text_secondary_light"
                     android:textSize="13sp"
-=======
-                    android:text="NUTRITION FACTS"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp"
->>>>>>> Stashed changes
                     android:textAllCaps="true"
                     android:letterSpacing="0.08" />
 
@@ -410,10 +186,10 @@
 
             </LinearLayout>
 
-        </com.google.android.material.card.MaterialCardView>
+        </androidx.cardview.widget.CardView>
 
         <!-- Error Card (hidden by default) -->
-        <com.google.android.material.card.MaterialCardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/errorCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -422,10 +198,8 @@
             android:layout_marginBottom="12dp"
             android:visibility="gone"
             app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="1.5dp"
-            app:strokeColor="@color/md_theme_light_error"
-            app:cardBackgroundColor="#33EF4444">
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="#FFF3E0">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -438,7 +212,7 @@
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:src="@drawable/ic_warning"
-                    app:tint="@color/md_theme_light_error"
+                    app:tint="@color/warning_orange"
                     android:contentDescription="Warning" />
 
                 <TextView
@@ -448,45 +222,13 @@
                     android:layout_weight="1"
                     android:layout_marginStart="12dp"
                     android:text="Something went wrong"
-                    android:textColor="@color/white"
+                    android:textColor="#E65100"
                     android:textSize="14sp" />
 
             </LinearLayout>
 
-        </com.google.android.material.card.MaterialCardView>
+        </androidx.cardview.widget.CardView>
 
-<<<<<<< Updated upstream
-=======
-        <!-- RLHF Info Banner -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/bg_smoked_glass_card"
-            android:padding="14dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🧠"
-                android:textSize="20sp"
-                android:layout_marginEnd="12dp" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="This AI learns from your feedback. Confirm or correct the result to help it improve!"
-                android:textSize="12sp"
-                android:textColor="@color/text_secondary"
-                android:lineSpacingMultiplier="1.3" />
-        </LinearLayout>
-
->>>>>>> Stashed changes
         <!-- Action Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -505,17 +247,15 @@
                 android:text="Scan Another"
                 android:textAllCaps="false"
                 android:textSize="15sp"
-                android:textColor="@color/white"
-                app:cornerRadius="16dp"
-                android:background="@drawable/bg_smoked_glass_button_primary"
-                app:backgroundTint="@null"
+                app:cornerRadius="14dp"
+                app:backgroundTint="@color/md_theme_light_primary"
                 app:icon="@drawable/ic_photo_capture"
                 app:iconGravity="textStart"
-                app:iconPadding="8dp"
-                app:iconTint="@color/white" />
+                app:iconPadding="8dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnGoHome"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="52dp"
                 android:layout_weight="1"
@@ -523,16 +263,13 @@
                 android:text="Go Home"
                 android:textAllCaps="false"
                 android:textSize="15sp"
-                android:textColor="@color/white"
-                app:cornerRadius="16dp"
-                android:background="@drawable/bg_smoked_glass_card"
-                app:backgroundTint="@null"
-                app:strokeWidth="1dp"
-                app:strokeColor="#1FFFFFFF"
+                android:textColor="@color/md_theme_light_primary"
+                app:cornerRadius="14dp"
+                app:strokeColor="@color/md_theme_light_primary"
                 app:icon="@drawable/ic_home"
                 app:iconGravity="textStart"
                 app:iconPadding="8dp"
-                app:iconTint="@color/white" />
+                app:iconTint="@color/md_theme_light_primary" />
 
         </LinearLayout>
 
