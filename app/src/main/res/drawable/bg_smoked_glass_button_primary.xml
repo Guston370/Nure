@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nure — Premium Smoked Glass Primary Button (Cyan gradient) -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Soft shadow -->
+    <item
+        android:left="2dp"
+        android:right="2dp"
+        android:top="2dp"
+        android:bottom="-3dp">
+        <shape>
+            <corners android:radius="30dp" />
+            <solid android:color="#3006B6D4" />
+        </shape>
+    </item>
+
+    <!-- Gradient background -->
+    <item>
+        <shape>
+            <corners android:radius="30dp" />
+            <gradient
+                android:type="linear"
+                android:angle="135"
+                android:startColor="#FF06B6D4"
+                android:endColor="#FF10B981" />
+        </shape>
+    </item>
+
+    <!-- Top sheen -->
+    <item
+        android:bottom="26dp"
+        android:left="0dp"
+        android:right="0dp"
+        android:top="0dp">
+        <shape>
+            <corners
+                android:topLeftRadius="30dp"
+                android:topRightRadius="30dp"
+                android:bottomLeftRadius="0dp"
+                android:bottomRightRadius="0dp" />
+            <gradient
+                android:type="linear"
+                android:angle="270"
+                android:startColor="#20FFFFFF"
+                android:endColor="#00FFFFFF" />
+        </shape>
+    </item>
+
+</layer-list>

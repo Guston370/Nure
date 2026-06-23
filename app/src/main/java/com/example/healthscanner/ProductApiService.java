@@ -29,6 +29,11 @@ public class ProductApiService {
         void onError(String error);
     }
     
+    public interface SearchCallback {
+        void onSuccess(java.util.List<ProductInfo> products);
+        void onError(String error);
+    }
+    
     public static class ProductInfo {
         public String name;
         public String brand;
@@ -70,6 +75,36 @@ public class ProductApiService {
     public void fetchProductInfo(String barcode, ProductCallback callback) {
         currentApiIndex = 0;
         tryNextApi(barcode, callback);
+    }
+    
+    public void searchProducts(String query, SearchCallback callback) {
+        String url = "https://world.openfoodfacts.org/cgi/search.pl?search_terms=" + android.net.Uri.encode(query) + "&search_simple=1&action=process&json=1";
+        
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+            response -> {
+                try {
+                    java.util.List<ProductInfo> productsList = new java.util.ArrayList<>();
+                    if (response.has("products")) {
+                        JSONArray products = response.getJSONArray("products");
+                        int limit = Math.min(products.length(), 20); // Limit to 20 results
+                        for (int i = 0; i < limit; i++) {
+                            JSONObject product = products.getJSONObject(i);
+                            ProductInfo info = parseOpenFoodFactsResponse(product, product.optString("code", ""));
+                            productsList.add(info);
+                        }
+                    }
+                    callback.onSuccess(productsList);
+                } catch (JSONException e) {
+                    Log.e(TAG, "Search parsing error", e);
+                    callback.onError("Failed to parse search results: " + e.getMessage());
+                }
+            },
+            error -> {
+                Log.e(TAG, "Search API error", error);
+                callback.onError("Network error during search: " + (error.getMessage() != null ? error.getMessage() : "Unknown"));
+            });
+            
+        requestQueue.add(request);
     }
     
     private void tryNextApi(String barcode, ProductCallback callback) {

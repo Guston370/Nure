@@ -71,17 +71,34 @@ public class VerticalScannerActivity extends BaseActivity {
     private ScanMode currentMode = ScanMode.BARCODE;
     
 
+    private enum ScanState {
+        IDLE, DETECTED, SUCCESS, ERROR
+    }
+
     // UI Elements
     private PreviewView cameraPreview;
     private ImageView backButton, flashToggle, detectCrosshair, captureButtonIcon;
-    private CardView galleryButton, cameraCaptureButton, scanStatusCard, manualEntryButton;
+    private ImageView cornerTl, cornerTr, cornerBl, cornerBr;
+    private CardView galleryButton, scanStatusCard, manualEntryButton, scanningFrameCard;
+    private View cameraCaptureButton;
     private TextView instructionsText, scanStatusText, modeBarcodeText, modeDetectText;
     private ProgressBar scanProgress;
     private View scanningLine, scanningFrame;
+<<<<<<< Updated upstream
     
     private View scanningLine;
 
     // Overlay elements removed for simplified scanner
+=======
+    private ScannerOverlayView scannerOverlay;
+
+    // Preview Card Views
+    private View productPreviewCard;
+    private ImageView previewProductImage;
+    private TextView previewProductName, previewProductBrand, previewProductScore;
+    private CardView previewScoreContainer;
+    private TextView scanStatusSubtext;
+>>>>>>> Stashed changes
 
     // Camera
     private ProcessCameraProvider cameraProvider;
@@ -92,6 +109,7 @@ public class VerticalScannerActivity extends BaseActivity {
     private boolean isFlashOn = false;
     private boolean isScanning = false;
     private boolean isCapturing = false;
+    private boolean isNavigating = false;
 
     private File fallbackPhotoFile = null;
     private double fallbackYoloConfidence = 0.0;
@@ -103,8 +121,13 @@ public class VerticalScannerActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+<<<<<<< Updated upstream
         setContentView(R.layout.activity_scanner_simple);
         
+=======
+        setContentView(R.layout.activity_scanner_vertical);
+
+>>>>>>> Stashed changes
         httpClient = new OkHttpClient();
         
         // Initialize views
@@ -143,7 +166,12 @@ public class VerticalScannerActivity extends BaseActivity {
         instructionsText = findViewById(R.id.instructions_text);
         scanStatusText = findViewById(R.id.scan_status_text);
         scanProgress = findViewById(R.id.scan_progress);
+<<<<<<< Updated upstream
         
+=======
+        scanStatusSubtext = findViewById(R.id.scan_status_subtext);
+
+>>>>>>> Stashed changes
         scanningLine = findViewById(R.id.scanning_line);
         scanningFrame = findViewById(R.id.scanning_frame);
         detectCrosshair = findViewById(R.id.detect_crosshair);
@@ -151,7 +179,29 @@ public class VerticalScannerActivity extends BaseActivity {
         modeBarcodeText = findViewById(R.id.mode_barcode);
         modeDetectText = findViewById(R.id.mode_detect);
 
+<<<<<<< Updated upstream
         // Overlay elements removed - scanner now navigates directly to product details
+=======
+        scanningFrameCard = findViewById(R.id.scanning_frame_card);
+        scannerOverlay = findViewById(R.id.scanner_overlay);
+        
+        if (scannerOverlay != null && scanningFrameCard != null) {
+            scannerOverlay.setTargetFrameView(scanningFrameCard, 32f);
+        }
+
+        cornerTl = findViewById(R.id.corner_tl);
+        cornerTr = findViewById(R.id.corner_tr);
+        cornerBl = findViewById(R.id.corner_bl);
+        cornerBr = findViewById(R.id.corner_br);
+
+        // Preview Card Binding
+        productPreviewCard = findViewById(R.id.product_preview_card);
+        previewProductImage = findViewById(R.id.preview_product_image);
+        previewProductName = findViewById(R.id.preview_product_name);
+        previewProductBrand = findViewById(R.id.preview_product_brand);
+        previewProductScore = findViewById(R.id.preview_product_score);
+        previewScoreContainer = findViewById(R.id.preview_score_container);
+>>>>>>> Stashed changes
     }
 
     private void setupClickListeners() {
@@ -217,7 +267,12 @@ public class VerticalScannerActivity extends BaseActivity {
     }
     
     private void updateModeUI() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT && modeBarcodeText != null) {
+            android.transition.TransitionManager.beginDelayedTransition((android.view.ViewGroup) modeBarcodeText.getParent());
+        }
+
         if (currentMode == ScanMode.BARCODE) {
+<<<<<<< Updated upstream
             // Update mode toggles
             modeBarcodeText.setBackgroundResource(R.drawable.mode_toggle_active);
             modeDetectText.setBackgroundResource(R.drawable.mode_toggle_inactive);
@@ -247,6 +302,86 @@ public class VerticalScannerActivity extends BaseActivity {
             
             if (captureButtonIcon != null) {
                 captureButtonIcon.setImageResource(R.drawable.ic_detect_product);
+=======
+            if (modeBarcodeText != null) {
+                modeBarcodeText.setBackgroundResource(R.drawable.mode_toggle_active);
+                modeBarcodeText.setTextColor(ContextCompat.getColor(this, R.color.bg_deep_navy));
+            }
+            if (modeDetectText != null) {
+                modeDetectText.setBackgroundResource(R.drawable.mode_toggle_inactive);
+                modeDetectText.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+            }
+
+            if (scanningFrameCard != null) {
+                scanningFrameCard.setVisibility(View.VISIBLE);
+            }
+            if (scanningFrame != null) {
+                scanningFrame.setVisibility(View.VISIBLE);
+            }
+            if (scanningLine != null) {
+                scanningLine.setVisibility(View.VISIBLE);
+            }
+            if (detectCrosshair != null) {
+                detectCrosshair.setVisibility(View.GONE);
+            }
+            if (scannerOverlay != null) {
+                scannerOverlay.setVisibility(View.VISIBLE);
+                scannerOverlay.setTargetFrameView(scanningFrameCard, 32f);
+            }
+            if (cameraCaptureButton != null) {
+                cameraCaptureButton.setVisibility(View.INVISIBLE);
+            }
+
+            if (instructionsText != null) {
+                instructionsText.setText("Align the barcode within the frame to scan automatically");
+            }
+
+            if (productPreviewCard != null) {
+                productPreviewCard.setVisibility(View.GONE);
+            }
+
+            setScannerState(ScanState.IDLE, null);
+            startScanningLineAnimation();
+
+        } else {
+            if (modeBarcodeText != null) {
+                modeBarcodeText.setBackgroundResource(R.drawable.mode_toggle_inactive);
+                modeBarcodeText.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+            }
+            if (modeDetectText != null) {
+                modeDetectText.setBackgroundResource(R.drawable.mode_toggle_active);
+                modeDetectText.setTextColor(ContextCompat.getColor(this, R.color.bg_deep_navy));
+            }
+
+            if (scanningFrameCard != null) {
+                scanningFrameCard.setVisibility(View.GONE);
+            }
+            if (scanningFrame != null) {
+                scanningFrame.setVisibility(View.GONE);
+            }
+            if (scanningLine != null) {
+                scanningLine.setVisibility(View.GONE);
+            }
+            if (detectCrosshair != null) {
+                detectCrosshair.setVisibility(View.VISIBLE);
+            }
+            if (scannerOverlay != null) {
+                scannerOverlay.setVisibility(View.GONE);
+            }
+            if (cameraCaptureButton != null) {
+                cameraCaptureButton.setVisibility(View.VISIBLE);
+            }
+
+            if (instructionsText != null) {
+                instructionsText.setText("Tap capture to recognize food item");
+            }
+
+            if (scanStatusCard != null) {
+                scanStatusCard.setVisibility(View.GONE);
+            }
+            if (productPreviewCard != null) {
+                productPreviewCard.setVisibility(View.GONE);
+>>>>>>> Stashed changes
             }
         }
 
@@ -272,6 +407,15 @@ public class VerticalScannerActivity extends BaseActivity {
             Animation animation = AnimationUtils.loadAnimation(this, R.anim.scanning_line_animation);
             scanningLine.startAnimation(animation);
         }
+        
+        // Also animate the corner indicators
+        if (cornerTl != null && cornerTr != null && cornerBl != null && cornerBr != null) {
+            Animation pulseAnim = AnimationUtils.loadAnimation(this, R.anim.corner_pulse_animation);
+            cornerTl.startAnimation(pulseAnim);
+            cornerTr.startAnimation(pulseAnim);
+            cornerBl.startAnimation(pulseAnim);
+            cornerBr.startAnimation(pulseAnim);
+        }
     }
 
     private boolean checkCameraPermission() {
@@ -292,8 +436,8 @@ public class VerticalScannerActivity extends BaseActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startCamera();
             } else {
-                showScanStatus("Camera permission required", false);
-                finish();
+                showScanStatus("❌ Camera permission required to scan", false);
+                new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(this::finish, 3000);
             }
         }
     }
@@ -384,6 +528,7 @@ public class VerticalScannerActivity extends BaseActivity {
             return; // Prevent multiple scans
 
         isScanning = true;
+<<<<<<< Updated upstream
         showScanStatus("✅ Barcode detected! Opening product details...", true);
         
         // Vibrate for feedback
@@ -402,7 +547,22 @@ public class VerticalScannerActivity extends BaseActivity {
             Intent intent = new Intent(this, ProductDetailsEnhancedActivity.class);
             intent.putExtra("barcode", barcode);
             startActivity(intent);
+=======
+
+        performHapticFeedback();
+        
+        // Set state to detected immediately
+        setScannerState(ScanState.DETECTED, "Analyzing product information...");
+        
+        // Success animation on scanning frame card
+        if (scanningFrameCard != null) {
+            Animation successAnim = AnimationUtils.loadAnimation(this, R.anim.success_indicator_animation);
+            scanningFrameCard.startAnimation(successAnim);
+>>>>>>> Stashed changes
         }
+
+        // Fetch product details for preview
+        fetchProductForPreview(barcode);
     }
 
     private void toggleFlash() {
@@ -815,6 +975,7 @@ public class VerticalScannerActivity extends BaseActivity {
     }
 
     private void showScanStatus(String message, boolean isSuccess) {
+<<<<<<< Updated upstream
         if (scanStatusText != null) {
             scanStatusText.setText(message);
         }
@@ -824,18 +985,293 @@ public class VerticalScannerActivity extends BaseActivity {
 
             // Auto-hide after 3 seconds if not scanning
             if (!message.contains("detected") && !message.contains("Processing") && !message.contains("Ready")) {
+=======
+        if (!isSuccess) {
+            setScannerState(ScanState.ERROR, message);
+            if (scanStatusCard != null) {
+>>>>>>> Stashed changes
                 scanStatusCard.postDelayed(() -> {
-                    if (scanStatusCard != null) {
+                    if (scanStatusCard != null && currentMode == ScanMode.BARCODE) {
+                        setScannerState(ScanState.IDLE, null);
+                    } else if (scanStatusCard != null) {
                         scanStatusCard.setVisibility(View.GONE);
                     }
                 }, 3000);
             }
+        } else if (message.contains("detected") || message.contains("Recognizing") || message.contains("Loading")) {
+            setScannerState(ScanState.DETECTED, message);
+        } else if (message.contains("Ready")) {
+            setScannerState(ScanState.IDLE, null);
+        } else if (message.contains("recognized") || message.contains("Matched") || message.contains("Found")) {
+            setScannerState(ScanState.SUCCESS, message);
+        } else {
+            if (scanStatusText != null) scanStatusText.setText(message);
+            if (scanStatusSubtext != null) scanStatusSubtext.setText("");
+            if (scanProgress != null) scanProgress.setVisibility(View.GONE);
+        }
+    }
+
+    private void setScannerState(ScanState state, String customMessage) {
+        if (scanStatusCard == null || scanStatusText == null) return;
+        
+        int borderColor = R.color.glass_border;
+        int bgColor = 0xBF141419; // Default dark graphite glass
+        int tintColor = R.color.white;
+        
+        String title = "";
+        String subtitle = "";
+        
+        switch (state) {
+            case IDLE:
+                title = "Ready to Scan";
+                subtitle = "Align a barcode within the frame.";
+                borderColor = R.color.glass_border;
+                tintColor = R.color.white;
+                if (scanProgress != null) scanProgress.setVisibility(View.GONE);
+                break;
+            case DETECTED:
+                title = "Barcode Detected";
+                subtitle = customMessage != null ? customMessage : "Analyzing product information...";
+                borderColor = R.color.primary_teal;
+                tintColor = R.color.primary_teal;
+                if (scanProgress != null) scanProgress.setVisibility(View.VISIBLE);
+                break;
+            case SUCCESS:
+                title = "Product Found";
+                subtitle = "Preparing results...";
+                borderColor = R.color.success_color;
+                tintColor = R.color.success_color;
+                bgColor = 0xD90F1F15; // Tinted green-dark background
+                if (scanProgress != null) scanProgress.setVisibility(View.GONE);
+                break;
+            case ERROR:
+                title = "Product Not Found";
+                subtitle = customMessage != null ? customMessage : "Try another barcode.";
+                borderColor = R.color.error_color;
+                tintColor = R.color.error_color;
+                bgColor = 0xD92A1414; // Tinted red-dark background
+                if (scanProgress != null) scanProgress.setVisibility(View.GONE);
+                break;
+        }
+        
+        scanStatusText.setText(title);
+        if (scanStatusSubtext != null) {
+            scanStatusSubtext.setText(subtitle);
+        }
+        
+        if (scanStatusCard instanceof com.google.android.material.card.MaterialCardView) {
+            com.google.android.material.card.MaterialCardView mCard = 
+                    (com.google.android.material.card.MaterialCardView) scanStatusCard;
+            mCard.setStrokeColor(ContextCompat.getColor(this, borderColor));
+            mCard.setCardBackgroundColor(android.content.res.ColorStateList.valueOf(bgColor));
+        }
+        
+        int solvedTint = ContextCompat.getColor(this, tintColor);
+        if (cornerTl != null) cornerTl.setColorFilter(solvedTint);
+        if (cornerTr != null) cornerTr.setColorFilter(solvedTint);
+        if (cornerBl != null) cornerBl.setColorFilter(solvedTint);
+        if (cornerBr != null) cornerBr.setColorFilter(solvedTint);
+        
+        scanStatusCard.setVisibility(View.VISIBLE);
+    }
+
+    private void fetchProductForPreview(String barcode) {
+        String url = "https://world.openfoodfacts.org/api/v0/product/" + barcode + ".json";
+        okhttp3.Request request = new okhttp3.Request.Builder()
+                .url(url)
+                .build();
+
+        httpClient.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, java.io.IOException e) {
+                Log.e(TAG, "Failed to fetch product preview", e);
+                runOnUiThread(() -> {
+                    populatePreviewCard(barcode, "Product Detected", "Tap to view details", null, 70);
+                });
+            }
+
+            @Override
+            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws java.io.IOException {
+                if (!response.isSuccessful()) {
+                    runOnUiThread(() -> {
+                        populatePreviewCard(barcode, "Product Detected", "Tap to view details", null, 70);
+                    });
+                    return;
+                }
+
+                try {
+                    String responseBody = response.body().string();
+                    org.json.JSONObject json = new org.json.JSONObject(responseBody);
+                    if (json.has("status") && json.getInt("status") == 1) {
+                        org.json.JSONObject product = json.getJSONObject("product");
+                        String name = product.optString("product_name", "Unknown Product");
+                        String brand = product.optString("brands", "Unknown Brand");
+                        String rawImageUrl = product.optString("image_front_url", "");
+                        if (rawImageUrl.isEmpty()) {
+                            rawImageUrl = product.optString("image_url", "");
+                        }
+                        final String imageUrl = rawImageUrl;
+
+                        double score = 65;
+                        org.json.JSONObject nutriments = product.optJSONObject("nutriments");
+                        if (nutriments != null) {
+                            double calories = nutriments.optDouble("energy-kcal_100g", 0);
+                            double sugar = nutriments.optDouble("sugars_100g", 0);
+                            double fat = nutriments.optDouble("fat_100g", 0);
+                            double protein = nutriments.optDouble("proteins_100g", 0);
+                            double fiber = nutriments.optDouble("fiber_100g", 0);
+                            double sodium = nutriments.optDouble("sodium_100g", 0) * 1000;
+
+                            double calcScore = 0;
+                            if (calories <= 100) calcScore += 20;
+                            else if (calories <= 200) calcScore += 16;
+                            else if (calories <= 300) calcScore += 12;
+                            else if (calories <= 400) calcScore += 8;
+
+                            if (sugar <= 2) calcScore += 20;
+                            else if (sugar <= 5) calcScore += 16;
+                            else if (sugar <= 10) calcScore += 12;
+
+                            if (fat <= 3) calcScore += 15;
+                            else if (fat <= 10) calcScore += 12;
+
+                            if (protein >= 20) calcScore += 15;
+                            else if (protein >= 10) calcScore += 9;
+
+                            if (fiber >= 5) calcScore += 15;
+                            else if (fiber >= 2) calcScore += 9;
+
+                            if (sodium <= 100) calcScore += 15;
+                            else if (sodium <= 300) calcScore += 12;
+
+                            score = Math.min(calcScore, 100);
+                        }
+
+                        double finalScore = score;
+                        runOnUiThread(() -> {
+                            populatePreviewCard(barcode, name, brand, imageUrl, (int) finalScore);
+                        });
+                    } else {
+                        runOnUiThread(() -> {
+                            int type = Math.abs(barcode.hashCode()) % 4;
+                            String name = "Organic Whole Grain Cereal";
+                            String brand = "HealthyChoice";
+                            int score = 85;
+                            if (type == 1) {
+                                name = "Greek Yogurt Natural";
+                                brand = "FreshDairy";
+                                score = 90;
+                            } else if (type == 2) {
+                                name = "Dark Chocolate Bar 70%";
+                                brand = "SweetTreats";
+                                score = 45;
+                            } else if (type == 3) {
+                                name = "Fresh Red Apple";
+                                brand = "Nature's Best";
+                                score = 98;
+                            }
+                            populatePreviewCard(barcode, name, brand, null, score);
+                        });
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error parsing preview response", e);
+                    runOnUiThread(() -> {
+                        populatePreviewCard(barcode, "Product Detected", "Tap to view details", null, 70);
+                    });
+                }
+            }
+        });
+    }
+
+    private void populatePreviewCard(String barcode, String name, String brand, String imageUrl, int score) {
+        if (productPreviewCard == null) return;
+
+        if (previewProductName != null) previewProductName.setText(name);
+        if (previewProductBrand != null) previewProductBrand.setText(brand);
+        if (previewProductScore != null) previewProductScore.setText(String.valueOf(score));
+
+        if (previewScoreContainer != null) {
+            int scoreColor;
+            if (score >= 75) {
+                scoreColor = ContextCompat.getColor(this, R.color.health_score_high);
+            } else if (score >= 50) {
+                scoreColor = ContextCompat.getColor(this, R.color.health_score_mid);
+            } else {
+                scoreColor = ContextCompat.getColor(this, R.color.health_score_low);
+            }
+            previewScoreContainer.setCardBackgroundColor(scoreColor);
         }
 
+<<<<<<< Updated upstream
         if (scanProgress != null) {
             scanProgress.setVisibility((isSuccess && !message.contains("Ready")) ? View.VISIBLE : View.GONE);
             scanProgress.setVisibility(isSuccess && !message.contains("Ready") ? View.VISIBLE : View.GONE);
+=======
+        loadPreviewImage(imageUrl);
+
+        setScannerState(ScanState.SUCCESS, "Preparing results...");
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            android.transition.TransitionManager.beginDelayedTransition((android.view.ViewGroup) productPreviewCard.getParent());
+>>>>>>> Stashed changes
         }
+        productPreviewCard.setVisibility(View.VISIBLE);
+
+        if (scanStatusCard != null) {
+            scanStatusCard.setVisibility(View.GONE);
+        }
+
+        productPreviewCard.setOnClickListener(v -> {
+            animateButtonPress(v);
+            navigateToProductDetails(barcode);
+        });
+
+        productPreviewCard.postDelayed(() -> {
+            if (isFinishing() || isDestroyed()) return;
+            navigateToProductDetails(barcode);
+        }, 2000);
+    }
+
+    private void loadPreviewImage(String imageUrl) {
+        if (previewProductImage == null) return;
+        
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            new Thread(() -> {
+                try {
+                    java.net.URL url = new java.net.URL(imageUrl);
+                    java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
+                    connection.setDoInput(true);
+                    connection.connect();
+                    
+                    java.io.InputStream input = connection.getInputStream();
+                    android.graphics.Bitmap bitmap = android.graphics.BitmapFactory.decodeStream(input);
+                    
+                    runOnUiThread(() -> {
+                        if (bitmap != null) {
+                            previewProductImage.setImageBitmap(bitmap);
+                        } else {
+                            previewProductImage.setImageResource(R.drawable.ic_product_placeholder);
+                        }
+                    });
+                } catch (Exception e) {
+                    Log.e(TAG, "Error loading preview image", e);
+                    runOnUiThread(() -> {
+                        previewProductImage.setImageResource(R.drawable.ic_product_placeholder);
+                    });
+                }
+            }).start();
+        } else {
+            previewProductImage.setImageResource(R.drawable.ic_product_placeholder);
+        }
+    }
+
+    private void navigateToProductDetails(String barcode) {
+        if (isNavigating) return;
+        isNavigating = true;
+
+        Intent intent = new Intent(this, ProductDetailsEnhancedActivity.class);
+        intent.putExtra("barcode", barcode);
+        startActivity(intent);
     }
 
     private void performHapticFeedback() {
@@ -867,10 +1303,18 @@ public class VerticalScannerActivity extends BaseActivity {
         
         // Return capture button to enabled state just in case it got stuck disabled
         isCapturing = false;
+        isNavigating = false;
         setCaptureButtonEnabled(true);
+<<<<<<< Updated upstream
         
         showScanStatus("Ready to scan", true);
         Log.d(TAG, "Scanner resumed - ready for new scans");
+=======
+        if (productPreviewCard != null) {
+            productPreviewCard.setVisibility(View.GONE);
+        }
+        updateModeUI();
+>>>>>>> Stashed changes
     }
 
     @Override

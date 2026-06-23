@@ -501,13 +501,14 @@ public class MainActivity extends BaseActivity {
 
     private void setupClickListeners() {
         try {
-            // Search card click - Launch vertical scanner
+            // Search card click - Launch SearchActivity
             View searchCard = findViewById(R.id.searchCard);
             if (searchCard != null) {
                 searchCard.setOnClickListener(v -> {
                     performHapticFeedback();
                     animateView(v);
-                    launchVerticalScanner();
+                    Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                    startActivity(intent);
                 });
             }
 

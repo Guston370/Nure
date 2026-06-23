@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Scanner Frame - dark glass overlay with emerald glowing border -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Dark glass base -->
+    <item>
+        <shape>
+            <corners android:radius="24dp" />
+            <solid android:color="#33000000" />
+        </shape>
+    </item>
+    <!-- Emerald glow border -->
+    <item>
+        <shape>
+            <corners android:radius="24dp" />
+            <solid android:color="#00000000" />
+            <stroke
+                android:width="2dp"
+                android:color="#8010B981" />
+        </shape>
+    </item>
+</layer-list>

@@ -44,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
     private MaterialCheckBox cbRememberMe;
     private MaterialButton btnLogin, btnGoogleSignIn, btnSignup, btnForgotPassword;
     private CircularProgressIndicator progressLogin;
+    private View logoContainer, loginTitle, loginSubtitle, loginCard;
 
     // Firebase
     private FirebaseAuth mAuth;
@@ -93,6 +94,63 @@ public class LoginActivity extends AppCompatActivity {
         
         // Check for signup success message
         handleSignupSuccess();
+
+        // Run premium entrance reveal animations
+        startEntranceAnimations();
+    }
+
+    /**
+     * Start entrance animations for premium reveal effect
+     */
+    private void startEntranceAnimations() {
+        if (logoContainer != null) {
+            logoContainer.setAlpha(0f);
+            logoContainer.setScaleX(0.5f);
+            logoContainer.setScaleY(0.5f);
+            logoContainer.animate()
+                    .alpha(1f)
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(400)
+                    .setInterpolator(new android.view.animation.OvershootInterpolator(1.2f))
+                    .start();
+        }
+
+        if (loginTitle != null) {
+            loginTitle.setAlpha(0f);
+            loginTitle.setTranslationY(30f);
+            loginTitle.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setDuration(400)
+                    .setStartDelay(100)
+                    .setInterpolator(new android.view.animation.DecelerateInterpolator())
+                    .start();
+        }
+
+        if (loginSubtitle != null) {
+            loginSubtitle.setAlpha(0f);
+            loginSubtitle.setTranslationY(30f);
+            loginSubtitle.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setDuration(400)
+                    .setStartDelay(150)
+                    .setInterpolator(new android.view.animation.DecelerateInterpolator())
+                    .start();
+        }
+
+        if (loginCard != null) {
+            loginCard.setAlpha(0f);
+            loginCard.setTranslationY(50f);
+            loginCard.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setDuration(500)
+                    .setStartDelay(200)
+                    .setInterpolator(new android.view.animation.DecelerateInterpolator())
+                    .start();
+        }
     }
 
     /**
@@ -145,6 +203,12 @@ public class LoginActivity extends AppCompatActivity {
         btnForgotPassword = findViewById(R.id.btn_forgot_password);
         btnSignup = findViewById(R.id.btn_signup);
         progressLogin = findViewById(R.id.progress_login);
+
+        // Animated layout container and titles
+        logoContainer = findViewById(R.id.logoContainer);
+        loginTitle = findViewById(R.id.loginTitle);
+        loginSubtitle = findViewById(R.id.loginSubtitle);
+        loginCard = findViewById(R.id.loginCard);
     }
 
     private void setupClickListeners() {

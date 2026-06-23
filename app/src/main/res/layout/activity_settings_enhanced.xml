@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/home_bg_clean"
+    android:background="@drawable/gradient_page_background"
     android:animateLayoutChanges="true"
     tools:context=".SettingsActivity">
 
@@ -44,9 +44,9 @@
                 <!-- Back Button -->
                 <FrameLayout
                     android:id="@+id/backButton"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:background="@drawable/bg_notification_circle"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_glass_stat_chip"
                     android:clickable="true"
                     android:focusable="true"
                     android:foreground="?attr/selectableItemBackgroundBorderless">
@@ -57,7 +57,7 @@
                         android:layout_gravity="center"
                         android:src="@drawable/ic_arrow_back"
                         android:contentDescription="Back"
-                        app:tint="#1B1B1B" />
+                        app:tint="@color/text_primary" />
                 </FrameLayout>
 
                 <View
@@ -68,9 +68,9 @@
                 <!-- Help Icon -->
                 <FrameLayout
                     android:id="@+id/helpIcon"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:background="@drawable/bg_notification_circle"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_glass_stat_chip"
                     android:clickable="true"
                     android:focusable="true"
                     android:foreground="?attr/selectableItemBackgroundBorderless">
@@ -81,7 +81,7 @@
                         android:layout_gravity="center"
                         android:src="@drawable/ic_support"
                         android:contentDescription="Help"
-                        app:tint="#1B1B1B" />
+                        app:tint="@color/text_primary" />
                 </FrameLayout>
             </LinearLayout>
 
@@ -100,9 +100,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="App"
-                    android:textSize="30sp"
+                    android:textSize="32sp"
                     android:textStyle="bold"
-                    android:textColor="#1B1B1B"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif-medium"
                     android:letterSpacing="-0.02"
                     android:lineSpacingMultiplier="1.1" />
@@ -112,7 +112,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Settings"
-                    android:textSize="30sp"
+                    android:textSize="32sp"
                     android:textStyle="bold"
                     android:textColor="@color/health_teal"
                     android:fontFamily="sans-serif-medium"
@@ -136,7 +136,7 @@
                     android:text="PREFERENCES"
                     android:textSize="12sp"
                     android:textStyle="bold"
-                    android:textColor="#999B96"
+                    android:textColor="@color/text_secondary"
                     android:fontFamily="sans-serif-medium"
                     android:letterSpacing="0.08"
                     android:layout_marginBottom="10dp"
@@ -146,7 +146,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_settings_group_card"
+                    android:background="@drawable/bg_glass_card"
                     android:orientation="vertical">
 
                     <!-- Notifications Item -->
@@ -193,7 +193,7 @@
                                 android:text="Notifications"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
-                                android:textColor="#1B1B1B"
+                                android:textColor="@color/text_primary"
                                 android:fontFamily="sans-serif-medium" />
 
                             <TextView
@@ -201,7 +201,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Health tips and reminders"
                                 android:textSize="13sp"
-                                android:textColor="#999B96"
+                                android:textColor="@color/text_secondary"
                                 android:fontFamily="sans-serif"
                                 android:layout_marginTop="2dp" />
                         </LinearLayout>
@@ -212,7 +212,7 @@
                             android:layout_height="wrap_content"
                             android:checked="true"
                             app:thumbTint="@color/health_teal"
-                            app:trackTint="#E0E0E0" />
+                            app:trackTint="@color/text_tertiary" />
                     </LinearLayout>
 
                     <!-- Divider -->
@@ -266,7 +266,7 @@
                                 android:text="Dark Mode"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
-                                android:textColor="#1B1B1B"
+                                android:textColor="@color/text_primary"
                                 android:fontFamily="sans-serif-medium" />
 
                             <TextView
@@ -274,7 +274,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Better night viewing"
                                 android:textSize="13sp"
-                                android:textColor="#999B96"
+                                android:textColor="@color/text_secondary"
                                 android:fontFamily="sans-serif"
                                 android:layout_marginTop="2dp" />
                         </LinearLayout>
@@ -285,7 +285,7 @@
                             android:layout_height="wrap_content"
                             android:checked="false"
                             app:thumbTint="@color/health_teal"
-                            app:trackTint="#E0E0E0" />
+                            app:trackTint="@color/text_tertiary" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -306,7 +306,7 @@
                     android:text="DATA &amp; PRIVACY"
                     android:textSize="12sp"
                     android:textStyle="bold"
-                    android:textColor="#999B96"
+                    android:textColor="@color/text_secondary"
                     android:fontFamily="sans-serif-medium"
                     android:letterSpacing="0.08"
                     android:layout_marginBottom="10dp"
@@ -316,7 +316,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_settings_group_card"
+                    android:background="@drawable/bg_glass_card"
                     android:orientation="vertical">
 
                     <!-- Privacy Policy Item -->
@@ -362,7 +362,7 @@
                                 android:text="Privacy Policy"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
-                                android:textColor="#1B1B1B"
+                                android:textColor="@color/text_primary"
                                 android:fontFamily="sans-serif-medium" />
 
                             <TextView
@@ -370,7 +370,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Learn how we protect your data"
                                 android:textSize="13sp"
-                                android:textColor="#999B96"
+                                android:textColor="@color/text_secondary"
                                 android:fontFamily="sans-serif"
                                 android:layout_marginTop="2dp" />
                         </LinearLayout>
@@ -381,7 +381,7 @@
                             android:layout_height="18dp"
                             android:src="@drawable/ic_arrow_forward"
                             android:contentDescription="View"
-                            app:tint="#C8CBC5" />
+                            app:tint="@color/text_secondary" />
                     </LinearLayout>
 
                     <!-- Divider -->
@@ -435,7 +435,7 @@
                                 android:text="Export Scan History"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
-                                android:textColor="#1B1B1B"
+                                android:textColor="@color/text_primary"
                                 android:fontFamily="sans-serif-medium" />
 
                             <TextView
@@ -443,7 +443,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Download your scan data as CSV"
                                 android:textSize="13sp"
-                                android:textColor="#999B96"
+                                android:textColor="@color/text_secondary"
                                 android:fontFamily="sans-serif"
                                 android:layout_marginTop="2dp" />
                         </LinearLayout>
@@ -454,7 +454,7 @@
                             android:layout_height="18dp"
                             android:src="@drawable/ic_arrow_forward"
                             android:contentDescription="Export"
-                            app:tint="#C8CBC5" />
+                            app:tint="@color/text_secondary" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -475,7 +475,7 @@
                     android:text="ACCOUNT"
                     android:textSize="12sp"
                     android:textStyle="bold"
-                    android:textColor="#999B96"
+                    android:textColor="@color/text_secondary"
                     android:fontFamily="sans-serif-medium"
                     android:letterSpacing="0.08"
                     android:layout_marginBottom="10dp"
@@ -485,7 +485,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_settings_group_card"
+                    android:background="@drawable/bg_glass_card"
                     android:orientation="vertical">
 
                     <!-- Logout Item -->
@@ -531,7 +531,7 @@
                                 android:text="Logout"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
-                                android:textColor="#E53935"
+                                android:textColor="#FF6B6B"
                                 android:fontFamily="sans-serif-medium" />
 
                             <TextView
@@ -539,7 +539,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Sign out of your account"
                                 android:textSize="13sp"
-                                android:textColor="#999B96"
+                                android:textColor="@color/text_secondary"
                                 android:fontFamily="sans-serif"
                                 android:layout_marginTop="2dp" />
                         </LinearLayout>
@@ -569,7 +569,7 @@
                     android:layout_height="wrap_content"
                     android:text="Nure Health Scanner"
                     android:textSize="13sp"
-                    android:textColor="#C8CBC5"
+                    android:textColor="@color/text_secondary"
                     android:fontFamily="sans-serif-medium" />
 
                 <TextView
@@ -577,7 +577,7 @@
                     android:layout_height="wrap_content"
                     android:text="Version 1.0.0"
                     android:textSize="12sp"
-                    android:textColor="#D6D8D3"
+                    android:textColor="@color/text_secondary"
                     android:fontFamily="sans-serif"
                     android:layout_marginTop="2dp" />
             </LinearLayout>
@@ -587,7 +587,14 @@
     </androidx.core.widget.NestedScrollView>
 
     <!-- Classy Bottom Navigation -->
-    <include layout="@layout/bottom_nav_classy" />
+    <include
+        android:id="@+id/bottomNavBar"
+        layout="@layout/bottom_nav_classy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Animation Overlay Container for Circular Reveal -->
     <include layout="@layout/animation_overlay_container" />

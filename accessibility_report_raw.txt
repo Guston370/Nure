@@ -1,0 +1,26 @@
+=== Touch Target Issues (< 48dp) ===
+[activity_analytics_enhanced.xml] @+id/backButton: Touch target too small (44dp x 44dp)
+[activity_analytics_enhanced.xml] @+id/refreshIcon: Touch target too small (44dp x 44dp)
+[activity_history_enhanced.xml] @+id/backButton: Touch target too small (44dp x 44dp)
+[activity_history_enhanced.xml] @+id/filterIcon: Touch target too small (44dp x 44dp)
+[activity_profile_enhanced.xml] @+id/backButton: Touch target too small (44dp x 44dp)
+[activity_profile_enhanced.xml] @+id/icon_edit_profile: Touch target too small (44dp x 44dp)
+[activity_profile_modern.xml] @+id/backButton: Touch target too small (44dp x 44dp)
+[activity_profile_modern.xml] @+id/edit_profile_menu: Touch target too small (44dp x 44dp)
+[activity_profile_modern.xml] @+id/editHealthConcerns: Touch target too small (28dp x 28dp)
+[activity_profile_modern.xml] @+id/editDietaryPreferences: Touch target too small (28dp x 28dp)
+[activity_settings_enhanced.xml] @+id/backButton: Touch target too small (44dp x 44dp)
+[activity_settings_enhanced.xml] @+id/helpIcon: Touch target too small (44dp x 44dp)
+
+=== Contrast/Opacity Issues ===
+
+=== Icon Issues (Missing Tint) ===
+[activity_login_modern.xml] unknown_id: ImageView has src but missing tint, may be invisible in some themes.
+[activity_product_details_enhanced.xml] @+id/product_image: ImageView has src but missing tint, may be invisible in some themes.
+[activity_scanner_simple.xml] @+id/detect_crosshair: ImageView has src but missing tint, may be invisible in some themes.
+[activity_signup_modern.xml] unknown_id: ImageView has src but missing tint, may be invisible in some themes.
+[enhanced_product_details.xml] @+id/product_image: ImageView has src but missing tint, may be invisible in some themes.
+[item_history_enhanced.xml] @+id/productImage: ImageView has src but missing tint, may be invisible in some themes.
+[item_product_selection.xml] @+id/item_product_image: ImageView has src but missing tint, may be invisible in some themes.
+[item_recent_scan_enhanced.xml] @+id/productImage: ImageView has src but missing tint, may be invisible in some themes.
+[scanning_frame_overlay.xml] @+id/success_indicator: ImageView has src but missing tint, may be invisible in some themes.

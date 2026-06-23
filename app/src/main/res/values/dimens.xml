@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Nure Health Scanner - Premium Glassmorphism Dimension System -->
 <resources>
-    <!-- Material Design 3 Spacing System -->
-    
-    <!-- Base spacing units (4dp grid) -->
+
+    <!-- ====== SPACING SYSTEM (4dp grid) ====== -->
     <dimen name="spacing_xs">4dp</dimen>
     <dimen name="spacing_sm">8dp</dimen>
     <dimen name="spacing_md">16dp</dimen>
@@ -10,8 +10,8 @@
     <dimen name="spacing_xl">32dp</dimen>
     <dimen name="spacing_xxl">48dp</dimen>
     <dimen name="spacing_xxxl">64dp</dimen>
-    
-    <!-- Margins and Padding -->
+
+    <!-- ====== MARGINS AND PADDING ====== -->
     <dimen name="margin_tiny">2dp</dimen>
     <dimen name="margin_small">4dp</dimen>
     <dimen name="margin_normal">8dp</dimen>
@@ -19,7 +19,7 @@
     <dimen name="margin_large">16dp</dimen>
     <dimen name="margin_xlarge">24dp</dimen>
     <dimen name="margin_xxlarge">32dp</dimen>
-    
+
     <dimen name="padding_tiny">2dp</dimen>
     <dimen name="padding_small">4dp</dimen>
     <dimen name="padding_normal">8dp</dimen>
@@ -27,122 +27,151 @@
     <dimen name="padding_large">16dp</dimen>
     <dimen name="padding_xlarge">24dp</dimen>
     <dimen name="padding_xxlarge">32dp</dimen>
-    
-    <!-- Touch targets (minimum 48dp for accessibility) -->
+
+    <!-- ====== TOUCH TARGETS (accessibility min 48dp) ====== -->
     <dimen name="touch_target_min">48dp</dimen>
     <dimen name="touch_target_large">56dp</dimen>
     <dimen name="touch_target_xlarge">64dp</dimen>
-    
-    <!-- Button dimensions -->
+
+    <!-- ====== BUTTON DIMENSIONS ====== -->
     <dimen name="button_height_small">36dp</dimen>
-    <dimen name="button_height_medium">48dp</dimen>
-    <dimen name="button_height_large">56dp</dimen>
-    <dimen name="button_height">48dp</dimen>
-    <dimen name="button_corner_radius">12dp</dimen>
-    <dimen name="button_corner_radius_large">16dp</dimen>
-    
-    <!-- Card dimensions -->
-    <dimen name="card_corner_radius">16dp</dimen>
-    <dimen name="card_corner_radius_large">20dp</dimen>
-    <dimen name="card_elevation">4dp</dimen>
-    <dimen name="card_elevation_large">8dp</dimen>
+    <dimen name="button_height_medium">52dp</dimen>
+    <dimen name="button_height_large">58dp</dimen>
+    <dimen name="button_height">52dp</dimen>
+    <dimen name="button_corner_radius">16dp</dimen>
+    <dimen name="button_corner_radius_large">28dp</dimen>
+    <dimen name="button_corner_radius_pill">100dp</dimen>
+
+    <!-- ====== GLASS CARD DIMENSIONS ====== -->
+    <dimen name="card_corner_radius">24dp</dimen>
+    <dimen name="card_corner_radius_large">28dp</dimen>
+    <dimen name="card_corner_radius_xl">32dp</dimen>
+    <dimen name="card_corner_radius_small">16dp</dimen>
+    <dimen name="card_elevation">0dp</dimen>
+    <dimen name="card_elevation_large">0dp</dimen>
     <dimen name="card_margin">8dp</dimen>
-    <dimen name="card_padding">16dp</dimen>
+    <dimen name="card_padding">20dp</dimen>
     <dimen name="card_padding_large">24dp</dimen>
-    
-    <!-- Elevation dimensions -->
+    <dimen name="glass_card_stroke">1dp</dimen>
+
+    <!-- ====== GLASS EFFECT DIMENSIONS ====== -->
+    <dimen name="glass_blur_radius">20dp</dimen>
+    <dimen name="glass_padding">20dp</dimen>
+    <dimen name="glass_border_width">1dp</dimen>
+
+    <!-- ====== ELEVATION (glassmorphism uses 0 + shadows) ====== -->
     <dimen name="elevation_sm">2dp</dimen>
-    <dimen name="elevation_md">4dp</dimen>
-    <dimen name="elevation_lg">8dp</dimen>
-    
-    <!-- Corner radius dimensions -->
-    <dimen name="corner_radius_lg">16dp</dimen>
-    <dimen name="corner_radius_xl">20dp</dimen>
-    <dimen name="corner_radius_xxl">24dp</dimen>
-    
-    <!-- Text size dimensions -->
+    <dimen name="elevation_md">8dp</dimen>
+    <dimen name="elevation_lg">16dp</dimen>
+    <dimen name="elevation_xlg">24dp</dimen>
+
+    <!-- ====== CORNER RADIUS TOKENS ====== -->
+    <dimen name="corner_radius_xs">8dp</dimen>
+    <dimen name="corner_radius_sm">12dp</dimen>
+    <dimen name="corner_radius_md">16dp</dimen>
+    <dimen name="corner_radius_lg">24dp</dimen>
+    <dimen name="corner_radius_xl">28dp</dimen>
+    <dimen name="corner_radius_xxl">32dp</dimen>
+    <dimen name="corner_radius_full">100dp</dimen>
+
+    <!-- ====== TEXT SIZES ====== -->
     <dimen name="text_size_xs">10sp</dimen>
     <dimen name="text_size_sm">12sp</dimen>
-    <dimen name="text_size_md">16sp</dimen>
+    <dimen name="text_size_md">15sp</dimen>
     <dimen name="text_size_lg">18sp</dimen>
-    <dimen name="text_size_headline">24sp</dimen>
-    
-    <!-- FAB dimensions -->
+    <dimen name="text_size_xl">22sp</dimen>
+    <dimen name="text_size_headline">28sp</dimen>
+    <dimen name="text_size_display">36sp</dimen>
+
+    <!-- ====== FAB DIMENSIONS ====== -->
     <dimen name="fab_size_normal">56dp</dimen>
-    <dimen name="fab_size_large">64dp</dimen>
+    <dimen name="fab_size_large">68dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
-    
-    <!-- Icon sizes -->
+
+    <!-- ====== ICON SIZES ====== -->
     <dimen name="icon_size_small">16dp</dimen>
     <dimen name="icon_size_medium">24dp</dimen>
     <dimen name="icon_size_large">32dp</dimen>
     <dimen name="icon_size_xlarge">48dp</dimen>
     <dimen name="icon_size_xxlarge">64dp</dimen>
-    
-    <!-- Avatar sizes -->
-    <dimen name="avatar_size_small">32dp</dimen>
+
+    <!-- ====== AVATAR SIZES ====== -->
+    <dimen name="avatar_size_small">36dp</dimen>
     <dimen name="avatar_size_medium">48dp</dimen>
-    <dimen name="avatar_size_large">64dp</dimen>
-    <dimen name="avatar_size_xlarge">96dp</dimen>
-    
-    <!-- Progress indicators -->
+    <dimen name="avatar_size_large">72dp</dimen>
+    <dimen name="avatar_size_xlarge">100dp</dimen>
+
+    <!-- ====== PROGRESS INDICATORS ====== -->
     <dimen name="progress_size_small">24dp</dimen>
     <dimen name="progress_size_medium">32dp</dimen>
-    <dimen name="progress_size_large">48dp</dimen>
-    <dimen name="progress_stroke_width">4dp</dimen>
-    
-    <!-- Health score circle -->
-    <dimen name="health_score_size">120dp</dimen>
-    <dimen name="health_score_stroke_width">8dp</dimen>
-    
-    <!-- Scan button -->
+    <dimen name="progress_size_large">56dp</dimen>
+    <dimen name="progress_stroke_width">5dp</dimen>
+
+    <!-- ====== HEALTH SCORE ====== -->
+    <dimen name="health_score_size">140dp</dimen>
+    <dimen name="health_score_stroke_width">10dp</dimen>
+
+    <!-- ====== SCAN BUTTON ====== -->
     <dimen name="scan_button_size">80dp</dimen>
     <dimen name="scan_button_corner_radius">40dp</dimen>
-    
-    <!-- Bottom navigation -->
-    <dimen name="bottom_nav_height">64dp</dimen>
-    <dimen name="bottom_nav_height_enhanced">110dp</dimen>
-    <dimen name="bottom_nav_icon_size">24dp</dimen>
-    
-    <!-- App bar -->
+
+    <!-- ====== BOTTOM NAVIGATION ====== -->
+    <dimen name="bottom_nav_height">72dp</dimen>
+    <dimen name="bottom_nav_height_enhanced">80dp</dimen>
+    <dimen name="bottom_nav_icon_size">26dp</dimen>
+    <dimen name="bottom_nav_margin_horizontal">16dp</dimen>
+    <dimen name="bottom_nav_margin_bottom">12dp</dimen>
+    <dimen name="bottom_nav_corner_radius">28dp</dimen>
+
+    <!-- ====== APP BAR ====== -->
     <dimen name="app_bar_height">64dp</dimen>
     <dimen name="toolbar_height">56dp</dimen>
-    
-    <!-- List items -->
-    <dimen name="list_item_height_small">48dp</dimen>
-    <dimen name="list_item_height_medium">64dp</dimen>
-    <dimen name="list_item_height_large">72dp</dimen>
-    
-    <!-- Dividers -->
+
+    <!-- ====== LIST ITEMS ====== -->
+    <dimen name="list_item_height_small">56dp</dimen>
+    <dimen name="list_item_height_medium">72dp</dimen>
+    <dimen name="list_item_height_large">84dp</dimen>
+
+    <!-- ====== DIVIDERS ====== -->
     <dimen name="divider_height">1dp</dimen>
     <dimen name="divider_thick">2dp</dimen>
-    
-    <!-- Borders -->
+
+    <!-- ====== BORDERS ====== -->
     <dimen name="border_width_thin">1dp</dimen>
     <dimen name="border_width_medium">2dp</dimen>
     <dimen name="border_width_thick">4dp</dimen>
-    
-    <!-- Text input -->
-    <dimen name="text_input_height">56dp</dimen>
-    <dimen name="text_input_corner_radius">8dp</dimen>
-    
-    <!-- Splash screen -->
-    <dimen name="splash_logo_size">120dp</dimen>
-    
-    <!-- Nutrition card dimensions -->
+
+    <!-- ====== TEXT INPUT ====== -->
+    <dimen name="text_input_height">58dp</dimen>
+    <dimen name="text_input_corner_radius">16dp</dimen>
+
+    <!-- ====== SPLASH SCREEN ====== -->
+    <dimen name="splash_logo_size">140dp</dimen>
+
+    <!-- ====== NUTRITION CARD ====== -->
     <dimen name="nutrition_card_height">120dp</dimen>
     <dimen name="nutrition_icon_size">40dp</dimen>
-    
-    <!-- Shimmer dimensions -->
-    <dimen name="shimmer_corner_radius">8dp</dimen>
+
+    <!-- ====== SHIMMER ====== -->
+    <dimen name="shimmer_corner_radius">12dp</dimen>
     <dimen name="shimmer_height_small">16dp</dimen>
     <dimen name="shimmer_height_medium">24dp</dimen>
-    <dimen name="shimmer_height_large">32dp</dimen>
-    
-    <!-- Safe area margins for different screen sizes -->
-    <dimen name="safe_margin_horizontal">16dp</dimen>
+    <dimen name="shimmer_height_large">36dp</dimen>
+
+    <!-- ====== SAFE AREA MARGINS ====== -->
+    <dimen name="safe_margin_horizontal">20dp</dimen>
     <dimen name="safe_margin_vertical">8dp</dimen>
-    
-    <!-- Minimum content width for tablets -->
+
+    <!-- ====== TABLET CONTENT WIDTH ====== -->
     <dimen name="content_max_width">600dp</dimen>
+
+    <!-- ====== RECENT SCAN CARD ====== -->
+    <dimen name="recent_scan_card_width">150dp</dimen>
+    <dimen name="recent_scan_card_height">170dp</dimen>
+
+    <!-- ====== SCANNER FRAME ====== -->
+    <dimen name="scanner_frame_width">320dp</dimen>
+    <dimen name="scanner_frame_height">480dp</dimen>
+    <dimen name="scanner_corner_size">36dp</dimen>
+
 </resources>

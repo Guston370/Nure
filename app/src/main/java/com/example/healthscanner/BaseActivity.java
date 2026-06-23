@@ -25,31 +25,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private static final String TAG = "BaseActivity";
 
-    // Color for the active (selected) icon – amber / orange
-    private static final int COLOR_ACTIVE = 0xFFF5A623;
-    // Color for inactive icons – medium gray
-    private static final int COLOR_INACTIVE = 0xFF9E9E9E;
-
-    // Nav item views
-    private LinearLayout navItemHome;
-    private LinearLayout navItemHistory;
-    private FrameLayout navItemScan;
-    private LinearLayout navItemStats;
-    private LinearLayout navItemProfile;
-
-    // Icon views
-    private ImageView navIconHome;
-    private ImageView navIconHistory;
-    private ImageView navIconScan;
-    private ImageView navIconStats;
-    private ImageView navIconProfile;
-
-    // Dot indicators
-    private View navDotHome;
-    private View navDotHistory;
-    private View navDotStats;
-    private View navDotProfile;
-
     /**
      * Subclasses return the ID that identifies the current screen in the
      * bottom navigation.  Use the R.id values defined in
@@ -64,152 +39,107 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void initializeBottomNavigation() {
         try {
-            // ---- Find views ----
-            navItemHome    = findViewById(R.id.nav_item_home);
-            navItemHistory = findViewById(R.id.nav_item_history);
-            navItemScan    = findViewById(R.id.nav_item_scan);
-            navItemStats   = findViewById(R.id.nav_item_stats);
-            navItemProfile = findViewById(R.id.nav_item_profile);
+            // Find custom navigation items
+            View navHome = findViewById(R.id.navHome);
+            View navSearch = findViewById(R.id.navSearch);
+            View navScan = findViewById(R.id.navScan);
+            View navInsights = findViewById(R.id.navInsights);
+            View navProfile = findViewById(R.id.navProfile);
 
-            navIconHome    = findViewById(R.id.nav_icon_home);
-            navIconHistory = findViewById(R.id.nav_icon_history);
-            navIconScan    = findViewById(R.id.nav_icon_scan);
-            navIconStats   = findViewById(R.id.nav_icon_stats);
-            navIconProfile = findViewById(R.id.nav_icon_profile);
-
-            navDotHome    = findViewById(R.id.nav_dot_home);
-            navDotHistory = findViewById(R.id.nav_dot_history);
-            navDotStats   = findViewById(R.id.nav_dot_stats);
-            navDotProfile = findViewById(R.id.nav_dot_profile);
-
-            // ---- Highlight the current tab ----
-            highlightCurrentTab();
-
-            // ---- Wire up click listeners ----
-            if (navItemHome != null) {
-                navItemHome.setOnClickListener(v -> onNavItemClicked(R.id.nav_home, v));
+            if (navHome != null) {
+                navHome.setOnClickListener(v -> navigateTo(R.id.nav_home, MainActivity.class));
             }
-            if (navItemHistory != null) {
-                navItemHistory.setOnClickListener(v -> onNavItemClicked(R.id.nav_history, v));
+            if (navSearch != null) {
+                navSearch.setOnClickListener(v -> navigateTo(R.id.nav_search, SearchActivity.class));
             }
-            if (navItemScan != null) {
-                navItemScan.setOnClickListener(v -> onNavItemClicked(R.id.nav_scan, v));
+            if (navScan != null) {
+                navScan.setOnClickListener(v -> navigateTo(R.id.nav_scan, VerticalScannerActivity.class));
             }
-            if (navItemStats != null) {
-                navItemStats.setOnClickListener(v -> onNavItemClicked(R.id.nav_stats, v));
+            if (navInsights != null) {
+                navInsights.setOnClickListener(v -> navigateTo(R.id.nav_insights, AnalyticsActivity.class));
             }
-            if (navItemProfile != null) {
-                navItemProfile.setOnClickListener(v -> onNavItemClicked(R.id.nav_profile, v));
+            if (navProfile != null) {
+                navProfile.setOnClickListener(v -> navigateTo(R.id.nav_profile, ProfileActivity.class));
             }
 
-            // Subtle entrance animation for the navbar
-            View navbarContainer = findViewById(R.id.classy_navbar_container);
-            if (navbarContainer != null) {
-                navbarContainer.setTranslationY(100f);
-                navbarContainer.setAlpha(0f);
-                navbarContainer.animate()
-                        .translationY(0f)
-                        .alpha(1f)
-                        .setDuration(450)
-                        .setInterpolator(new AccelerateDecelerateInterpolator())
-                        .start();
+            // Also find the FAB if they click exactly on it
+            View navScanButton = findViewById(R.id.navScanButton);
+            if (navScanButton != null) {
+                navScanButton.setOnClickListener(v -> navigateTo(R.id.nav_scan, VerticalScannerActivity.class));
             }
 
-            Log.d(TAG, "Classy bottom navigation initialized");
+            // Update UI state for active tab
+            updateNavigationState();
+
+            // Removed translation animation to prevent visual jumping during tab switches
+            View navContainer = findViewById(R.id.navContainer);
+            if (navContainer != null) {
+                navContainer.setAlpha(1f);
+                navContainer.setTranslationY(0f);
+            }
+
+            Log.d(TAG, "Glassmorphism bottom navigation initialized");
         } catch (Exception e) {
-            Log.e(TAG, "Error initializing classy bottom navigation: " + e.getMessage(), e);
+            Log.e(TAG, "Error initializing bottom navigation: " + e.getMessage(), e);
         }
     }
 
-    // ---------------------------------------------------------------
-    //  Tab highlight
-    // ---------------------------------------------------------------
+    private void navigateTo(int targetItemId, Class<?> targetClass) {
+        if (getCurrentNavigationItemId() == targetItemId) {
+            return; // Already on this screen
+        }
 
-    private void highlightCurrentTab() {
+        Intent intent = new Intent(this, targetClass);
+        intent.putExtra("from_navigation", true);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        overridePendingTransition(R.anim.nav_fade_in, R.anim.nav_fade_out);
+    }
+
+    private void updateNavigationState() {
         int currentId = getCurrentNavigationItemId();
+        
+        // Reset all tabs to inactive state
+        setTabState(R.id.navHome, R.id.navHomeIcon, R.id.navHomeLabel, false);
+        setTabState(R.id.navSearch, R.id.navSearchIcon, R.id.navSearchLabel, false);
+        setTabState(R.id.navInsights, R.id.navInsightsIcon, R.id.navInsightsLabel, false);
+        setTabState(R.id.navProfile, R.id.navProfileIcon, R.id.navProfileLabel, false);
 
-        // Reset all icons to inactive colour
-        tintIcon(navIconHome, COLOR_INACTIVE);
-        tintIcon(navIconHistory, COLOR_INACTIVE);
-        tintIcon(navIconStats, COLOR_INACTIVE);
-        tintIcon(navIconProfile, COLOR_INACTIVE);
-
-        // Hide all dots
-        setDotVisible(navDotHome, false);
-        setDotVisible(navDotHistory, false);
-        setDotVisible(navDotStats, false);
-        setDotVisible(navDotProfile, false);
-
-        // Activate the correct one
+        // Highlight active tab
         if (currentId == R.id.nav_home) {
-            tintIcon(navIconHome, COLOR_ACTIVE);
-            setDotVisible(navDotHome, true);
-        } else if (currentId == R.id.nav_history) {
-            tintIcon(navIconHistory, COLOR_ACTIVE);
-            setDotVisible(navDotHistory, true);
-        } else if (currentId == R.id.nav_stats) {
-            tintIcon(navIconStats, COLOR_ACTIVE);
-            setDotVisible(navDotStats, true);
+            setTabState(R.id.navHome, R.id.navHomeIcon, R.id.navHomeLabel, true);
+        } else if (currentId == R.id.nav_search) {
+            setTabState(R.id.navSearch, R.id.navSearchIcon, R.id.navSearchLabel, true);
+        } else if (currentId == R.id.nav_insights) {
+            setTabState(R.id.navInsights, R.id.navInsightsIcon, R.id.navInsightsLabel, true);
         } else if (currentId == R.id.nav_profile) {
-            tintIcon(navIconProfile, COLOR_ACTIVE);
-            setDotVisible(navDotProfile, true);
-        }
-        // nav_scan (center) has no dot – it's always prominent
-    }
-
-    private void tintIcon(ImageView icon, int color) {
-        if (icon != null) {
-            icon.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN);
+            setTabState(R.id.navProfile, R.id.navProfileIcon, R.id.navProfileLabel, true);
         }
     }
 
-    private void setDotVisible(View dot, boolean visible) {
-        if (dot != null) {
-            dot.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
-        }
-    }
+    private void setTabState(int containerId, int iconId, int labelId, boolean isActive) {
+        View container = findViewById(containerId);
+        ImageView icon = findViewById(iconId);
+        android.widget.TextView label = findViewById(labelId);
+        
+        if (icon == null || label == null) return;
 
-    // ---------------------------------------------------------------
-    //  Navigation handling
-    // ---------------------------------------------------------------
+        int colorRes = isActive ? R.color.health_teal : R.color.text_secondary_light;
+        float alpha = isActive ? 1.0f : 0.65f;
 
-    private void onNavItemClicked(int itemId, View clickedView) {
-        int currentId = getCurrentNavigationItemId();
-        if (itemId == currentId) {
-            // Already on this tab – tiny bounce animation
-            try {
-                clickedView.startAnimation(
-                        AnimationUtils.loadAnimation(this, R.anim.scale_bounce));
-            } catch (Exception ignored) {}
-            return;
-        }
+        icon.setColorFilter(ContextCompat.getColor(this, colorRes), android.graphics.PorterDuff.Mode.SRC_IN);
+        label.setTextColor(ContextCompat.getColor(this, colorRes));
+        label.setAlpha(alpha);
 
-        // Animate the clicked item
-        try {
-            clickedView.startAnimation(
-                    AnimationUtils.loadAnimation(this, R.anim.scale_bounce));
-        } catch (Exception ignored) {}
-
-        // Determine destination activity
-        Intent intent = null;
-
-        if (itemId == R.id.nav_home) {
-            intent = new Intent(this, MainActivity.class);
-        } else if (itemId == R.id.nav_history) {
-            intent = new Intent(this, HistoryActivity.class);
-        } else if (itemId == R.id.nav_scan) {
-            intent = new Intent(this, VerticalScannerActivity.class);
-        } else if (itemId == R.id.nav_stats) {
-            intent = new Intent(this, AnalyticsActivity.class);
-        } else if (itemId == R.id.nav_profile) {
-            intent = new Intent(this, ProfileActivity.class);
-        }
-
-        if (intent != null) {
-            intent.putExtra("from_navigation", true);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
-            overridePendingTransition(R.anim.nav_fade_in, R.anim.nav_fade_out);
+        if (container != null) {
+            if (isActive) {
+                container.setBackgroundResource(R.drawable.bg_nav_active_capsule);
+                // Smooth scale transition
+                container.animate().scaleX(1.05f).scaleY(1.05f).setDuration(200).start();
+            } else {
+                container.setBackground(null);
+                container.animate().scaleX(1.0f).scaleY(1.0f).setDuration(200).start();
+            }
         }
     }
 }

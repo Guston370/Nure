@@ -1,0 +1,11 @@
+[HistoryActivity.java] looks for R.id.productName but missing in activity_history_enhanced
+[HistoryActivity.java] looks for R.id.brandName but missing in activity_history_enhanced
+[HistoryActivity.java] looks for R.id.scanTime but missing in activity_history_enhanced
+[HistoryActivity.java] looks for R.id.healthScore but missing in activity_history_enhanced
+[HistoryActivity.java] looks for R.id.caloriesText but missing in activity_history_enhanced
+[HistoryActivity.java] looks for R.id.proteinText but missing in activity_history_enhanced
+[HistoryActivity.java] looks for R.id.sugarText but missing in activity_history_enhanced
+[HistoryActivity.java] looks for R.id.healthInsight but missing in activity_history_enhanced
+[HistoryActivity.java] looks for R.id.healthScoreCard but missing in activity_history_enhanced
+[ProfileActivity.java] looks for R.id.name_input but missing in activity_profile_modern
+[ProfileActivity.java] looks for R.id.email_input but missing in activity_profile_modern

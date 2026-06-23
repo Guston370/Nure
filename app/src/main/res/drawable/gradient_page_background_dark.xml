@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Gradient page background - Dark Mode (Deep Navy) -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:type="linear"
+        android:angle="160"
+        android:startColor="#090E1A"
+        android:centerColor="#0D1525"
+        android:endColor="#0F172A" />
+</shape>

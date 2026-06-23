@@ -4,12 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="@color/dark_navy_deep"
     tools:context=".VerticalScannerActivity">
 
     <!-- Camera Preview (Full Screen) -->
     <androidx.camera.view.PreviewView
         android:id="@+id/camera_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Darkened Overlay with cutout -->
+    <com.example.healthscanner.ScannerOverlayView
+        android:id="@+id/scanner_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -39,12 +49,14 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <!-- Enhanced Back Button -->
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 app:cardCornerRadius="24dp"
                 app:cardElevation="12dp"
-                app:cardBackgroundColor="#30FFFFFF">
+                app:strokeWidth="1dp"
+                app:strokeColor="#1FFFFFFF"
+                app:cardBackgroundColor="#BF141419">
 
                 <ImageView
                     android:id="@+id/back_button"
@@ -56,44 +68,32 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     app:tint="@color/white" />
 
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
-            <!-- Enhanced Title Section -->
-            <LinearLayout
+            <!-- Simplified Title -->
+            <TextView
+                android:id="@+id/scanner_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical"
+                android:text="NURE SCAN"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.15"
                 android:gravity="center"
                 android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Health Scanner"
-                    android:textColor="@color/white"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Scan any product barcode"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:alpha="0.9"
-                    android:layout_marginTop="4dp" />
-
-            </LinearLayout>
+                android:layout_marginEnd="20dp" />
 
             <!-- Enhanced Flash Toggle -->
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 app:cardCornerRadius="24dp"
                 app:cardElevation="12dp"
-                app:cardBackgroundColor="#30FFFFFF">
+                app:strokeWidth="1dp"
+                app:strokeColor="#1FFFFFFF"
+                app:cardBackgroundColor="#BF141419">
 
                 <ImageView
                     android:id="@+id/flash_toggle"
@@ -105,20 +105,65 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     app:tint="@color/white" />
 
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
 
-        <!-- Premium Scanning Frame -->
+        <!-- Mode Toggle (Barcode / Detect Product) -->
+        <LinearLayout
+            android:id="@+id/mode_toggle_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="20dp"
+            android:padding="6dp"
+            android:background="@drawable/bg_glass_search_bar"
+            app:layout_constraintTop_toBottomOf="@+id/top_bar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/mode_barcode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔍 Barcode"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:background="@drawable/mode_toggle_active" />
+
+            <TextView
+                android:id="@+id/mode_detect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📷 Detect Product"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/mode_toggle_inactive" />
+
+        </LinearLayout>
+
+        <!-- Premium Horizontal Scanning Frame -->
         <androidx.cardview.widget.CardView
             android:id="@+id/scanning_frame_card"
-            android:layout_width="340dp"
-            android:layout_height="520dp"
-            android:layout_marginTop="32dp"
+            android:layout_width="0dp"
+            android:layout_height="180dp"
+            android:layout_marginTop="20dp"
             app:cardCornerRadius="32dp"
             app:cardElevation="20dp"
             app:cardBackgroundColor="@color/transparent"
-            app:layout_constraintTop_toBottomOf="@+id/top_bar"
+            app:layout_constraintWidth_percent="0.85"
+            app:layout_constraintTop_toBottomOf="@+id/mode_toggle_container"
             app:layout_constraintBottom_toTopOf="@+id/bottom_controls"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -145,7 +190,7 @@
                     android:layout_margin="12dp"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:tint="@color/primary_teal" />
+                    app:tint="@color/health_teal" />
 
                 <ImageView
                     android:id="@+id/corner_tr"
@@ -156,7 +201,7 @@
                     android:layout_margin="12dp"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:tint="@color/primary_teal" />
+                    app:tint="@color/health_teal" />
 
                 <ImageView
                     android:id="@+id/corner_bl"
@@ -167,7 +212,7 @@
                     android:layout_margin="12dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:tint="@color/primary_teal" />
+                    app:tint="@color/health_teal" />
 
                 <ImageView
                     android:id="@+id/corner_br"
@@ -191,43 +236,26 @@
                     android:elevation="8dp"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <!-- Enhanced Center Target -->
-                <View
-                    android:layout_width="80dp"
-                    android:layout_height="3dp"
-                    android:background="@drawable/center_target_line"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
-
-                <View
-                    android:layout_width="3dp"
-                    android:layout_height="80dp"
-                    android:background="@drawable/center_target_line"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
-
-                <!-- Barcode Icon Hint -->
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/ic_barcode_hint"
-                    android:alpha="0.6"
-                    android:layout_marginTop="24dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:tint="@color/white" />
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.cardview.widget.CardView>
 
+        <!-- Crosshair / Center indicator (shown in detect mode) -->
+        <ImageView
+            android:id="@+id/detect_crosshair"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:src="@drawable/simple_scanning_frame"
+            android:visibility="gone"
+            android:alpha="0.7"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tint="@color/nure_primary" />
+
         <!-- Enhanced Instructions -->
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/instructions_card"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -236,7 +264,9 @@
             android:layout_marginTop="24dp"
             app:cardCornerRadius="20dp"
             app:cardElevation="12dp"
-            app:cardBackgroundColor="#40000000"
+            app:strokeWidth="1dp"
+            app:strokeColor="#1FFFFFFF"
+            app:cardBackgroundColor="#BF141419"
             app:layout_constraintTop_toBottomOf="@+id/scanning_frame_card"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -270,7 +300,7 @@
 
             </LinearLayout>
 
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Premium Bottom Controls -->
         <LinearLayout
@@ -293,14 +323,16 @@
                 android:layout_marginBottom="20dp">
 
                 <!-- Gallery Button -->
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/gallery_button"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    android:layout_marginEnd="24dp"
+                    android:layout_marginEnd="16dp"
                     app:cardCornerRadius="32dp"
                     app:cardElevation="12dp"
-                    app:cardBackgroundColor="@color/white">
+                    app:strokeWidth="1dp"
+                    app:strokeColor="#1FFFFFFF"
+                    app:cardBackgroundColor="#BF141419">
 
                     <ImageView
                         android:layout_width="28dp"
@@ -309,19 +341,45 @@
                         android:src="@drawable/ic_gallery"
                         android:contentDescription="Select from Gallery"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        app:tint="@color/primary_teal" />
+                        app:tint="@color/health_teal" />
 
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Camera Capture Button (center, larger) -->
+                <FrameLayout
+                    android:id="@+id/camera_capture_button"
+                    android:layout_width="76dp"
+                    android:layout_height="76dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="@drawable/bg_smoked_glass_button_primary"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:clipToOutline="true">
+
+                    <ImageView
+                        android:id="@+id/capture_button_icon"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_photo_capture"
+                        android:contentDescription="Take Photo"
+                        app:tint="@color/white" />
+
+                </FrameLayout>
 
                 <!-- Manual Entry Button -->
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/manual_entry_button"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    android:layout_marginStart="24dp"
+                    android:layout_marginStart="16dp"
                     app:cardCornerRadius="32dp"
                     app:cardElevation="12dp"
-                    app:cardBackgroundColor="#30FFFFFF">
+                    app:strokeWidth="1dp"
+                    app:strokeColor="#1FFFFFFF"
+                    app:cardBackgroundColor="#BF141419">
 
                     <ImageView
                         android:layout_width="28dp"
@@ -330,9 +388,9 @@
                         android:src="@drawable/ic_keyboard"
                         android:contentDescription="Manual Entry"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        app:tint="@color/white" />
+                        app:tint="@color/health_teal" />
 
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
 
@@ -349,7 +407,7 @@
         </LinearLayout>
 
         <!-- Enhanced Scan Status -->
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/scan_status_card"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -359,7 +417,9 @@
             android:visibility="gone"
             app:cardCornerRadius="20dp"
             app:cardElevation="16dp"
-            app:cardBackgroundColor="@color/primary_teal"
+            app:strokeWidth="1.5dp"
+            app:strokeColor="@color/health_teal"
+            app:cardBackgroundColor="#E1141419"
             app:layout_constraintBottom_toTopOf="@+id/bottom_controls"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -375,7 +435,7 @@
                     android:id="@+id/scan_progress"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
-                    android:indeterminateTint="@color/white"
+                    android:indeterminateTint="@color/health_teal"
                     android:layout_marginEnd="16dp" />
 
                 <LinearLayout
@@ -394,6 +454,7 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/scan_status_subtext"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Getting health information"
@@ -406,7 +467,111 @@
 
             </LinearLayout>
 
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Premium Product Preview Card (shown on successful detection) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/product_preview_card"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="20dp"
+            android:visibility="gone"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="16dp"
+            app:strokeWidth="1.5dp"
+            app:strokeColor="@color/health_teal"
+            app:cardBackgroundColor="#E1141419"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_controls"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/preview_image_container"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardBackgroundColor="#20FFFFFF"
+                    app:strokeWidth="0dp">
+
+                    <ImageView
+                        android:id="@+id/preview_product_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_product_placeholder" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/preview_image_container"
+                    android:layout_toStartOf="@+id/preview_score_container"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_centerVertical="true"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/preview_product_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Loading product..."
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:ellipsize="end"
+                        android:maxLines="1" />
+
+                    <TextView
+                        android:id="@+id/preview_product_brand"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Please wait"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp"
+                        android:layout_marginTop="4dp"
+                        android:ellipsize="end"
+                        android:maxLines="1" />
+
+                </LinearLayout>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/preview_score_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp"
+                    app:cardBackgroundColor="@color/primary_teal">
+
+                    <TextView
+                        android:id="@+id/preview_product_score"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="—"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="6dp" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </RelativeLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Simplified - No overlay, direct navigation to product details -->
 

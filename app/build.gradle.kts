@@ -7,6 +7,7 @@ android {
     namespace = "com.example.healthscanner"
     compileSdk = 35
     buildToolsVersion = "35.0.0"
+    ndkVersion = "27.0.12077973"
 
     defaultConfig {
         applicationId = "com.example.healthscanner"

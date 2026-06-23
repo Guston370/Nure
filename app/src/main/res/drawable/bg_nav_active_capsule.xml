@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nure — Active Nav Tab Capsule indicator -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Cyan glow halo -->
+    <item
+        android:left="2dp"
+        android:right="2dp"
+        android:top="2dp"
+        android:bottom="-2dp">
+        <shape>
+            <corners android:radius="20dp" />
+            <solid android:color="#2006B6D4" />
+        </shape>
+    </item>
+
+    <!-- Active capsule surface -->
+    <item>
+        <shape>
+            <corners android:radius="20dp" />
+            <solid android:color="#2506B6D4" />
+        </shape>
+    </item>
+
+    <!-- Active capsule border -->
+    <item>
+        <shape>
+            <corners android:radius="20dp" />
+            <stroke
+                android:width="1dp"
+                android:color="#4006B6D4" />
+        </shape>
+    </item>
+
+</layer-list>

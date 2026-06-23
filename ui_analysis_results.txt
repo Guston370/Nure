@@ -1,0 +1,296 @@
+[activity_analytics_enhanced.xml] Deep layout nesting (Depth: 8). Consider using ConstraintLayout.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_analytics_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_analytics_enhanced.xml] Hardcoded width (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded height (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded width (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded height (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded width (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded height (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded width (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded height (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded width (44dp) found in <ProgressBar>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded height (44dp) found in <ProgressBar>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded width (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded height (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded width (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded height (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded width (36dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded height (36dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded height (8dp) found in <ProgressBar>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded height (8dp) found in <ProgressBar>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded height (8dp) found in <ProgressBar>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded height (8dp) found in <ProgressBar>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded width (36dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded height (36dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_analytics_enhanced.xml] Hardcoded height (130dp) found in <LinearLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_api_detection_result.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_api_detection_result.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_api_detection_result.xml] layout_weight found inside ScrollView in <ProgressBar>. This causes measurement issues.
+[activity_api_detection_result.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_api_detection_result.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_api_detection_result.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_api_detection_result.xml] layout_weight found inside ScrollView in <com.google.android.material.button.MaterialButton>. This causes measurement issues.
+[activity_api_detection_result.xml] layout_weight found inside ScrollView in <com.google.android.material.button.MaterialButton>. This causes measurement issues.
+[activity_api_detection_result.xml] Hardcoded height (8dp) found in <ProgressBar>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_api_detection_result.xml] Hardcoded height (52dp) found in <MaterialButton>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_api_detection_result.xml] Hardcoded height (52dp) found in <MaterialButton>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_enhanced_product.xml] Deep layout nesting (Depth: 10). Consider using ConstraintLayout.
+[activity_enhanced_product.xml] Hardcoded height (240dp) found in <AppBarLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_enhanced_product.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_enhanced_product.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_enhanced_product.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_enhanced_product.xml] layout_weight found inside ScrollView in <androidx.cardview.widget.CardView>. This causes measurement issues.
+[activity_enhanced_product.xml] layout_weight found inside ScrollView in <androidx.cardview.widget.CardView>. This causes measurement issues.
+[activity_enhanced_product.xml] layout_weight found inside ScrollView in <androidx.cardview.widget.CardView>. This causes measurement issues.
+[activity_enhanced_product.xml] layout_weight found inside ScrollView in <androidx.cardview.widget.CardView>. This causes measurement issues.
+[activity_enhanced_product.xml] layout_weight found inside ScrollView in <androidx.cardview.widget.CardView>. This causes measurement issues.
+[activity_enhanced_product.xml] layout_weight found inside ScrollView in <androidx.cardview.widget.CardView>. This causes measurement issues.
+[activity_enhanced_product.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_enhanced_product.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_enhanced_product.xml] Hardcoded width (120dp) found in <RelativeLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_enhanced_product.xml] Hardcoded height (120dp) found in <RelativeLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_history_enhanced.xml] Hardcoded width (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_history_enhanced.xml] Hardcoded height (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_history_enhanced.xml] Hardcoded width (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_history_enhanced.xml] Hardcoded height (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_history_enhanced.xml] Hardcoded height (48dp) found in <LinearLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Deep layout nesting (Depth: 9). Consider using ConstraintLayout.
+[activity_home_enhanced.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_home_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_home_enhanced.xml] layout_weight found inside ScrollView in <com.google.android.material.card.MaterialCardView>. This causes measurement issues.
+[activity_home_enhanced.xml] layout_weight found inside ScrollView in <com.google.android.material.card.MaterialCardView>. This causes measurement issues.
+[activity_home_enhanced.xml] layout_weight found inside ScrollView in <com.google.android.material.card.MaterialCardView>. This causes measurement issues.
+[activity_home_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_home_enhanced.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_home_enhanced.xml] Hardcoded width (48dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded height (48dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded width (48dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded height (48dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded height (60dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded width (36dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded height (36dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded height (100dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded height (100dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded height (100dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded height (60dp) found in <MaterialButton>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded width (80dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded height (80dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded width (52dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded height (52dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded width (300dp) found in <LinearLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded width (72dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded height (72dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded height (52dp) found in <LinearLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded height (52dp) found in <LinearLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded height (52dp) found in <LinearLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded height (52dp) found in <LinearLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded height (52dp) found in <LinearLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_home_enhanced.xml] Hardcoded height (56dp) found in <LinearLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_login.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_login.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_login.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_login.xml] Hardcoded width (120dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_login.xml] Hardcoded height (120dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_login_modern.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_login_modern.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_login_modern.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_login_modern.xml] Hardcoded width (120dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_login_modern.xml] Hardcoded height (120dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_login_modern.xml] Hardcoded height (54dp) found in <MaterialButton>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_login_modern.xml] Hardcoded height (54dp) found in <MaterialButton>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_enhanced.xml] Deep layout nesting (Depth: 8). Consider using ConstraintLayout.
+[activity_product_details_enhanced.xml] Hardcoded height (300dp) found in <AppBarLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_enhanced.xml] Hardcoded width (130dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_enhanced.xml] Hardcoded height (130dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_product_details_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_product_details_enhanced.xml] layout_weight found inside ScrollView in <com.google.android.material.card.MaterialCardView>. This causes measurement issues.
+[activity_product_details_enhanced.xml] layout_weight found inside ScrollView in <com.google.android.material.card.MaterialCardView>. This causes measurement issues.
+[activity_product_details_enhanced.xml] layout_weight found inside ScrollView in <com.google.android.material.card.MaterialCardView>. This causes measurement issues.
+[activity_product_details_enhanced.xml] layout_weight found inside ScrollView in <com.google.android.material.card.MaterialCardView>. This causes measurement issues.
+[activity_product_details_enhanced.xml] layout_weight found inside ScrollView in <com.google.android.material.card.MaterialCardView>. This causes measurement issues.
+[activity_product_details_enhanced.xml] layout_weight found inside ScrollView in <com.google.android.material.card.MaterialCardView>. This causes measurement issues.
+[activity_product_details_enhanced.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_product_details_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_product_details_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_product_details_enhanced.xml] layout_weight found inside ScrollView in <com.google.android.material.button.MaterialButton>. This causes measurement issues.
+[activity_product_details_enhanced.xml] layout_weight found inside ScrollView in <com.google.android.material.button.MaterialButton>. This causes measurement issues.
+[activity_product_details_enhanced.xml] layout_weight found inside ScrollView in <com.google.android.material.button.MaterialButton>. This causes measurement issues.
+[activity_product_details_enhanced.xml] layout_weight found inside ScrollView in <com.google.android.material.button.MaterialButton>. This causes measurement issues.
+[activity_product_details_enhanced.xml] Hardcoded height (110dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_enhanced.xml] Hardcoded height (110dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_enhanced.xml] Hardcoded height (110dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_enhanced.xml] Hardcoded height (90dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_enhanced.xml] Hardcoded height (90dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_enhanced.xml] Hardcoded height (90dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_enhanced.xml] Hardcoded width (40dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_enhanced.xml] Hardcoded height (40dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_enhanced.xml] Hardcoded width (36dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_enhanced.xml] Hardcoded height (36dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_enhanced.xml] Hardcoded width (36dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_enhanced.xml] Hardcoded height (36dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_enhanced.xml] Hardcoded height (52dp) found in <MaterialButton>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_enhanced.xml] Hardcoded height (52dp) found in <MaterialButton>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_enhanced.xml] Hardcoded height (48dp) found in <MaterialButton>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_enhanced.xml] Hardcoded height (48dp) found in <MaterialButton>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_simple.xml] Deep layout nesting (Depth: 9). Consider using ConstraintLayout.
+[activity_product_details_simple.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_product_details_simple.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_product_details_simple.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_product_details_simple.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_product_details_simple.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_product_details_simple.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_product_details_simple.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_product_details_simple.xml] Hardcoded width (80dp) found in <RelativeLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_simple.xml] Hardcoded height (80dp) found in <RelativeLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_simple.xml] Hardcoded width (80dp) found in <ProgressBar>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_product_details_simple.xml] Hardcoded height (80dp) found in <ProgressBar>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_profile_enhanced.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_profile_enhanced.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_profile_enhanced.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_profile_enhanced.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_profile_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_profile_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_profile_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_profile_enhanced.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_profile_enhanced.xml] Hardcoded width (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_profile_enhanced.xml] Hardcoded height (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_profile_enhanced.xml] Hardcoded width (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_profile_enhanced.xml] Hardcoded height (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_profile_enhanced.xml] Hardcoded height (52dp) found in <LinearLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_profile_enhanced.xml] Hardcoded height (52dp) found in <LinearLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_profile_enhanced.xml] Hardcoded height (52dp) found in <LinearLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_profile_enhanced.xml] Hardcoded height (52dp) found in <LinearLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_profile_enhanced.xml] Hardcoded height (52dp) found in <LinearLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_profile_modern.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_profile_modern.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_profile_modern.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_profile_modern.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_profile_modern.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_profile_modern.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_profile_modern.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_profile_modern.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_profile_modern.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_profile_modern.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_profile_modern.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_profile_modern.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_profile_modern.xml] Hardcoded width (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_profile_modern.xml] Hardcoded height (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_profile_modern.xml] Hardcoded width (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_profile_modern.xml] Hardcoded height (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_profile_modern.xml] Hardcoded height (52dp) found in <LinearLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_profile_modern.xml] Hardcoded height (52dp) found in <LinearLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_profile_modern.xml] Hardcoded height (52dp) found in <LinearLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_profile_modern.xml] Hardcoded height (52dp) found in <LinearLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_profile_modern.xml] Hardcoded height (52dp) found in <LinearLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_profile_modern.xml] Hardcoded height (52dp) found in <MaterialButton>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_scanner_simple.xml] Hardcoded width (24dp) found in <ProgressBar>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_scanner_simple.xml] Hardcoded height (24dp) found in <ProgressBar>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_scanner_vertical.xml] Hardcoded width (28dp) found in <ProgressBar>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_scanner_vertical.xml] Hardcoded height (28dp) found in <ProgressBar>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_scan_result.xml] Deep layout nesting (Depth: 8). Consider using ConstraintLayout.
+[activity_scan_result.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_scan_result.xml] layout_weight found inside ScrollView in <com.google.android.material.card.MaterialCardView>. This causes measurement issues.
+[activity_scan_result.xml] layout_weight found inside ScrollView in <com.google.android.material.card.MaterialCardView>. This causes measurement issues.
+[activity_scan_result.xml] layout_weight found inside ScrollView in <com.google.android.material.card.MaterialCardView>. This causes measurement issues.
+[activity_scan_result.xml] layout_weight found inside ScrollView in <com.google.android.material.card.MaterialCardView>. This causes measurement issues.
+[activity_scan_result.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_scan_result.xml] layout_weight found inside ScrollView in <com.google.android.material.button.MaterialButton>. This causes measurement issues.
+[activity_scan_result.xml] layout_weight found inside ScrollView in <com.google.android.material.button.MaterialButton>. This causes measurement issues.
+[activity_settings_enhanced.xml] Deep layout nesting (Depth: 8). Consider using ConstraintLayout.
+[activity_settings_enhanced.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_settings_enhanced.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_settings_enhanced.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_settings_enhanced.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_settings_enhanced.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_settings_enhanced.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_settings_enhanced.xml] Hardcoded width (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_settings_enhanced.xml] Hardcoded height (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_settings_enhanced.xml] Hardcoded width (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_settings_enhanced.xml] Hardcoded height (44dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_settings_enhanced.xml] Hardcoded width (42dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_settings_enhanced.xml] Hardcoded height (42dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_settings_enhanced.xml] Hardcoded width (42dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_settings_enhanced.xml] Hardcoded height (42dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_settings_enhanced.xml] Hardcoded width (42dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_settings_enhanced.xml] Hardcoded height (42dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_settings_enhanced.xml] Hardcoded width (42dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_settings_enhanced.xml] Hardcoded height (42dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_settings_enhanced.xml] Hardcoded width (42dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_settings_enhanced.xml] Hardcoded height (42dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_signup.xml] Hardcoded width (100dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_signup.xml] Hardcoded height (100dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_signup_modern.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_signup_modern.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[activity_signup_modern.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_signup_modern.xml] layout_weight found inside ScrollView in <View>. This causes measurement issues.
+[activity_signup_modern.xml] Hardcoded width (120dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_signup_modern.xml] Hardcoded height (120dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_signup_modern.xml] Hardcoded height (54dp) found in <MaterialButton>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_signup_modern.xml] Hardcoded height (54dp) found in <MaterialButton>. Consider match_parent, wrap_content, or 0dp with constraints.
+[activity_simple_product.xml] Deep layout nesting (Depth: 8). Consider using ConstraintLayout.
+[activity_simple_product.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_simple_product.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_simple_product.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_simple_product.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_simple_product.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_simple_product.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[activity_simple_product.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[bottom_nav_classy.xml] Hardcoded height (72dp) found in <ConstraintLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[bottom_nav_classy.xml] Hardcoded width (68dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[bottom_nav_classy.xml] Hardcoded height (68dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[bottom_nav_classy.xml] Hardcoded width (68dp) found in <FloatingActionButton>. Consider match_parent, wrap_content, or 0dp with constraints.
+[bottom_nav_classy.xml] Hardcoded height (68dp) found in <FloatingActionButton>. Consider match_parent, wrap_content, or 0dp with constraints.
+[enhanced_product_details.xml] Deep layout nesting (Depth: 8). Consider using ConstraintLayout.
+[enhanced_product_details.xml] Hardcoded height (280dp) found in <AppBarLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[enhanced_product_details.xml] Hardcoded width (120dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[enhanced_product_details.xml] Hardcoded height (120dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[enhanced_product_details.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[enhanced_product_details.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[enhanced_product_details.xml] layout_weight found inside ScrollView in <com.google.android.material.card.MaterialCardView>. This causes measurement issues.
+[enhanced_product_details.xml] layout_weight found inside ScrollView in <com.google.android.material.card.MaterialCardView>. This causes measurement issues.
+[enhanced_product_details.xml] layout_weight found inside ScrollView in <com.google.android.material.card.MaterialCardView>. This causes measurement issues.
+[enhanced_product_details.xml] layout_weight found inside ScrollView in <com.google.android.material.card.MaterialCardView>. This causes measurement issues.
+[enhanced_product_details.xml] layout_weight found inside ScrollView in <com.google.android.material.card.MaterialCardView>. This causes measurement issues.
+[enhanced_product_details.xml] layout_weight found inside ScrollView in <com.google.android.material.card.MaterialCardView>. This causes measurement issues.
+[enhanced_product_details.xml] layout_weight found inside ScrollView in <LinearLayout>. This causes measurement issues.
+[enhanced_product_details.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[enhanced_product_details.xml] layout_weight found inside ScrollView in <TextView>. This causes measurement issues.
+[enhanced_product_details.xml] layout_weight found inside ScrollView in <com.google.android.material.button.MaterialButton>. This causes measurement issues.
+[enhanced_product_details.xml] layout_weight found inside ScrollView in <com.google.android.material.button.MaterialButton>. This causes measurement issues.
+[enhanced_product_details.xml] layout_weight found inside ScrollView in <com.google.android.material.button.MaterialButton>. This causes measurement issues.
+[enhanced_product_details.xml] layout_weight found inside ScrollView in <com.google.android.material.button.MaterialButton>. This causes measurement issues.
+[item_category_score_simple.xml] Hardcoded height (8dp) found in <ProgressBar>. Consider match_parent, wrap_content, or 0dp with constraints.
+[item_history_enhanced.xml] Hardcoded width (60dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[item_history_enhanced.xml] Hardcoded height (60dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[item_history_enhanced.xml] Hardcoded width (50dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[item_history_enhanced.xml] Hardcoded height (50dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[item_recent_scan.xml] Hardcoded width (48dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[item_recent_scan.xml] Hardcoded height (48dp) found in <MaterialCardView>. Consider match_parent, wrap_content, or 0dp with constraints.
+[item_recent_scan_enhanced.xml] Hardcoded height (120dp) found in <FrameLayout>. Consider match_parent, wrap_content, or 0dp with constraints.
+[item_recent_scan_enhanced.xml] Hardcoded height (4dp) found in <ProgressBar>. Consider match_parent, wrap_content, or 0dp with constraints.

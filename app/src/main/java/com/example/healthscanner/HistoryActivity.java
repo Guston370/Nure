@@ -296,7 +296,7 @@ public class HistoryActivity extends BaseActivity {
 
     @Override
     protected int getCurrentNavigationItemId() {
-        return R.id.nav_history;
+        return R.id.nav_insights;
     }
 
     /**

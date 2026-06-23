@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- item_history_enhanced.xml — Glassmorphism redesign. Preserves all IDs. -->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,10 +8,11 @@
     android:layout_marginStart="@dimen/spacing_md"
     android:layout_marginEnd="@dimen/spacing_md"
     android:layout_marginBottom="@dimen/spacing_sm"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="4dp"
-    app:strokeWidth="0dp"
-    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/glass_card_stroke"
+    app:cardBackgroundColor="@color/glass_card_background"
     android:foreground="?attr/selectableItemBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -23,9 +25,9 @@
             android:id="@+id/productImageCard"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/health_light_gray"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/glass_card_background"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -49,7 +51,7 @@
             android:text="Product Name"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="@color/health_text_primary"
+            android:textColor="@color/text_primary"
             android:maxLines="2"
             android:ellipsize="end"
             app:layout_constraintStart_toEndOf="@+id/productImageCard"
@@ -65,7 +67,7 @@
             android:layout_marginTop="@dimen/spacing_xs"
             android:text="Brand Name"
             android:textSize="14sp"
-            android:textColor="@color/health_text_secondary"
+            android:textColor="@color/text_secondary"
             android:maxLines="1"
             android:ellipsize="end"
             app:layout_constraintStart_toStartOf="@+id/productName"
@@ -81,11 +83,11 @@
             android:layout_marginTop="@dimen/spacing_xs"
             android:text="2 hours ago"
             android:textSize="12sp"
-            android:textColor="@color/health_text_secondary"
+            android:textColor="@color/text_secondary"
             android:drawableStart="@drawable/ic_access_time"
             android:drawablePadding="4dp"
             android:gravity="center_vertical"
-            app:drawableTint="@color/health_text_secondary"
+            app:drawableTint="@color/text_secondary"
             app:layout_constraintStart_toStartOf="@+id/productName"
             app:layout_constraintTop_toBottomOf="@+id/brandName"
             app:layout_constraintEnd_toEndOf="@+id/productName"
@@ -97,8 +99,8 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             app:cardCornerRadius="25dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/health_excellent"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/emerald_500"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/productImageCard">
 
@@ -164,7 +166,7 @@
                     android:layout_marginStart="4dp"
                     android:text="350 cal"
                     android:textSize="12sp"
-                    android:textColor="@color/health_text_secondary"
+                    android:textColor="@color/text_secondary"
                     tools:text="350 cal" />
 
             </LinearLayout>
@@ -191,7 +193,7 @@
                     android:layout_marginStart="4dp"
                     android:text="12g protein"
                     android:textSize="12sp"
-                    android:textColor="@color/health_text_secondary"
+                    android:textColor="@color/text_secondary"
                     tools:text="12g protein" />
 
             </LinearLayout>
@@ -218,7 +220,7 @@
                     android:layout_marginStart="4dp"
                     android:text="8g sugar"
                     android:textSize="12sp"
-                    android:textColor="@color/health_text_secondary"
+                    android:textColor="@color/text_secondary"
                     tools:text="8g sugar" />
 
             </LinearLayout>
@@ -233,7 +235,7 @@
             android:layout_marginTop="@dimen/spacing_sm"
             android:text="Great choice! High in protein and fiber."
             android:textSize="12sp"
-            android:textColor="@color/health_excellent"
+            android:textColor="@color/health_teal"
             android:textStyle="italic"
             android:maxLines="2"
             android:ellipsize="end"

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Health Gradient - Emerald → Indigo diagonal for login/signup -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <gradient
-        android:angle="135"
-        android:startColor="@color/background_gradient_start"
-        android:centerColor="@color/md_theme_light_primaryContainer"
-        android:endColor="@color/background_gradient_end"
-        android:type="linear" />
+        android:type="linear"
+        android:angle="150"
+        android:startColor="#10B981"
+        android:centerColor="#06B6D4"
+        android:endColor="#4F46E5" />
 </shape>

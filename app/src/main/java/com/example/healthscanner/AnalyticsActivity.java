@@ -138,7 +138,7 @@ public class AnalyticsActivity extends BaseActivity {
 
     @Override
     protected int getCurrentNavigationItemId() {
-        return R.id.nav_stats;
+        return R.id.nav_insights;
     }
 
     private void setupEntranceAnimations() {

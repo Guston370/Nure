@@ -1,144 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- item_recent_scan_enhanced.xml — Glassmorphism redesign. Preserves all IDs. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="200dp"
     android:layout_height="wrap_content"
     android:layout_marginEnd="12dp"
-    app:cardCornerRadius="20dp"
-    app:cardElevation="0dp"
-    app:cardBackgroundColor="#FFFFFF"
+    android:background="@drawable/bg_glass_card"
+    android:orientation="vertical"
+    android:padding="16dp"
     android:foreground="?attr/selectableItemBackground">
 
+    <!-- Product Image -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_marginBottom="12dp">
+
+        <ImageView
+            android:id="@+id/productImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_nutrition_facts"
+            android:scaleType="centerInside"
+            android:background="@drawable/bg_glass_stat_chip"
+            android:padding="24dp"
+            android:contentDescription="Product Image" />
+    </FrameLayout>
+
+    <!-- Product Name -->
+    <TextView
+        android:id="@+id/productName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Product Name"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_primary"
+        android:fontFamily="sans-serif-medium"
+        android:maxLines="2"
+        android:ellipsize="end" />
+
+    <!-- Nutrition Row -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="4dp">
 
-        <!-- Product Image -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:layout_marginBottom="12dp">
+        <!-- Calories -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
 
             <ImageView
-                android:id="@+id/productImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_nutrition_facts"
-                android:scaleType="centerInside"
-                android:background="@drawable/bg_stat_chip"
-                android:padding="24dp"
-                android:contentDescription="Product Image" />
-        </FrameLayout>
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_calories"
+                android:contentDescription="Calories"
+                app:tint="@color/indigo_300" />
 
-        <!-- Product Name -->
-        <TextView
-            android:id="@+id/productName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Product Name"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:textColor="#1B1B1B"
-            android:fontFamily="sans-serif-medium"
-            android:maxLines="2"
-            android:ellipsize="end" />
-
-        <!-- Nutrition Row -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="4dp">
-
-            <!-- Calories -->
-            <LinearLayout
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/caloriesText"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center">
-
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:src="@drawable/ic_calories"
-                    android:contentDescription="Calories"
-                    app:tint="@color/calories_color" />
-
-                <TextView
-                    android:id="@+id/caloriesText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="150 cal"
-                    android:textSize="11sp"
-                    android:textColor="#999B96"
-                    android:fontFamily="sans-serif"
-                    android:layout_marginTop="2dp" />
-            </LinearLayout>
-
-            <!-- Health Score -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center">
-
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:src="@drawable/ic_health_score"
-                    android:contentDescription="Health Score"
-                    app:tint="@color/health_teal" />
-
-                <TextView
-                    android:id="@+id/healthScoreText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="8.5"
-                    android:textSize="11sp"
-                    android:textColor="#999B96"
-                    android:fontFamily="sans-serif"
-                    android:layout_marginTop="2dp" />
-            </LinearLayout>
-
-            <!-- Emoji -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center">
-
-                <TextView
-                    android:id="@+id/healthEmoji"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="😊"
-                    android:textSize="16sp" />
-
-                <View
-                    android:layout_width="16dp"
-                    android:layout_height="2dp" />
-            </LinearLayout>
+                android:text="150 cal"
+                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:fontFamily="sans-serif"
+                android:layout_marginTop="2dp" />
         </LinearLayout>
 
-        <!-- Health Score Progress Bar -->
-        <ProgressBar
-            android:id="@+id/healthScoreProgress"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:progress="85"
-            android:max="100"
-            android:progressTint="@color/health_teal"
-            android:progressBackgroundTint="#EAECE7"
-            android:layout_marginTop="8dp" />
+        <!-- Health Score -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_health_score"
+                android:contentDescription="Health Score"
+                app:tint="@color/emerald_400" />
+
+            <TextView
+                android:id="@+id/healthScoreText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="8.5"
+                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:fontFamily="sans-serif"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
+
+        <!-- Emoji -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/healthEmoji"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="😊"
+                android:textSize="16sp" />
+
+            <View
+                android:layout_width="16dp"
+                android:layout_height="2dp" />
+        </LinearLayout>
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+    <!-- Health Score Progress Bar -->
+    <ProgressBar
+        android:id="@+id/healthScoreProgress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:progress="85"
+        android:max="100"
+        android:progressTint="@color/emerald_400"
+        android:progressBackgroundTint="@color/divider_light"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>

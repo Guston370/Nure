@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Modern Sign Up Activity with Enhanced UI/UX -->
+<!-- Premium Glassmorphism Sign Up Screen with Smoked-Glass Aesthetics -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/health_gradient_background"
+    android:background="@drawable/gradient_page_background"
     tools:context=".SignUpActivity">
 
     <!-- Main Content -->
@@ -18,8 +18,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/spacing_xl"
-            android:gravity="center">
+            android:padding="24dp"
+            android:gravity="center_horizontal">
 
             <!-- Header Section -->
             <LinearLayout
@@ -27,15 +27,15 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:layout_marginTop="@dimen/spacing_xxl"
-                android:layout_marginBottom="@dimen/spacing_lg">
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="16dp">
 
                 <!-- Back Button -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginBottom="@dimen/spacing_lg">
+                    android:layout_marginBottom="16dp">
 
                     <ImageView
                         android:id="@+id/btn_back"
@@ -46,7 +46,7 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:padding="12dp"
-                        app:tint="?attr/colorOnPrimary"
+                        app:tint="#FFF8FAFC"
                         android:contentDescription="Back" />
 
                     <View
@@ -58,18 +58,20 @@
 
                 <!-- App Logo -->
                 <com.google.android.material.card.MaterialCardView
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:layout_marginBottom="@dimen/spacing_md"
-                    app:cardCornerRadius="60dp"
-                    app:cardElevation="8dp"
-                    app:strokeWidth="3dp"
-                    app:strokeColor="?attr/colorOnPrimary"
-                    app:cardBackgroundColor="?attr/colorPrimaryContainer">
+                    android:id="@+id/logoContainer"
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="55dp"
+                    app:cardElevation="16dp"
+                    app:strokeWidth="1.5dp"
+                    app:strokeColor="#1FFFFFFF"
+                    app:cardBackgroundColor="#BF141419">
 
                     <ImageView
-                        android:layout_width="90dp"
-                        android:layout_height="90dp"
+                        android:id="@+id/logoImage"
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
                         android:layout_gravity="center"
                         android:contentDescription="Nure Health Logo"
                         android:scaleType="centerInside"
@@ -79,40 +81,43 @@
 
                 <!-- Welcome Text -->
                 <TextView
+                    android:id="@+id/signupTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Create Account"
                     android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge"
-                    android:textColor="?attr/colorOnPrimary"
+                    android:textColor="#FFF8FAFC"
                     android:textStyle="bold"
-                    android:layout_marginBottom="@dimen/spacing_xs" />
+                    android:layout_marginBottom="6dp" />
 
                 <TextView
+                    android:id="@+id/signupSubtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Join thousands making healthier choices"
                     android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-                    android:textColor="?attr/colorOnPrimary"
-                    android:alpha="0.8"
+                    android:textColor="#FF94A3B8"
                     android:textAlignment="center" />
 
             </LinearLayout>
 
             <!-- Sign Up Form Card -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/signupCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/spacing_lg"
+                android:layout_marginBottom="20dp"
                 app:cardCornerRadius="24dp"
-                app:cardElevation="8dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@android:color/transparent"
                 app:strokeWidth="0dp"
-                app:cardBackgroundColor="?attr/colorSurface">
+                android:background="@drawable/bg_smoked_glass_card">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="@dimen/spacing_xl">
+                    android:padding="24dp">
 
                     <!-- Full Name Input -->
                     <com.google.android.material.textfield.TextInputLayout
@@ -120,18 +125,27 @@
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/spacing_md"
+                        android:layout_marginBottom="16dp"
                         android:hint="Full Name"
                         app:startIconDrawable="@drawable/ic_person"
-                        app:hintTextColor="?attr/colorPrimary"
-                        app:boxStrokeColor="?attr/colorPrimary">
+                        app:startIconTint="#FF94A3B8"
+                        app:hintTextColor="#FF94A3B8"
+                        app:boxStrokeColor="@color/health_teal"
+                        app:boxStrokeWidth="1dp"
+                        app:boxBackgroundColor="#1A1A1E"
+                        app:boxCornerRadiusTopStart="14dp"
+                        app:boxCornerRadiusTopEnd="14dp"
+                        app:boxCornerRadiusBottomStart="14dp"
+                        app:boxCornerRadiusBottomEnd="14dp">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_full_name"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="textPersonName"
-                            android:maxLines="1" />
+                            android:maxLines="1"
+                            android:textColor="#FFF8FAFC"
+                            android:textColorHint="#FF475569" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -141,18 +155,27 @@
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/spacing_md"
+                        android:layout_marginBottom="16dp"
                         android:hint="Email Address"
                         app:startIconDrawable="@drawable/ic_email"
-                        app:hintTextColor="?attr/colorPrimary"
-                        app:boxStrokeColor="?attr/colorPrimary">
+                        app:startIconTint="#FF94A3B8"
+                        app:hintTextColor="#FF94A3B8"
+                        app:boxStrokeColor="@color/health_teal"
+                        app:boxStrokeWidth="1dp"
+                        app:boxBackgroundColor="#1A1A1E"
+                        app:boxCornerRadiusTopStart="14dp"
+                        app:boxCornerRadiusTopEnd="14dp"
+                        app:boxCornerRadiusBottomStart="14dp"
+                        app:boxCornerRadiusBottomEnd="14dp">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_email"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="textEmailAddress"
-                            android:maxLines="1" />
+                            android:maxLines="1"
+                            android:textColor="#FFF8FAFC"
+                            android:textColorHint="#FF475569" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -162,21 +185,31 @@
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/spacing_md"
+                        android:layout_marginBottom="16dp"
                         android:hint="Password"
                         app:startIconDrawable="@drawable/ic_lock"
+                        app:startIconTint="#FF94A3B8"
                         app:endIconMode="password_toggle"
-                        app:hintTextColor="?attr/colorPrimary"
-                        app:boxStrokeColor="?attr/colorPrimary"
-                        app:helperText="At least 8 characters with uppercase, lowercase, and numbers"
-                        app:helperTextTextColor="?attr/colorOnSurfaceVariant">
+                        app:endIconTint="#FF94A3B8"
+                        app:hintTextColor="#FF94A3B8"
+                        app:boxStrokeColor="@color/health_teal"
+                        app:boxStrokeWidth="1dp"
+                        app:boxBackgroundColor="#1A1A1E"
+                        app:boxCornerRadiusTopStart="14dp"
+                        app:boxCornerRadiusTopEnd="14dp"
+                        app:boxCornerRadiusBottomStart="14dp"
+                        app:boxCornerRadiusBottomEnd="14dp"
+                        app:helperText="At least 8 characters with uppercase, lowercase &amp; numbers"
+                        app:helperTextTextColor="#FF94A3B8">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_password"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="textPassword"
-                            android:maxLines="1" />
+                            android:maxLines="1"
+                            android:textColor="#FFF8FAFC"
+                            android:textColorHint="#FF475569" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -186,19 +219,29 @@
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/spacing_lg"
+                        android:layout_marginBottom="20dp"
                         android:hint="Confirm Password"
                         app:startIconDrawable="@drawable/ic_lock"
+                        app:startIconTint="#FF94A3B8"
                         app:endIconMode="password_toggle"
-                        app:hintTextColor="?attr/colorPrimary"
-                        app:boxStrokeColor="?attr/colorPrimary">
+                        app:endIconTint="#FF94A3B8"
+                        app:hintTextColor="#FF94A3B8"
+                        app:boxStrokeColor="@color/health_teal"
+                        app:boxStrokeWidth="1dp"
+                        app:boxBackgroundColor="#1A1A1E"
+                        app:boxCornerRadiusTopStart="14dp"
+                        app:boxCornerRadiusTopEnd="14dp"
+                        app:boxCornerRadiusBottomStart="14dp"
+                        app:boxCornerRadiusBottomEnd="14dp">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_confirm_password"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="textPassword"
-                            android:maxLines="1" />
+                            android:maxLines="1"
+                            android:textColor="#FFF8FAFC"
+                            android:textColorHint="#FF475569" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -208,12 +251,13 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="@dimen/spacing_lg">
+                        android:layout_marginBottom="20dp">
 
                         <com.google.android.material.checkbox.MaterialCheckBox
                             android:id="@+id/cb_terms"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            app:buttonTint="@color/health_teal" />
 
                         <TextView
                             android:layout_width="0dp"
@@ -221,23 +265,29 @@
                             android:layout_weight="1"
                             android:text="I agree to the Terms of Service and Privacy Policy"
                             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                            android:textColor="?attr/colorOnSurface"
-                            android:layout_marginStart="@dimen/spacing_xs" />
+                            android:textColor="#FF94A3B8"
+                            android:layout_marginStart="8dp" />
 
                     </LinearLayout>
 
-                    <!-- Sign Up Button -->
+                    <!-- Sign Up Button — Premium Cyan gradient CTA -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_signup"
                         style="@style/Widget.Material3.Button"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/spacing_md"
+                        android:layout_height="54dp"
+                        android:layout_marginBottom="16dp"
                         android:text="Create Account"
                         android:textSize="16sp"
                         android:textStyle="bold"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/bg_smoked_glass_button_primary"
+                        app:backgroundTint="@null"
+                        app:cornerRadius="14dp"
                         app:icon="@drawable/ic_person"
-                        app:iconGravity="start" />
+                        app:iconGravity="start"
+                        app:iconTint="#FFFFFF"
+                        app:elevation="4dp" />
 
                     <!-- Divider -->
                     <LinearLayout
@@ -245,27 +295,27 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:layout_marginVertical="@dimen/spacing_md">
+                        android:layout_marginVertical="8dp">
 
                         <View
                             android:layout_width="0dp"
                             android:layout_height="1dp"
                             android:layout_weight="1"
-                            android:background="?attr/colorOutline" />
+                            android:background="#1FFFFFFF" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="or sign up with"
+                            android:text="  or sign up with  "
                             android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                            android:textColor="?attr/colorOnSurfaceVariant"
-                            android:layout_marginHorizontal="@dimen/spacing_md" />
+                            android:textColor="#FF94A3B8"
+                            android:layout_marginHorizontal="8dp" />
 
                         <View
                             android:layout_width="0dp"
                             android:layout_height="1dp"
                             android:layout_weight="1"
-                            android:background="?attr/colorOutline" />
+                            android:background="#1FFFFFFF" />
 
                     </LinearLayout>
 
@@ -274,13 +324,18 @@
                         android:id="@+id/btn_google_signup"
                         style="@style/Widget.Material3.Button.OutlinedButton"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="54dp"
                         android:text="Continue with Google"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textSize="16sp"
+                        android:textColor="#FFF8FAFC"
+                        android:textSize="15sp"
                         app:icon="@drawable/ic_google"
                         app:iconGravity="start"
-                        app:strokeColor="?attr/colorOutline" />
+                        app:iconTint="@null"
+                        app:strokeColor="#1FFFFFFF"
+                        app:strokeWidth="1dp"
+                        app:backgroundTint="#0CFFFFFF"
+                        app:cornerRadius="14dp"
+                        app:elevation="0dp" />
 
                 </LinearLayout>
 
@@ -292,15 +347,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center"
-                android:layout_marginBottom="@dimen/spacing_xl">
+                android:layout_marginBottom="24dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Already have an account? "
                     android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                    android:textColor="?attr/colorOnPrimary"
-                    android:alpha="0.8" />
+                    android:textColor="#FF94A3B8" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_signin"
@@ -308,9 +362,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Sign In"
-                    android:textColor="?attr/colorOnPrimary"
+                    android:textColor="@color/health_teal"
                     android:textStyle="bold"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:paddingHorizontal="4dp" />
 
             </LinearLayout>
 
@@ -325,6 +380,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone"
-        app:indicatorColor="?attr/colorPrimary" />
+        app:indicatorColor="@color/health_teal"
+        app:trackColor="#1FFFFFFF" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

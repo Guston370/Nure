@@ -1,154 +1,171 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Classy Bottom Navigation Bar with Elevated Center Button -->
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Premium Glassmorphism Bottom Navigation Bar — Floating Pill with 5 Tabs -->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/classy_navbar_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/transparent"
     android:clipChildren="false"
     android:clipToPadding="false"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent">
+    android:paddingHorizontal="16dp"
+    android:paddingBottom="16dp"
+    android:paddingTop="0dp">
 
-    <!-- Navbar Background Card with Rounded Top Corners -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/navbar_background_card"
+    <!-- Floating glass nav pill -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/navContainer"
         android:layout_width="match_parent"
-        android:layout_height="68dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="8dp"
-        app:cardBackgroundColor="#FFFFFFFF"
-        app:cardCornerRadius="28dp"
-        app:cardElevation="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="72dp"
+        android:background="@drawable/bg_glass_nav_bar"
+        android:elevation="12dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- Navigation Items Row -->
+        <!-- 5-column horizontal layout for tabs -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp">
+            android:weightSum="5"
+            android:gravity="center_vertical"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-            <!-- Nav Item 1: Home -->
+            <!-- Home Tab -->
             <LinearLayout
-                android:id="@+id/nav_item_home"
+                android:id="@+id/navHome"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="56dp"
                 android:layout_weight="1"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:gravity="center"
+                android:layout_marginHorizontal="2dp"
                 android:orientation="vertical"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp">
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless">
 
                 <ImageView
-                    android:id="@+id/nav_icon_home"
+                    android:id="@+id/navHomeIcon"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
+                    android:src="@drawable/ic_home"
                     android:contentDescription="Home"
-                    android:src="@drawable/ic_home" />
+                    app:tint="@color/text_secondary_light" />
 
-                <!-- Selected indicator dot -->
-                <View
-                    android:id="@+id/nav_dot_home"
-                    android:layout_width="6dp"
-                    android:layout_height="6dp"
-                    android:layout_marginTop="4dp"
-                    android:background="@drawable/bg_nav_item_selected"
-                    android:visibility="visible" />
-
+                <TextView
+                    android:id="@+id/navHomeLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Home"
+                    android:textSize="10sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/text_secondary_light"
+                    android:alpha="0.65" />
             </LinearLayout>
 
-            <!-- Nav Item 2: History / Notifications -->
+            <!-- Search Tab -->
             <LinearLayout
-                android:id="@+id/nav_item_history"
+                android:id="@+id/navSearch"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless">
+
+                <ImageView
+                    android:id="@+id/navSearchIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_search"
+                    android:contentDescription="Search"
+                    app:tint="@color/text_secondary_light" />
+
+                <TextView
+                    android:id="@+id/navSearchLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Search"
+                    android:textSize="10sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/text_secondary_light"
+                    android:alpha="0.65" />
+            </LinearLayout>
+
+            <!-- Center Placeholder for Scan FAB -->
+            <View
+                android:id="@+id/navScanPlaceholder"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:gravity="center"
+                android:clickable="false"
+                android:focusable="false" />
+
+            <!-- Insights Tab -->
+            <LinearLayout
+                android:id="@+id/navInsights"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="2dp"
                 android:orientation="vertical"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp">
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless">
 
                 <ImageView
-                    android:id="@+id/nav_icon_history"
+                    android:id="@+id/navInsightsIcon"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:contentDescription="History"
-                    android:src="@drawable/ic_notifications" />
+                    android:src="@drawable/ic_stats"
+                    android:contentDescription="Insights"
+                    app:tint="@color/text_secondary_light" />
 
-                <!-- Selected indicator dot -->
-                <View
-                    android:id="@+id/nav_dot_history"
-                    android:layout_width="6dp"
-                    android:layout_height="6dp"
-                    android:layout_marginTop="4dp"
-                    android:background="@drawable/bg_nav_item_selected"
-                    android:visibility="invisible" />
-
+                <TextView
+                    android:id="@+id/navInsightsLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Insights"
+                    android:textSize="10sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/text_secondary_light"
+                    android:alpha="0.65" />
             </LinearLayout>
 
-            <!-- Nav Item 3: Center Scan Button (spacer in the row) -->
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-
-            <!-- Nav Item 4: Stats / Analytics -->
+            <!-- Profile Tab -->
             <LinearLayout
-                android:id="@+id/nav_item_stats"
+                android:id="@+id/navProfile"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="56dp"
                 android:layout_weight="1"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:gravity="center"
+                android:layout_marginHorizontal="2dp"
                 android:orientation="vertical"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp">
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless">
 
                 <ImageView
-                    android:id="@+id/nav_icon_stats"
+                    android:id="@+id/navProfileIcon"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:contentDescription="Statistics"
-                    android:src="@drawable/ic_health_score" />
-
-                <!-- Selected indicator dot -->
-                <View
-                    android:id="@+id/nav_dot_stats"
-                    android:layout_width="6dp"
-                    android:layout_height="6dp"
-                    android:layout_marginTop="4dp"
-                    android:background="@drawable/bg_nav_item_selected"
-                    android:visibility="invisible" />
-
-            </LinearLayout>
-
-            <!-- Nav Item 5: Profile / Settings -->
-            <LinearLayout
-                android:id="@+id/nav_item_profile"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp">
-
-                <ImageView
-                    android:id="@+id/nav_icon_profile"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:src="@drawable/ic_person"
                     android:contentDescription="Profile"
+<<<<<<< Updated upstream
                     android:src="@drawable/ic_settings" />
 
                 <!-- Selected indicator dot -->
@@ -159,41 +176,54 @@
                     android:layout_marginTop="4dp"
                     android:background="@drawable/bg_nav_item_selected"
                     android:visibility="invisible" />
+=======
+                    app:tint="@color/text_secondary_light" />
+>>>>>>> Stashed changes
 
+                <TextView
+                    android:id="@+id/navProfileLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Profile"
+                    android:textSize="10sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/text_secondary_light"
+                    android:alpha="0.65" />
             </LinearLayout>
 
         </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Center Elevated Scan Button (floating above navbar) -->
+    <!-- Center Scan FAB — elevated and floats above navContainer -->
     <FrameLayout
-        android:id="@+id/nav_item_scan"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:elevation="16dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?attr/selectableItemBackgroundBorderless"
-        app:layout_constraintBottom_toBottomOf="@+id/navbar_background_card"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/navbar_background_card"
-        app:layout_constraintVertical_bias="0.1">
+        android:id="@+id/navScan"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginBottom="20dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        app:layout_constraintStart_toStartOf="@id/navContainer"
+        app:layout_constraintEnd_toEndOf="@id/navContainer"
+        app:layout_constraintBottom_toBottomOf="@id/navContainer"
+        app:layout_constraintTop_toTopOf="@id/navContainer"
+        app:layout_constraintVertical_bias="0.0">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/bg_center_nav_button" />
-
-        <ImageView
-            android:id="@+id/nav_icon_scan"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/navScanButton"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
             android:layout_gravity="center"
-            android:contentDescription="Scan"
             android:src="@drawable/ic_barcode_scan"
-            app:tint="@android:color/white" />
+            android:contentDescription="Scan"
+            app:backgroundTint="@null"
+            android:backgroundTint="@null"
+            app:fabCustomSize="68dp"
+            app:maxImageSize="30dp"
+            app:elevation="16dp"
+            app:tint="@color/white"
+            android:background="@drawable/bg_glass_fab_scan" />
 
     </FrameLayout>
 

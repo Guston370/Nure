@@ -476,11 +476,11 @@ public class CircularRevealAnimationHelper {
     private static int getItemIndex(int itemId) {
         if (itemId == R.id.nav_home)
             return 0;
-        if (itemId == R.id.nav_scan)
+        if (itemId == R.id.nav_search)
             return 1;
-        if (itemId == R.id.nav_stats)
+        if (itemId == R.id.nav_scan)
             return 2;
-        if (itemId == R.id.nav_history)
+        if (itemId == R.id.nav_insights)
             return 3;
         if (itemId == R.id.nav_profile)
             return 4;

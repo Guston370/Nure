@@ -34,55 +34,48 @@ public class DarkModeManager {
      * Apply the user's dark mode preference on app startup
      */
     public void applyUserPreference() {
-        boolean isDarkModeEnabled = preferences.getBoolean(KEY_DARK_MODE, false);
-        int nightMode = isDarkModeEnabled ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO;
-        
-        AppCompatDelegate.setDefaultNightMode(nightMode);
-        
-        Log.d(TAG, "Applied user dark mode preference: " + (isDarkModeEnabled ? "enabled" : "disabled"));
+        // Force dark mode for premium smoked-glass dark design system
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        Log.d(TAG, "Forced dark mode (MODE_NIGHT_YES)");
     }
     
     /**
      * Toggle dark mode and save preference
      */
     public void toggleDarkMode(boolean isDarkMode) {
-        int nightMode = isDarkMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO;
-        AppCompatDelegate.setDefaultNightMode(nightMode);
-        
-        // Save preference
-        preferences.edit().putBoolean(KEY_DARK_MODE, isDarkMode).apply();
-        
-        Log.d(TAG, "Dark mode toggled: " + (isDarkMode ? "enabled" : "disabled"));
+        // Force dark mode regardless of toggle for premium theme design
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        preferences.edit().putBoolean(KEY_DARK_MODE, true).apply();
+        Log.d(TAG, "Dark mode toggle ignored, dark mode forced: enabled");
     }
     
     /**
      * Check if dark mode is currently enabled
      */
     public boolean isDarkModeEnabled() {
-        return preferences.getBoolean(KEY_DARK_MODE, false);
+        return true;
     }
     
     /**
      * Get the current night mode setting
      */
     public int getCurrentNightMode() {
-        boolean isDarkMode = isDarkModeEnabled();
-        return isDarkMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO;
+        return AppCompatDelegate.MODE_NIGHT_YES;
     }
     
     /**
      * Apply dark mode based on system setting (follow system)
      */
     public void followSystemSetting() {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        preferences.edit().putBoolean("follow_system_theme", true).apply();
-        Log.d(TAG, "Set to follow system dark mode setting");
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        preferences.edit().putBoolean("follow_system_theme", false).apply();
+        Log.d(TAG, "Follow system setting ignored, dark mode forced");
     }
     
     /**
      * Check if app is set to follow system theme
      */
     public boolean isFollowingSystemTheme() {
-        return preferences.getBoolean("follow_system_theme", false);
+        return false;
     }
 }

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nure — Premium Smoked Glass Card
+     Surface: rgba(20,20,25,0.75) = #BF141419
+     Border:  rgba(255,255,255,0.12) = #1FFFFFFF
+     Highlight sheen: rgba(255,255,255,0.08) = #14FFFFFF
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Base smoked glass surface -->
+    <item>
+        <shape>
+            <corners android:radius="24dp" />
+            <solid android:color="#BF141419" />
+        </shape>
+    </item>
+
+    <!-- Subtle top highlight sheen (reflection effect) -->
+    <item
+        android:bottom="30dp"
+        android:left="0dp"
+        android:right="0dp"
+        android:top="0dp">
+        <shape>
+            <corners
+                android:topLeftRadius="24dp"
+                android:topRightRadius="24dp"
+                android:bottomLeftRadius="0dp"
+                android:bottomRightRadius="0dp" />
+            <gradient
+                android:type="linear"
+                android:angle="270"
+                android:startColor="#14FFFFFF"
+                android:endColor="#00FFFFFF" />
+        </shape>
+    </item>
+
+    <!-- Glass border -->
+    <item>
+        <shape>
+            <corners android:radius="24dp" />
+            <stroke
+                android:width="1dp"
+                android:color="#1FFFFFFF" />
+        </shape>
+    </item>
+
+</layer-list>
