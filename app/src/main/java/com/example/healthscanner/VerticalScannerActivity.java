@@ -84,12 +84,6 @@ public class VerticalScannerActivity extends BaseActivity {
     private TextView instructionsText, scanStatusText, modeBarcodeText, modeDetectText;
     private ProgressBar scanProgress;
     private View scanningLine, scanningFrame;
-<<<<<<< Updated upstream
-    
-    private View scanningLine;
-
-    // Overlay elements removed for simplified scanner
-=======
     private ScannerOverlayView scannerOverlay;
 
     // Preview Card Views
@@ -98,8 +92,6 @@ public class VerticalScannerActivity extends BaseActivity {
     private TextView previewProductName, previewProductBrand, previewProductScore;
     private CardView previewScoreContainer;
     private TextView scanStatusSubtext;
->>>>>>> Stashed changes
-
     // Camera
     private ProcessCameraProvider cameraProvider;
     private Preview preview;
@@ -121,13 +113,7 @@ public class VerticalScannerActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-<<<<<<< Updated upstream
-        setContentView(R.layout.activity_scanner_simple);
-        
-=======
         setContentView(R.layout.activity_scanner_vertical);
-
->>>>>>> Stashed changes
         httpClient = new OkHttpClient();
         
         // Initialize views
@@ -166,12 +152,7 @@ public class VerticalScannerActivity extends BaseActivity {
         instructionsText = findViewById(R.id.instructions_text);
         scanStatusText = findViewById(R.id.scan_status_text);
         scanProgress = findViewById(R.id.scan_progress);
-<<<<<<< Updated upstream
-        
-=======
         scanStatusSubtext = findViewById(R.id.scan_status_subtext);
-
->>>>>>> Stashed changes
         scanningLine = findViewById(R.id.scanning_line);
         scanningFrame = findViewById(R.id.scanning_frame);
         detectCrosshair = findViewById(R.id.detect_crosshair);
@@ -179,9 +160,6 @@ public class VerticalScannerActivity extends BaseActivity {
         modeBarcodeText = findViewById(R.id.mode_barcode);
         modeDetectText = findViewById(R.id.mode_detect);
 
-<<<<<<< Updated upstream
-        // Overlay elements removed - scanner now navigates directly to product details
-=======
         scanningFrameCard = findViewById(R.id.scanning_frame_card);
         scannerOverlay = findViewById(R.id.scanner_overlay);
         
@@ -200,9 +178,7 @@ public class VerticalScannerActivity extends BaseActivity {
         previewProductName = findViewById(R.id.preview_product_name);
         previewProductBrand = findViewById(R.id.preview_product_brand);
         previewProductScore = findViewById(R.id.preview_product_score);
-        previewScoreContainer = findViewById(R.id.preview_score_container);
->>>>>>> Stashed changes
-    }
+        previewScoreContainer = findViewById(R.id.preview_score_container);    }
 
     private void setupClickListeners() {
         // Back button
@@ -272,37 +248,6 @@ public class VerticalScannerActivity extends BaseActivity {
         }
 
         if (currentMode == ScanMode.BARCODE) {
-<<<<<<< Updated upstream
-            // Update mode toggles
-            modeBarcodeText.setBackgroundResource(R.drawable.mode_toggle_active);
-            modeDetectText.setBackgroundResource(R.drawable.mode_toggle_inactive);
-            
-            // Show barcode views
-            scanningFrame.setVisibility(View.VISIBLE);
-            scanningLine.setVisibility(View.VISIBLE);
-            detectCrosshair.setVisibility(View.GONE);
-            
-            instructionsText.setText("For better accuracy, scan the barcode against the local DB");
-            
-            if (captureButtonIcon != null) {
-                captureButtonIcon.setImageResource(R.drawable.ic_barcode_scan);
-            }
-            
-        } else {
-            // Update mode toggles
-            modeBarcodeText.setBackgroundResource(R.drawable.mode_toggle_inactive);
-            modeDetectText.setBackgroundResource(R.drawable.mode_toggle_active);
-            
-            // Show detect views
-            scanningFrame.setVisibility(View.GONE);
-            scanningLine.setVisibility(View.GONE);
-            detectCrosshair.setVisibility(View.VISIBLE);
-            
-            instructionsText.setText("Try verifying via Barcode first for DB accuracy");
-            
-            if (captureButtonIcon != null) {
-                captureButtonIcon.setImageResource(R.drawable.ic_detect_product);
-=======
             if (modeBarcodeText != null) {
                 modeBarcodeText.setBackgroundResource(R.drawable.mode_toggle_active);
                 modeBarcodeText.setTextColor(ContextCompat.getColor(this, R.color.bg_deep_navy));
@@ -380,9 +325,7 @@ public class VerticalScannerActivity extends BaseActivity {
                 scanStatusCard.setVisibility(View.GONE);
             }
             if (productPreviewCard != null) {
-                productPreviewCard.setVisibility(View.GONE);
->>>>>>> Stashed changes
-            }
+                productPreviewCard.setVisibility(View.GONE);            }
         }
 
         // Add long press on instructions for testing
@@ -483,13 +426,6 @@ public class VerticalScannerActivity extends BaseActivity {
                 .setFlashMode(isFlashOn ? ImageCapture.FLASH_MODE_ON : ImageCapture.FLASH_MODE_OFF)
                 .build();
 
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .build();
-
-        // Set up barcode analyzer
-        imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(this),
-                new BarcodeAnalyzer(this::onBarcodeDetected));
-
         // Camera selector (back camera)
         CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
 
@@ -501,18 +437,11 @@ public class VerticalScannerActivity extends BaseActivity {
             androidx.camera.core.Camera camera = cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview, imageAnalysis, imageCapture);
 
-            // Bind use cases to camera and get camera control
-            androidx.camera.core.Camera camera = cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageAnalysis);
-
             // Enable flash if needed
             if (camera.getCameraInfo().hasFlashUnit()) {
                 camera.getCameraControl().enableTorch(isFlashOn);
             }
             
-            showScanStatus("Ready", true);
-            
-
             showScanStatus("Ready to scan", true);
 
         } catch (Exception e) {
@@ -528,26 +457,6 @@ public class VerticalScannerActivity extends BaseActivity {
             return; // Prevent multiple scans
 
         isScanning = true;
-<<<<<<< Updated upstream
-        showScanStatus("✅ Barcode detected! Opening product details...", true);
-        
-        // Vibrate for feedback
-        performHapticFeedback();
-        
-        Log.d(TAG, "Navigating to product details with barcode: " + barcode);
-        
-        // Add a small delay for better UX
-        if (scanStatusCard != null) {
-            scanStatusCard.postDelayed(() -> {
-                Intent intent = new Intent(this, ProductDetailsEnhancedActivity.class);
-                intent.putExtra("barcode", barcode);
-                startActivity(intent);
-            }, 500); 
-        } else {
-            Intent intent = new Intent(this, ProductDetailsEnhancedActivity.class);
-            intent.putExtra("barcode", barcode);
-            startActivity(intent);
-=======
 
         performHapticFeedback();
         
@@ -557,9 +466,7 @@ public class VerticalScannerActivity extends BaseActivity {
         // Success animation on scanning frame card
         if (scanningFrameCard != null) {
             Animation successAnim = AnimationUtils.loadAnimation(this, R.anim.success_indicator_animation);
-            scanningFrameCard.startAnimation(successAnim);
->>>>>>> Stashed changes
-        }
+            scanningFrameCard.startAnimation(successAnim);        }
 
         // Fetch product details for preview
         fetchProductForPreview(barcode);
@@ -975,22 +882,9 @@ public class VerticalScannerActivity extends BaseActivity {
     }
 
     private void showScanStatus(String message, boolean isSuccess) {
-<<<<<<< Updated upstream
-        if (scanStatusText != null) {
-            scanStatusText.setText(message);
-        }
-
-        if (scanStatusCard != null) {
-            scanStatusCard.setVisibility(View.VISIBLE);
-
-            // Auto-hide after 3 seconds if not scanning
-            if (!message.contains("detected") && !message.contains("Processing") && !message.contains("Ready")) {
-=======
         if (!isSuccess) {
             setScannerState(ScanState.ERROR, message);
-            if (scanStatusCard != null) {
->>>>>>> Stashed changes
-                scanStatusCard.postDelayed(() -> {
+            if (scanStatusCard != null) {                scanStatusCard.postDelayed(() -> {
                     if (scanStatusCard != null && currentMode == ScanMode.BARCODE) {
                         setScannerState(ScanState.IDLE, null);
                     } else if (scanStatusCard != null) {
@@ -1202,19 +1096,12 @@ public class VerticalScannerActivity extends BaseActivity {
             previewScoreContainer.setCardBackgroundColor(scoreColor);
         }
 
-<<<<<<< Updated upstream
-        if (scanProgress != null) {
-            scanProgress.setVisibility((isSuccess && !message.contains("Ready")) ? View.VISIBLE : View.GONE);
-            scanProgress.setVisibility(isSuccess && !message.contains("Ready") ? View.VISIBLE : View.GONE);
-=======
         loadPreviewImage(imageUrl);
 
         setScannerState(ScanState.SUCCESS, "Preparing results...");
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            android.transition.TransitionManager.beginDelayedTransition((android.view.ViewGroup) productPreviewCard.getParent());
->>>>>>> Stashed changes
-        }
+            android.transition.TransitionManager.beginDelayedTransition((android.view.ViewGroup) productPreviewCard.getParent());        }
         productPreviewCard.setVisibility(View.VISIBLE);
 
         if (scanStatusCard != null) {
@@ -1265,14 +1152,7 @@ public class VerticalScannerActivity extends BaseActivity {
         }
     }
 
-    private void navigateToProductDetails(String barcode) {
-        if (isNavigating) return;
-        isNavigating = true;
 
-        Intent intent = new Intent(this, ProductDetailsEnhancedActivity.class);
-        intent.putExtra("barcode", barcode);
-        startActivity(intent);
-    }
 
     private void performHapticFeedback() {
         try {
@@ -1305,17 +1185,10 @@ public class VerticalScannerActivity extends BaseActivity {
         isCapturing = false;
         isNavigating = false;
         setCaptureButtonEnabled(true);
-<<<<<<< Updated upstream
-        
-        showScanStatus("Ready to scan", true);
-        Log.d(TAG, "Scanner resumed - ready for new scans");
-=======
         if (productPreviewCard != null) {
             productPreviewCard.setVisibility(View.GONE);
         }
-        updateModeUI();
->>>>>>> Stashed changes
-    }
+        updateModeUI();    }
 
     @Override
     protected void onDestroy() {

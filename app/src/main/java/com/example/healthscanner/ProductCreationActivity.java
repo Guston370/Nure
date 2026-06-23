@@ -171,7 +171,8 @@ public class ProductCreationActivity extends AppCompatActivity {
                     System.currentTimeMillis(),
                     "manual",
                     deviceId != null ? deviceId : "unknown_device",
-                    "pending"
+                    "pending",
+                    0.0
             );
 
             new Thread(() -> {

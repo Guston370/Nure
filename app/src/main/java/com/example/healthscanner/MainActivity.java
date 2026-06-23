@@ -52,6 +52,33 @@ public class MainActivity extends BaseActivity {
     private DarkModeManager darkModeManager;
     private DrawerLayout drawerLayout;
 
+    private static final String[] HEALTH_TIPS = {
+        "Foods with fewer than 5g added sugar are generally considered low-sugar options.",
+        "Try scanning foods to check their protein content for muscle growth and recovery.",
+        "Aim for high-fiber foods (more than 3g per serving) to support digestive health.",
+        "Check sodium levels: foods with less than 140mg per serving are considered low sodium.",
+        "Look for healthy unsaturated fats like omega-3 instead of saturated or trans fats."
+    };
+
+    private void animateTextCounter(final TextView textView, int targetValue) {
+        if (textView == null) return;
+        android.animation.ValueAnimator animator = android.animation.ValueAnimator.ofInt(0, targetValue);
+        animator.setDuration(1000);
+        animator.addUpdateListener(animation -> textView.setText(animation.getAnimatedValue().toString()));
+        animator.start();
+    }
+
+    private void animateTextCounter(final TextView textView, double targetValue) {
+        if (textView == null) return;
+        android.animation.ValueAnimator animator = android.animation.ValueAnimator.ofFloat(0f, (float) targetValue);
+        animator.setDuration(1000);
+        animator.addUpdateListener(animation -> {
+            float val = (float) animation.getAnimatedValue();
+            textView.setText(String.format("%.1f", val));
+        });
+        animator.start();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -199,17 +226,37 @@ public class MainActivity extends BaseActivity {
             TextView healthScoreNumber = findViewById(R.id.healthScoreNumber);
             TextView savedItemsNumber = findViewById(R.id.savedItemsNumber);
             TextView healthEmoji = findViewById(R.id.healthEmoji);
+            TextView greetingSubText = findViewById(R.id.greetingSubText);
+            TextView dailyTipText = findViewById(R.id.dailyTipText);
 
-            // Set personalized welcome text with user's name
+            // Set personalized welcome text with user's name and time of day
             if (welcomeText != null) {
                 String userName = getRealUserName();
-                if (userName != null && !userName.isEmpty()) {
-                    // Extract first name only
-                    String firstName = userName.split(" ")[0];
-                    welcomeText.setText("Hi " + firstName + ", Let's");
+                String greeting;
+                int hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
+                if (hour < 12) {
+                    greeting = "Good Morning";
+                } else if (hour < 17) {
+                    greeting = "Good Afternoon";
                 } else {
-                    welcomeText.setText("Let's Check Your");
+                    greeting = "Good Evening";
                 }
+                
+                if (userName != null && !userName.isEmpty()) {
+                    String firstName = userName.split(" ")[0];
+                    welcomeText.setText(greeting + ", " + firstName);
+                } else {
+                    welcomeText.setText(greeting + ", Aditya");
+                }
+            }
+
+            if (greetingSubText != null) {
+                greetingSubText.setText("Track healthier choices with Nure");
+            }
+
+            if (dailyTipText != null) {
+                int randomIndex = (int) (Math.random() * HEALTH_TIPS.length);
+                dailyTipText.setText(HEALTH_TIPS[randomIndex]);
             }
 
             // Set REAL stats (no artificial data)
@@ -264,14 +311,14 @@ public class MainActivity extends BaseActivity {
             // Get real scan count from actual user scans
             int realScanCount = getRealScanCount(prefs);
             if (totalScansNumber != null) {
-                totalScansNumber.setText(String.valueOf(realScanCount));
+                animateTextCounter(totalScansNumber, realScanCount);
             }
 
             // Get real health score from actual scans
             double realHealthScore = getRealHealthScore(prefs);
             if (healthScoreNumber != null) {
                 if (realScanCount > 0) {
-                    healthScoreNumber.setText(String.format("%.1f", realHealthScore));
+                    animateTextCounter(healthScoreNumber, realHealthScore);
                 } else {
                     healthScoreNumber.setText("--");
                 }
@@ -280,7 +327,7 @@ public class MainActivity extends BaseActivity {
             // Get real saved items count
             int realSavedCount = getRealSavedItemsCount(prefs);
             if (savedItemsNumber != null) {
-                savedItemsNumber.setText(String.valueOf(realSavedCount));
+                animateTextCounter(savedItemsNumber, realSavedCount);
             }
 
             // Set appropriate emoji based on real data
@@ -289,6 +336,35 @@ public class MainActivity extends BaseActivity {
                     healthEmoji.setText(getHealthEmoji(realHealthScore));
                 } else {
                     healthEmoji.setText("🌟"); // New user emoji
+                }
+            }
+
+            // Update health insights dynamically
+            TextView healthInsightText = findViewById(R.id.healthInsightText);
+            if (healthInsightText != null) {
+                if (realScanCount == 0) {
+                    healthInsightText.setText("Scan your first product to get personalized insights!");
+                } else {
+                    int healthyChoices = 0;
+                    try {
+                        String scanHistoryJson = prefs.getString("recent_scans", "[]");
+                        org.json.JSONArray scanArray = new org.json.JSONArray(scanHistoryJson);
+                        for (int i = 0; i < scanArray.length(); i++) {
+                            org.json.JSONObject scan = scanArray.getJSONObject(i);
+                            if (scan.has("healthScore") && scan.getDouble("healthScore") >= 7.0) {
+                                healthyChoices++;
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error parsing scan history for insights", e);
+                    }
+                    if (healthyChoices > 0) {
+                        healthInsightText.setText("You made " + healthyChoices + " healthy choices this week. Keep it up!");
+                    } else if (realHealthScore >= 7.0) {
+                        healthInsightText.setText("Average health score is " + String.format("%.1f", realHealthScore) + ". Excellent choice of foods!");
+                    } else {
+                        healthInsightText.setText("Your average health score is " + String.format("%.1f", realHealthScore) + ". Try scanning more protein-rich products.");
+                    }
                 }
             }
 
@@ -782,10 +858,6 @@ public class MainActivity extends BaseActivity {
     private void updateStatsCards() {
         try {
             updateHealthScore();
-            TextView savedItemsNumber = findViewById(R.id.savedItemsNumber);
-            if (savedItemsNumber != null) {
-                savedItemsNumber.setText("0");
-            }
             Log.d(TAG, "Stats cards updated successfully");
         } catch (Exception e) {
             Log.e(TAG, "Error updating stats cards: " + e.getMessage(), e);
@@ -794,43 +866,14 @@ public class MainActivity extends BaseActivity {
 
     private void updateHealthScore() {
         try {
-            SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-
-            TextView healthScoreNumber = findViewById(R.id.healthScoreNumber);
-            TextView healthEmoji = findViewById(R.id.healthEmoji);
             TextView totalScansNumber = findViewById(R.id.totalScansNumber);
+            TextView healthScoreNumber = findViewById(R.id.healthScoreNumber);
+            TextView savedItemsNumber = findViewById(R.id.savedItemsNumber);
+            TextView healthEmoji = findViewById(R.id.healthEmoji);
 
-            // Use REAL user data only
-            double realHealthScore = getRealHealthScore(prefs);
-            int realScanCount = getRealScanCount(prefs);
-
-            // Update total scans with real count
-            if (totalScansNumber != null) {
-                totalScansNumber.setText(String.valueOf(realScanCount));
-            }
-
-            // Update health score with real data
-            if (healthScoreNumber != null) {
-                if (realScanCount > 0) {
-                    healthScoreNumber.setText(String.format("%.1f", realHealthScore));
-                } else {
-                    healthScoreNumber.setText("--");
-                }
-            }
-
-            // Update emoji based on real health score
-            if (healthEmoji != null) {
-                if (realScanCount > 0) {
-                    healthEmoji.setText(getHealthEmoji(realHealthScore));
-                } else {
-                    healthEmoji.setText("🌟"); // New user - no scans yet
-                }
-            }
-
-            Log.d(TAG, "Updated with real data - Scans: " + realScanCount + ", Health Score: " + realHealthScore);
-
+            setRealUserStats(totalScansNumber, healthScoreNumber, savedItemsNumber, healthEmoji);
         } catch (Exception e) {
-            Log.e(TAG, "Error updating health score with real data: " + e.getMessage(), e);
+            Log.e(TAG, "Error updating health score: " + e.getMessage(), e);
         }
     }
 

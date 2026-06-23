@@ -113,21 +113,22 @@
                         android:id="@+id/welcomeText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Hello,"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
-                        android:textColor="@color/md_theme_light_onSurfaceVariant"
-                        android:fontFamily="sans-serif"
-                        android:layout_marginBottom="2dp" />
+                        android:text="Good Morning, Aditya"
+                        android:textColor="@color/text_primary"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_marginBottom="4dp" />
 
                     <TextView
                         android:id="@+id/greetingSubText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Let's scan something healthy 🌱"
-                        android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
-                        android:textColor="@color/md_theme_light_onBackground"
-                        android:fontFamily="sans-serif-medium"
-                        android:letterSpacing="-0.02" />
+                        android:text="Track healthier choices with Nure"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="15sp"
+                        android:fontFamily="sans-serif"
+                        android:letterSpacing="0.01" />
 
                 </LinearLayout>
 
@@ -135,16 +136,16 @@
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/searchCard"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="56dp"
                     android:layout_marginHorizontal="20dp"
                     android:layout_marginBottom="28dp"
                     android:clickable="true"
                     android:focusable="true"
-                    app:cardCornerRadius="30dp"
+                    app:cardCornerRadius="28dp"
                     app:cardElevation="0dp"
                     app:cardBackgroundColor="@android:color/transparent"
                     app:strokeWidth="0dp"
-                    android:background="@drawable/bg_smoked_glass_card">
+                    android:background="@drawable/bg_glass_search_bar">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -165,8 +166,8 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="12dp"
-                            android:text="Search or scan foods..."
-                            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                            android:text="Search products, ingredients or scan barcode"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                             android:textColor="#FF94A3B8"
                             android:alpha="0.8" />
 
@@ -194,38 +195,38 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- ==================== STATS ROW ==================== -->
-                <LinearLayout
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/statsContainerCard"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="20dp"
-                    android:paddingBottom="28dp">
+                    android:layout_height="100dp"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginBottom="28dp"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    app:strokeWidth="0dp"
+                    android:background="@drawable/bg_smoked_glass_card">
 
-                    <!-- Total Scans Chip -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/totalScansCard"
-                        android:layout_width="0dp"
-                        android:layout_height="100dp"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@android:color/transparent"
-                        app:strokeWidth="0dp"
-                        android:background="@drawable/bg_smoked_glass_card">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingVertical="12dp">
 
+                        <!-- Total Scans Column -->
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="match_parent"
+                            android:layout_weight="1"
                             android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="12dp">
+                            android:gravity="center">
 
                             <ImageView
-                                android:layout_width="26dp"
-                                android:layout_height="26dp"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
                                 android:src="@drawable/ic_barcode_scan"
-                                android:layout_marginBottom="6dp"
+                                android:layout_marginBottom="4dp"
                                 app:tint="@color/md_theme_light_primary" />
 
                             <TextView
@@ -233,7 +234,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0"
-                                android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                                android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
                                 android:textColor="@color/md_theme_light_primary"
                                 android:textStyle="bold" />
 
@@ -241,38 +242,31 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Scans"
-                                android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
-                                android:textColor="@color/md_theme_light_onSurfaceVariant" />
+                                android:textSize="11sp"
+                                android:textColor="@color/text_secondary"
+                                android:fontFamily="sans-serif-medium" />
 
                         </LinearLayout>
 
-                    </com.google.android.material.card.MaterialCardView>
+                        <!-- Divider 1 -->
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="50dp"
+                            android:background="@color/glass_border" />
 
-                    <!-- Health Score Chip -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/healthScoreCard"
-                        android:layout_width="0dp"
-                        android:layout_height="100dp"
-                        android:layout_weight="1"
-                        android:layout_marginHorizontal="4dp"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@android:color/transparent"
-                        app:strokeWidth="0dp"
-                        android:background="@drawable/bg_smoked_glass_card">
-
+                        <!-- Average Score Column -->
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="match_parent"
+                            android:layout_weight="1.2"
                             android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="12dp">
+                            android:gravity="center">
 
                             <ImageView
-                                android:layout_width="26dp"
-                                android:layout_height="26dp"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
                                 android:src="@drawable/ic_health_score"
-                                android:layout_marginBottom="6dp"
+                                android:layout_marginBottom="4dp"
                                 app:tint="@color/md_theme_light_secondary" />
 
                             <LinearLayout
@@ -286,7 +280,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="--"
-                                    android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                                    android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
                                     android:textColor="@color/md_theme_light_secondary"
                                     android:textStyle="bold" />
 
@@ -295,7 +289,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text=""
-                                    android:textSize="18sp"
+                                    android:textSize="16sp"
                                     android:layout_marginStart="4dp" />
 
                             </LinearLayout>
@@ -304,38 +298,31 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Avg Score"
-                                android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
-                                android:textColor="@color/md_theme_light_onSurfaceVariant" />
+                                android:textSize="11sp"
+                                android:textColor="@color/text_secondary"
+                                android:fontFamily="sans-serif-medium" />
 
                         </LinearLayout>
 
-                    </com.google.android.material.card.MaterialCardView>
+                        <!-- Divider 2 -->
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="50dp"
+                            android:background="@color/glass_border" />
 
-                    <!-- Saved Items Chip -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/savedItemsCard"
-                        android:layout_width="0dp"
-                        android:layout_height="100dp"
-                        android:layout_weight="1"
-                        android:layout_marginHorizontal="8dp"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@android:color/transparent"
-                        app:strokeWidth="0dp"
-                        android:background="@drawable/bg_smoked_glass_card">
-
+                        <!-- Saved Items Column -->
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="match_parent"
+                            android:layout_weight="1"
                             android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="12dp">
+                            android:gravity="center">
 
                             <ImageView
-                                android:layout_width="26dp"
-                                android:layout_height="26dp"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
                                 android:src="@drawable/ic_favorite_border"
-                                android:layout_marginBottom="6dp"
+                                android:layout_marginBottom="4dp"
                                 app:tint="@color/md_theme_light_tertiary" />
 
                             <TextView
@@ -343,7 +330,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0"
-                                android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                                android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
                                 android:textColor="@color/md_theme_light_tertiary"
                                 android:textStyle="bold" />
 
@@ -351,14 +338,15 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Saved"
-                                android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
-                                android:textColor="@color/md_theme_light_onSurfaceVariant" />
+                                android:textSize="11sp"
+                                android:textColor="@color/text_secondary"
+                                android:fontFamily="sans-serif-medium" />
 
                         </LinearLayout>
 
-                    </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
 
-                </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
                 <!-- ==================== QUICK SCAN CTA ==================== -->
                 <com.google.android.material.button.MaterialButton
@@ -377,7 +365,7 @@
                     app:iconTint="@color/white"
                     app:iconPadding="12dp"
                     app:backgroundTint="@null"
-                    android:background="@drawable/bg_glass_button_primary"
+                    android:background="@drawable/bg_smoked_glass_button_primary"
                     app:cornerRadius="30dp"
                     app:elevation="0dp" />
 
@@ -474,6 +462,79 @@
 
                 </LinearLayout>
 
+                <!-- ==================== HEALTH INSIGHTS SECTION ==================== -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/healthInsightsCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="4dp"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    app:strokeWidth="0dp"
+                    android:background="@drawable/bg_smoked_glass_card">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="20dp">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="52dp"
+                            android:layout_height="52dp"
+                            android:layout_marginEnd="16dp"
+                            app:cardCornerRadius="26dp"
+                            app:cardElevation="0dp"
+                            app:cardBackgroundColor="#2010B981"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="#4010B981">
+
+                            <ImageView
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_trending_up"
+                                android:scaleType="centerInside"
+                                app:tint="@color/md_theme_light_secondary" />
+
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Health Insights"
+                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                                android:textColor="@color/md_theme_light_secondary"
+                                android:fontFamily="sans-serif-medium"
+                                android:textAllCaps="true"
+                                android:letterSpacing="0.08"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:id="@+id/healthInsightText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Scan your first product to get personalized insights!"
+                                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                android:textColor="#FF94A3B8"
+                                android:lineSpacingExtra="2dp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
                 <!-- ==================== DAILY TIP SECTION ==================== -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/dailyTipCard"
@@ -533,6 +594,7 @@
                                 android:layout_marginBottom="4dp" />
 
                             <TextView
+                                android:id="@+id/dailyTipText"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Aim for foods with less than 5g of added sugar per serving"

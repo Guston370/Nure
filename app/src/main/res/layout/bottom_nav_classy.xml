@@ -165,21 +165,7 @@
                     android:layout_height="24dp"
                     android:src="@drawable/ic_person"
                     android:contentDescription="Profile"
-<<<<<<< Updated upstream
-                    android:src="@drawable/ic_settings" />
-
-                <!-- Selected indicator dot -->
-                <View
-                    android:id="@+id/nav_dot_profile"
-                    android:layout_width="6dp"
-                    android:layout_height="6dp"
-                    android:layout_marginTop="4dp"
-                    android:background="@drawable/bg_nav_item_selected"
-                    android:visibility="invisible" />
-=======
                     app:tint="@color/text_secondary_light" />
->>>>>>> Stashed changes
-
                 <TextView
                     android:id="@+id/navProfileLabel"
                     android:layout_width="wrap_content"

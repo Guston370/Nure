@@ -56,8 +56,43 @@ public class RecentScansAdapter extends RecyclerView.Adapter<RecentScansAdapter.
         String emoji = getHealthEmoji(item.getHealthScore());
         holder.healthEmoji.setText(emoji);
         
-        // Set product image (placeholder for now)
-        holder.productImage.setImageResource(R.drawable.ic_nutrition_facts);
+        // Adjust score badge background color based on score
+        double score = item.getHealthScore();
+        int badgeColor;
+        if (score >= 8.0) {
+            badgeColor = android.graphics.Color.parseColor("#CC10B981"); // Emerald Green
+        } else if (score >= 5.0) {
+            badgeColor = android.graphics.Color.parseColor("#CCF59E0B"); // Warning Orange
+        } else {
+            badgeColor = android.graphics.Color.parseColor("#CCEF4444"); // Error Red
+        }
+        if (holder.scoreBadgeContainer != null) {
+            holder.scoreBadgeContainer.setCardBackgroundColor(badgeColor);
+        }
+
+        // Set dynamic category and placeholder image
+        String nameLower = item.getProductName().toLowerCase();
+        String category = "PRODUCT";
+        int placeholderRes = R.drawable.ic_product_placeholder;
+        
+        if (nameLower.contains("cereal") || nameLower.contains("granola") || nameLower.contains("oats") || nameLower.contains("muesli") || nameLower.contains("cornflakes")) {
+            category = "CEREAL";
+            placeholderRes = R.drawable.ic_cereal_placeholder;
+        } else if (nameLower.contains("milk") || nameLower.contains("yogurt") || nameLower.contains("cheese") || nameLower.contains("dairy") || nameLower.contains("dahi") || nameLower.contains("paneer") || nameLower.contains("butter")) {
+            category = "DAIRY";
+            placeholderRes = R.drawable.ic_dairy_placeholder;
+        } else if (nameLower.contains("fruit") || nameLower.contains("apple") || nameLower.contains("banana") || nameLower.contains("berry") || nameLower.contains("orange") || nameLower.contains("mango") || nameLower.contains("juice") || nameLower.contains("strawberry")) {
+            category = "FRUIT";
+            placeholderRes = R.drawable.ic_fruit_placeholder;
+        } else if (nameLower.contains("snack") || nameLower.contains("chip") || nameLower.contains("cookie") || nameLower.contains("chocolate") || nameLower.contains("candy") || nameLower.contains("bar") || nameLower.contains("biscuit") || nameLower.contains("namkeen")) {
+            category = "SNACK";
+            placeholderRes = R.drawable.ic_snack_placeholder;
+        }
+        
+        if (holder.productCategory != null) {
+            holder.productCategory.setText(category);
+        }
+        holder.productImage.setImageResource(placeholderRes);
         
         // Add slide-in animation
         holder.itemView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.slide_in_right));
@@ -90,6 +125,8 @@ public class RecentScansAdapter extends RecyclerView.Adapter<RecentScansAdapter.
         TextView healthScoreText;
         TextView healthEmoji;
         ProgressBar healthScoreProgress;
+        TextView productCategory;
+        com.google.android.material.card.MaterialCardView scoreBadgeContainer;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -99,6 +136,8 @@ public class RecentScansAdapter extends RecyclerView.Adapter<RecentScansAdapter.
             healthScoreText = itemView.findViewById(R.id.healthScoreText);
             healthEmoji = itemView.findViewById(R.id.healthEmoji);
             healthScoreProgress = itemView.findViewById(R.id.healthScoreProgress);
+            productCategory = itemView.findViewById(R.id.productCategory);
+            scoreBadgeContainer = itemView.findViewById(R.id.scoreBadgeContainer);
         }
     }
 
