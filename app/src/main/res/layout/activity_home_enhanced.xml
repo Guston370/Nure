@@ -14,491 +14,703 @@
         android:animateLayoutChanges="true"
         android:background="@drawable/home_bg_clean">
 
-    <!-- Main Scrollable Content -->
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:fillViewport="true"
-        android:clipToPadding="false"
-        android:paddingBottom="90dp"
-        android:overScrollMode="never"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <LinearLayout
+        <!-- Main Scrollable Content -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="16dp"
-            android:paddingBottom="@dimen/spacing_xxxl">
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            android:clipToPadding="false"
+            android:paddingBottom="100dp"
+            android:overScrollMode="never"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-            <!-- ==================== TOP BAR ==================== -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
-                android:paddingTop="36dp"
-                android:paddingBottom="12dp">
+                android:orientation="vertical">
 
-                <!-- Profile Image (opens sidebar) -->
-                <ImageView
-                    android:id="@+id/profileImage"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:src="@drawable/ic_person"
-                    android:background="@drawable/bg_profile_circle"
-                    android:scaleType="centerInside"
-                    android:padding="8dp"
-                    android:contentDescription="Profile Picture"
-                    app:tint="@color/health_teal" />
+                <!-- ==================== TOP BAR ==================== -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:paddingTop="52dp"
+                    android:paddingBottom="8dp">
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    <!-- Profile Image (opens sidebar) -->
+                    <ImageView
+                        android:id="@+id/profileImage"
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
+                        android:src="@drawable/ic_person"
+                        android:background="@drawable/bg_profile_circle"
+                        android:scaleType="centerInside"
+                        android:padding="10dp"
+                        android:contentDescription="Profile Picture"
+                        app:tint="#10B981" />
 
-                <!-- Notification Bell -->
-                <FrameLayout
-                    android:id="@+id/notificationButton"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:background="@drawable/bg_notification_circle"
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <!-- Notification Bell -->
+                    <FrameLayout
+                        android:id="@+id/notificationButton"
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
+                        android:background="@drawable/bg_notification_circle"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackgroundBorderless">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_notifications"
+                            android:contentDescription="Notifications"
+                            app:tint="#FFFFFF" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <!-- ==================== HEADLINE ==================== -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="4dp">
+
+                    <TextView
+                        android:id="@+id/welcomeText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Good Morning,"
+                        android:textSize="15sp"
+                        android:textColor="#94A3B8"
+                        android:fontFamily="sans-serif"
+                        android:letterSpacing="0.02" />
+
+                    <TextView
+                        android:id="@+id/subtitleText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Track Your Health"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF"
+                        android:fontFamily="sans-serif-medium"
+                        android:letterSpacing="-0.02"
+                        android:lineSpacingMultiplier="1.1"
+                        android:layout_marginTop="2dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Make smarter choices with Nure"
+                        android:textSize="13sp"
+                        android:textColor="#64748B"
+                        android:fontFamily="sans-serif"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+                <!-- ==================== SEARCH BAR ==================== -->
+                <LinearLayout
+                    android:id="@+id/searchCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="24dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/bg_search_bar"
+                    android:paddingStart="18dp"
+                    android:paddingEnd="8dp"
                     android:clickable="true"
                     android:focusable="true"
-                    android:foreground="?attr/selectableItemBackgroundBorderless">
-
-                    <ImageView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_notifications"
-                        android:contentDescription="Notifications"
-                        app:tint="#1B1B1B" />
-                </FrameLayout>
-            </LinearLayout>
-
-            <!-- ==================== HEADLINE ==================== -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingStart="20dp"
-                android:paddingEnd="60dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="4dp">
-
-                <TextView
-                    android:id="@+id/welcomeText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Let's Check Your"
-                    android:textSize="30sp"
-                    android:textStyle="bold"
-                    android:textColor="#1B1B1B"
-                    android:fontFamily="sans-serif-medium"
-                    android:letterSpacing="-0.02"
-                    android:lineSpacingMultiplier="1.1" />
-
-                <TextView
-                    android:id="@+id/subtitleText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Meal Together"
-                    android:textSize="30sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/health_teal"
-                    android:fontFamily="sans-serif-medium"
-                    android:letterSpacing="-0.02"
-                    android:lineSpacingMultiplier="1.1" />
-            </LinearLayout>
-
-            <!-- ==================== SEARCH BAR ==================== -->
-            <LinearLayout
-                android:id="@+id/searchCard"
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginTop="20dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?attr/selectableItemBackground">
-
-                <!-- Search Input Area -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="10dp"
-                    android:background="@drawable/bg_search_bar"
-                    android:gravity="center_vertical"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:orientation="horizontal">
+                    android:foreground="?attr/selectableItemBackground">
 
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@drawable/ic_search"
                         android:contentDescription="Search"
-                        app:tint="#999B96"
+                        app:tint="#10B981"
                         android:layout_marginEnd="12dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Scan or search a food..."
-                        android:textSize="15sp"
-                        android:textColor="#999B96"
-                        android:fontFamily="sans-serif" />
-                </LinearLayout>
-
-                <!-- Filter button -->
-                <FrameLayout
-                    android:layout_width="52dp"
-                    android:layout_height="52dp"
-                    android:background="@drawable/bg_filter_button"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackgroundBorderless">
-
-                    <ImageView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_filter_tune"
-                        android:contentDescription="Filter"
-                        app:tint="#1B1B1B" />
-                </FrameLayout>
-            </LinearLayout>
-
-            <!-- ==================== STATS ROW ==================== -->
-            <LinearLayout
-                android:id="@+id/statsContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
-                android:paddingTop="24dp"
-                android:weightSum="3">
-
-                <!-- Total Scans -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    android:background="@drawable/bg_stat_chip"
-                    android:orientation="vertical"
-                    android:paddingTop="16dp"
-                    android:paddingBottom="16dp"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/totalScansNumber"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textSize="22sp"
-                        android:textStyle="bold"
-                        android:textColor="#1B1B1B"
-                        android:fontFamily="sans-serif-medium" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Total Scans"
-                        android:textSize="11sp"
-                        android:textColor="#999B96"
-                        android:fontFamily="sans-serif"
-                        android:layout_marginTop="4dp" />
-                </LinearLayout>
-
-                <!-- Avg Health Score -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="6dp"
-                    android:layout_marginEnd="6dp"
-                    android:background="@drawable/bg_stat_chip"
-                    android:orientation="vertical"
-                    android:paddingTop="16dp"
-                    android:paddingBottom="16dp"
-                    android:gravity="center">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:id="@+id/healthScoreNumber"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="--"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            android:textColor="#1B1B1B"
-                            android:fontFamily="sans-serif-medium" />
-
-                        <TextView
-                            android:id="@+id/healthEmoji"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="🌟"
-                            android:textSize="16sp"
-                            android:layout_marginStart="4dp" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Avg Score"
-                        android:textSize="11sp"
-                        android:textColor="#999B96"
-                        android:fontFamily="sans-serif"
-                        android:layout_marginTop="4dp" />
-                </LinearLayout>
-
-                <!-- Saved Items -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="6dp"
-                    android:background="@drawable/bg_stat_chip"
-                    android:orientation="vertical"
-                    android:paddingTop="16dp"
-                    android:paddingBottom="16dp"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/savedItemsNumber"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textSize="22sp"
-                        android:textStyle="bold"
-                        android:textColor="#1B1B1B"
-                        android:fontFamily="sans-serif-medium" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Saved"
-                        android:textSize="11sp"
-                        android:textColor="#999B96"
-                        android:fontFamily="sans-serif"
-                        android:layout_marginTop="4dp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- ==================== RECENT SCANS SECTION ==================== -->
-            <LinearLayout
-                android:id="@+id/recentScansSection"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingTop="28dp">
-
-                <!-- Section Header -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
-                    android:paddingBottom="14dp">
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Last scans"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="#1B1B1B"
-                        android:fontFamily="sans-serif-medium" />
-
-                    <TextView
-                        android:id="@+id/viewAllScans"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="See all"
+                        android:text="Search products, ingredients or scan barcode"
                         android:textSize="14sp"
-                        android:textColor="#999B96"
+                        android:textColor="#4D94A3B8"
                         android:fontFamily="sans-serif"
-                        android:background="?attr/selectableItemBackground"
-                        android:padding="@dimen/spacing_sm" />
+                        android:singleLine="true"
+                        android:ellipsize="end" />
+
+                    <!-- Filter button -->
+                    <FrameLayout
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/bg_filter_button"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackgroundBorderless">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_filter_tune"
+                            android:contentDescription="Filter"
+                            app:tint="#FFFFFF" />
+                    </FrameLayout>
                 </LinearLayout>
 
-                <!-- Recent Scans Horizontal RecyclerView -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recentScansRecyclerView"
+                <!-- ==================== STATS ROW ==================== -->
+                <LinearLayout
+                    android:id="@+id/statsContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:clipToPadding="false"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
-                    tools:listitem="@layout/item_recent_scan_enhanced" />
+                    android:paddingTop="24dp"
+                    android:weightSum="3">
 
-                <!-- Empty State (shown when no scans) -->
+                    <!-- Total Scans -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="6dp"
+                        android:background="@drawable/bg_stat_chip"
+                        android:orientation="vertical"
+                        android:paddingTop="18dp"
+                        android:paddingBottom="18dp"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:gravity="center">
+
+                        <!-- Icon -->
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_barcode_scan"
+                            android:contentDescription="Scans"
+                            app:tint="#10B981"
+                            android:layout_marginBottom="6dp" />
+
+                        <TextView
+                            android:id="@+id/totalScansNumber"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="24sp"
+                            android:textStyle="bold"
+                            android:textColor="#10B981"
+                            android:fontFamily="sans-serif-medium" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Scans"
+                            android:textSize="10sp"
+                            android:textColor="#64748B"
+                            android:fontFamily="sans-serif"
+                            android:layout_marginTop="3dp" />
+                    </LinearLayout>
+
+                    <!-- Avg Health Score -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginEnd="6dp"
+                        android:background="@drawable/bg_stat_chip"
+                        android:orientation="vertical"
+                        android:paddingTop="18dp"
+                        android:paddingBottom="18dp"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_health_score"
+                            android:contentDescription="Score"
+                            app:tint="#06B6D4"
+                            android:layout_marginBottom="6dp" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:id="@+id/healthScoreNumber"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="--"
+                                android:textSize="24sp"
+                                android:textStyle="bold"
+                                android:textColor="#06B6D4"
+                                android:fontFamily="sans-serif-medium" />
+
+                            <TextView
+                                android:id="@+id/healthEmoji"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="🌟"
+                                android:textSize="14sp"
+                                android:layout_marginStart="3dp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Avg Score"
+                            android:textSize="10sp"
+                            android:textColor="#64748B"
+                            android:fontFamily="sans-serif"
+                            android:layout_marginTop="3dp" />
+                    </LinearLayout>
+
+                    <!-- Saved Items -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="6dp"
+                        android:background="@drawable/bg_stat_chip"
+                        android:orientation="vertical"
+                        android:paddingTop="18dp"
+                        android:paddingBottom="18dp"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_favorite"
+                            android:contentDescription="Saved"
+                            app:tint="#F59E0B"
+                            android:layout_marginBottom="6dp" />
+
+                        <TextView
+                            android:id="@+id/savedItemsNumber"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="24sp"
+                            android:textStyle="bold"
+                            android:textColor="#F59E0B"
+                            android:fontFamily="sans-serif-medium" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Saved"
+                            android:textSize="10sp"
+                            android:textColor="#64748B"
+                            android:fontFamily="sans-serif"
+                            android:layout_marginTop="3dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- ==================== PRIMARY SCAN CTA ==================== -->
                 <LinearLayout
-                    android:id="@+id/emptyStateContainer"
+                    android:id="@+id/quickScanButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="62dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/bg_scan_button_pill"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:elevation="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_barcode_scan"
+                        android:contentDescription="Scan"
+                        app:tint="#FFFFFF"
+                        android:layout_marginEnd="12dp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Scan a Product"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="#FFFFFF"
+                            android:fontFamily="sans-serif-medium"
+                            android:letterSpacing="0.01" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Point camera at barcode"
+                            android:textSize="11sp"
+                            android:textColor="#B3FFFFFF"
+                            android:fontFamily="sans-serif" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- ==================== RECENT SCANS SECTION ==================== -->
+                <LinearLayout
+                    android:id="@+id/recentScansSection"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:gravity="center"
-                    android:paddingTop="20dp"
-                    android:paddingBottom="20dp"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
-                    android:visibility="gone">
+                    android:paddingTop="32dp">
 
+                    <!-- Section Header -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_recent_scan_card"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:paddingBottom="14dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="RECENT SCANS"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:textColor="#10B981"
+                                android:fontFamily="sans-serif-medium"
+                                android:letterSpacing="0.1" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Your latest products"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:textColor="#FFFFFF"
+                                android:fontFamily="sans-serif-medium"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/viewAllScans"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="See all →"
+                            android:textSize="13sp"
+                            android:textColor="#10B981"
+                            android:fontFamily="sans-serif-medium"
+                            android:background="?attr/selectableItemBackground"
+                            android:padding="8dp" />
+                    </LinearLayout>
+
+                    <!-- Recent Scans Horizontal RecyclerView -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recentScansRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:clipToPadding="false"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        tools:listitem="@layout/item_recent_scan_enhanced" />
+
+                    <!-- Empty State (shown when no scans) -->
+                    <LinearLayout
+                        android:id="@+id/emptyStateContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:gravity="center"
-                        android:padding="32dp">
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:visibility="gone">
 
-                        <ImageView
-                            android:layout_width="64dp"
-                            android:layout_height="64dp"
-                            android:src="@drawable/ic_barcode_scan"
-                            android:contentDescription="No scans"
-                            app:tint="#C8CBC5" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="No scans yet"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="#1B1B1B"
-                            android:fontFamily="sans-serif-medium"
-                            android:layout_marginTop="16dp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Tap the scan button to analyze your first product"
-                            android:textSize="13sp"
-                            android:textColor="#999B96"
-                            android:fontFamily="sans-serif"
+                            android:background="@drawable/bg_glass_card"
+                            android:orientation="vertical"
                             android:gravity="center"
-                            android:layout_marginTop="6dp" />
+                            android:padding="36dp">
+
+                            <ImageView
+                                android:layout_width="56dp"
+                                android:layout_height="56dp"
+                                android:src="@drawable/ic_barcode_scan"
+                                android:contentDescription="No scans"
+                                app:tint="#2010B981" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="No scans yet"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#FFFFFF"
+                                android:fontFamily="sans-serif-medium"
+                                android:layout_marginTop="16dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Tap the scan button above to analyze your first product"
+                                android:textSize="13sp"
+                                android:textColor="#64748B"
+                                android:fontFamily="sans-serif"
+                                android:gravity="center"
+                                android:layout_marginTop="8dp" />
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
 
-            <!-- ==================== HEALTH TIP ==================== -->
-            <LinearLayout
-                android:id="@+id/tipCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginTop="24dp"
-                android:background="@drawable/bg_tip_card_clean"
-                android:orientation="horizontal"
-                android:padding="20dp"
-                android:gravity="center_vertical">
-
+                <!-- ==================== HEALTH INSIGHTS SECTION ==================== -->
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:orientation="vertical"
-                    android:layout_marginEnd="12dp">
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:paddingTop="28dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <!-- Section Label -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="💡 Daily Tip"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/health_teal"
-                        android:fontFamily="sans-serif-medium"
-                        android:letterSpacing="0.06" />
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingBottom="14dp">
 
-                    <TextView
-                        android:id="@+id/healthTipText"
-                        android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="INSIGHTS"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:textColor="#06B6D4"
+                                android:fontFamily="sans-serif-medium"
+                                android:letterSpacing="0.1" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Your health summary"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:textColor="#FFFFFF"
+                                android:fontFamily="sans-serif-medium"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Insight Card 1 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Choose products with less than 5g of sugar per serving for better health!"
-                        android:textSize="14sp"
-                        android:textColor="#2E3630"
-                        android:fontFamily="sans-serif"
-                        android:lineSpacingMultiplier="1.3"
-                        android:layout_marginTop="6dp" />
+                        android:background="@drawable/bg_insight_card"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="18dp"
+                        android:layout_marginBottom="10dp">
+
+                        <FrameLayout
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:layout_marginEnd="14dp">
+
+                            <View
+                                android:layout_width="44dp"
+                                android:layout_height="44dp"
+                                android:background="@drawable/bg_icon_circle_teal" />
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_health_score"
+                                android:contentDescription="Insight"
+                                app:tint="#06B6D4" />
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/insightText1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Start scanning products to see your health insights."
+                                android:textSize="14sp"
+                                android:textColor="#FFFFFF"
+                                android:fontFamily="sans-serif"
+                                android:lineSpacingMultiplier="1.3" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Insight Card 2 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_insight_card"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="18dp">
+
+                        <FrameLayout
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:layout_marginEnd="14dp">
+
+                            <View
+                                android:layout_width="44dp"
+                                android:layout_height="44dp"
+                                android:background="@drawable/bg_icon_circle_blue" />
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_trending_up"
+                                android:contentDescription="Trend"
+                                app:tint="#38BDF8" />
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/insightText2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Try scanning more protein-rich products to boost your score."
+                                android:textSize="14sp"
+                                android:textColor="#FFFFFF"
+                                android:fontFamily="sans-serif"
+                                android:lineSpacingMultiplier="1.3" />
+                        </LinearLayout>
+                    </LinearLayout>
                 </LinearLayout>
 
-                <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:src="@drawable/ic_health_score"
-                    android:contentDescription="Health Tip"
-                    app:tint="@color/health_teal" />
-            </LinearLayout>
-
-            <!-- ==================== QUICK ACTION: SCAN BUTTON ==================== -->
-            <LinearLayout
-                android:id="@+id/quickScanButton"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/bg_scan_button_pill"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?attr/selectableItemBackground">
-
-                <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:src="@drawable/ic_barcode_scan"
-                    android:contentDescription="Scan"
-                    app:tint="#FFFFFF"
-                    android:layout_marginEnd="10dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- ==================== DAILY HEALTH TIP ==================== -->
+                <LinearLayout
+                    android:id="@+id/tipCard"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Scan a Product"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    android:fontFamily="sans-serif-medium"
-                    android:letterSpacing="0.02" />
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/bg_tip_card_clean"
+                    android:orientation="horizontal"
+                    android:padding="20dp"
+                    android:gravity="center_vertical">
+
+                    <FrameLayout
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_marginEnd="14dp">
+
+                        <View
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:background="@drawable/bg_icon_circle_orange" />
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_lightbulb"
+                            android:contentDescription="Daily Tip"
+                            app:tint="#F59E0B" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="DAILY TIP"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:textColor="#F59E0B"
+                            android:fontFamily="sans-serif-medium"
+                            android:letterSpacing="0.1" />
+
+                        <TextView
+                            android:id="@+id/healthTipText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Foods with fewer than 5g added sugar are generally considered low-sugar options."
+                            android:textSize="13sp"
+                            android:textColor="#CBD5E1"
+                            android:fontFamily="sans-serif"
+                            android:lineSpacingMultiplier="1.4"
+                            android:layout_marginTop="4dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
             </LinearLayout>
 
-        </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 
-    </androidx.core.widget.NestedScrollView>
+        <!-- Classy Bottom Navigation -->
+        <include layout="@layout/bottom_nav_classy" />
 
-    <!-- Classy Bottom Navigation -->
-    <include layout="@layout/bottom_nav_classy" />
-
-    <!-- Animation Overlay Container for Circular Reveal -->
-    <include layout="@layout/animation_overlay_container" />
+        <!-- Animation Overlay Container for Circular Reveal -->
+        <include layout="@layout/animation_overlay_container" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -510,7 +722,7 @@
         android:layout_gravity="start"
         android:orientation="vertical"
         android:background="@drawable/bg_sidebar_panel"
-        android:elevation="8dp"
+        android:elevation="16dp"
         android:fitsSystemWindows="true">
 
         <!-- Sidebar Header with Profile -->
@@ -520,7 +732,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center_horizontal"
-            android:paddingTop="48dp"
+            android:paddingTop="56dp"
             android:paddingBottom="24dp"
             android:paddingStart="24dp"
             android:paddingEnd="24dp">
@@ -535,7 +747,7 @@
                 android:scaleType="centerInside"
                 android:padding="14dp"
                 android:contentDescription="Profile Avatar"
-                app:tint="@color/health_teal" />
+                app:tint="#10B981" />
 
             <!-- User Name -->
             <TextView
@@ -545,7 +757,7 @@
                 android:text="User"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="#1B1B1B"
+                android:textColor="#FFFFFF"
                 android:fontFamily="sans-serif-medium"
                 android:layout_marginTop="12dp" />
 
@@ -556,7 +768,7 @@
                 android:layout_height="wrap_content"
                 android:text="user@example.com"
                 android:textSize="13sp"
-                android:textColor="#999B96"
+                android:textColor="#64748B"
                 android:fontFamily="sans-serif"
                 android:layout_marginTop="4dp" />
         </LinearLayout>
@@ -593,18 +805,18 @@
                 android:focusable="true">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:src="@drawable/ic_person"
                     android:contentDescription="My Profile"
-                    app:tint="#4CAF50" />
+                    app:tint="#10B981" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="My Profile"
                     android:textSize="15sp"
-                    android:textColor="#1B1B1B"
+                    android:textColor="#FFFFFF"
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginStart="16dp" />
             </LinearLayout>
@@ -624,18 +836,18 @@
                 android:focusable="true">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:src="@drawable/ic_history"
                     android:contentDescription="Scan History"
-                    app:tint="#4CAF50" />
+                    app:tint="#06B6D4" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Scan History"
                     android:textSize="15sp"
-                    android:textColor="#1B1B1B"
+                    android:textColor="#FFFFFF"
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginStart="16dp" />
             </LinearLayout>
@@ -655,18 +867,18 @@
                 android:focusable="true">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:src="@drawable/ic_health_score"
                     android:contentDescription="Analytics"
-                    app:tint="#4CAF50" />
+                    app:tint="#34D399" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Analytics"
                     android:textSize="15sp"
-                    android:textColor="#1B1B1B"
+                    android:textColor="#FFFFFF"
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginStart="16dp" />
             </LinearLayout>
@@ -686,18 +898,18 @@
                 android:focusable="true">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:src="@drawable/ic_settings"
                     android:contentDescription="Settings"
-                    app:tint="#4CAF50" />
+                    app:tint="#94A3B8" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Settings"
                     android:textSize="15sp"
-                    android:textColor="#1B1B1B"
+                    android:textColor="#FFFFFF"
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginStart="16dp" />
             </LinearLayout>
@@ -711,7 +923,7 @@
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/bg_sidebar_divider" />
 
-            <!-- Help & Support -->
+            <!-- Help &amp; Support -->
             <LinearLayout
                 android:id="@+id/sidebarHelp"
                 android:layout_width="match_parent"
@@ -726,18 +938,18 @@
                 android:focusable="true">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:src="@drawable/ic_support"
                     android:contentDescription="Help and Support"
-                    app:tint="#4CAF50" />
+                    app:tint="#94A3B8" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Help &amp; Support"
                     android:textSize="15sp"
-                    android:textColor="#1B1B1B"
+                    android:textColor="#FFFFFF"
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginStart="16dp" />
             </LinearLayout>
@@ -752,7 +964,7 @@
             android:gravity="center_vertical"
             android:paddingStart="28dp"
             android:paddingEnd="28dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="32dp"
             android:layout_marginStart="12dp"
             android:layout_marginEnd="12dp"
             android:background="@drawable/bg_sidebar_menu_item"
@@ -760,18 +972,18 @@
             android:focusable="true">
 
             <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:src="@drawable/ic_logout"
                 android:contentDescription="Logout"
-                app:tint="#E53935" />
+                app:tint="#EF4444" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Logout"
                 android:textSize="15sp"
-                android:textColor="#E53935"
+                android:textColor="#EF4444"
                 android:fontFamily="sans-serif-medium"
                 android:layout_marginStart="16dp" />
         </LinearLayout>

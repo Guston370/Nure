@@ -45,8 +45,8 @@ public class RecentScansAdapter extends RecyclerView.Adapter<RecentScansAdapter.
         ScanItem item = scanItems.get(position);
         
         holder.productName.setText(item.getProductName());
-        holder.caloriesText.setText(item.getCalories() + " cal");
-        holder.healthScoreText.setText(String.valueOf(item.getHealthScore()));
+        holder.caloriesText.setText(item.getCalories() > 0 ? String.valueOf(item.getCalories()) : "--");
+        holder.healthScoreText.setText(String.format("%.1f", item.getHealthScore()));
         
         // Set health score progress
         int progress = (int) (item.getHealthScore() * 10);
@@ -56,8 +56,10 @@ public class RecentScansAdapter extends RecyclerView.Adapter<RecentScansAdapter.
         String emoji = getHealthEmoji(item.getHealthScore());
         holder.healthEmoji.setText(emoji);
         
-        // Set product image (placeholder for now)
+        // Set product image (placeholder with brand tint)
         holder.productImage.setImageResource(R.drawable.ic_nutrition_facts);
+        holder.productImage.setColorFilter(android.graphics.Color.parseColor("#3010B981"),
+                android.graphics.PorterDuff.Mode.SRC_IN);
         
         // Add slide-in animation
         holder.itemView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.slide_in_right));
