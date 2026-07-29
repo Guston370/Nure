@@ -7,14 +7,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
-import android.widget.ImageView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.button.MaterialButton;
+import android.widget.TextView;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
@@ -42,9 +40,10 @@ public class SignUpActivity extends AppCompatActivity {
     private TextInputLayout tilFullName, tilEmail, tilPassword, tilConfirmPassword;
     private TextInputEditText etFullName, etEmail, etPassword, etConfirmPassword;
     private MaterialCheckBox cbTerms;
-    private MaterialButton btnSignUp, btnSignIn, btnGoogleSignUp;
+    private View btnSignUp, btnGoogleSignUp;
+    private TextView btnSignIn;
     private CircularProgressIndicator progressSignup;
-    private ImageView btnBack;
+    private View btnBack;
 
     // Firebase
     private FirebaseAuth mAuth;
@@ -674,12 +673,12 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void setSignUpLoading(boolean loading) {
-        if (loading) {
-            btnSignUp.setEnabled(false);
-            progressSignup.setVisibility(View.VISIBLE);
-        } else {
-            btnSignUp.setEnabled(true);
-            progressSignup.setVisibility(View.GONE);
+        if (btnSignUp != null) {
+            btnSignUp.setAlpha(loading ? 0.6f : 1.0f);
+            btnSignUp.setClickable(!loading);
+        }
+        if (progressSignup != null) {
+            progressSignup.setVisibility(loading ? View.VISIBLE : View.GONE);
         }
     }
 

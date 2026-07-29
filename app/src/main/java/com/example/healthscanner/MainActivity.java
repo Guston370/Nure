@@ -198,109 +198,29 @@ public class MainActivity extends BaseActivity {
         try {
             // Enhanced Home Layout Views
             TextView welcomeText = findViewById(R.id.welcomeText);
-            TextView subtitleText = findViewById(R.id.subtitleText);
             TextView totalScansNumber = findViewById(R.id.totalScansNumber);
             TextView healthScoreNumber = findViewById(R.id.healthScoreNumber);
             TextView savedItemsNumber = findViewById(R.id.savedItemsNumber);
             TextView healthEmoji = findViewById(R.id.healthEmoji);
 
-            // Set time-of-day greeting (welcomeText = "Good Morning," etc.)
+            // Set personalized welcome text with user's name
             if (welcomeText != null) {
-                welcomeText.setText(getTimeOfDayGreeting());
-            }
-
-            // Set personalized name / main headline in subtitleText
-            if (subtitleText != null) {
                 String userName = getRealUserName();
                 if (userName != null && !userName.isEmpty()) {
+                    // Extract first name only
                     String firstName = userName.split(" ")[0];
-                    subtitleText.setText(firstName + " 👋");
+                    welcomeText.setText("Hi " + firstName + ", Let's");
                 } else {
-                    subtitleText.setText("Track Your Health");
+                    welcomeText.setText("Let's Check Your");
                 }
             }
 
             // Set REAL stats (no artificial data)
             setRealUserStats(totalScansNumber, healthScoreNumber, savedItemsNumber, healthEmoji);
 
-            // Populate health insight cards
-            updateHealthInsights();
-
-            // Rotate daily health tip
-            rotateDailyTip();
-
             Log.d(TAG, "Views initialized with real user data");
         } catch (Exception e) {
             Log.e(TAG, "Error initializing views: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Returns a greeting string based on the time of day.
-     */
-    private String getTimeOfDayGreeting() {
-        int hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
-        if (hour < 12) return "Good Morning,";
-        else if (hour < 18) return "Good Afternoon,";
-        else return "Good Evening,";
-    }
-
-    /**
-     * Populates insightText1 and insightText2 based on real scan data.
-     */
-    private void updateHealthInsights() {
-        try {
-            TextView insight1 = findViewById(R.id.insightText1);
-            TextView insight2 = findViewById(R.id.insightText2);
-            SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-            int scanCount = getRealScanCount(prefs);
-            double avgScore = getRealHealthScore(prefs);
-
-            if (insight1 != null) {
-                if (scanCount == 0) {
-                    insight1.setText("Start scanning products to see your health insights.");
-                } else if (scanCount == 1) {
-                    insight1.setText("You scanned 1 product. Keep going to build your health history!");
-                } else {
-                    insight1.setText("You made " + scanCount + " healthy scans. Your journey is looking great!");
-                }
-            }
-
-            if (insight2 != null) {
-                if (avgScore >= 8.0) {
-                    insight2.setText("Excellent! Your average health score is " + String.format("%.1f", avgScore) + "/10.");
-                } else if (avgScore >= 5.0) {
-                    insight2.setText("Average score: " + String.format("%.1f", avgScore) + "/10. Try scanning more natural, whole-food products.");
-                } else {
-                    insight2.setText("Try scanning more protein-rich and low-sugar products to boost your score.");
-                }
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error updating health insights", e);
-        }
-    }
-
-    /**
-     * Rotates daily health tips dynamically.
-     */
-    private void rotateDailyTip() {
-        try {
-            TextView tipText = findViewById(R.id.healthTipText);
-            if (tipText == null) return;
-            String[] tips = {
-                "Foods with fewer than 5g added sugar are generally considered low-sugar options.",
-                "Aim for at least 25g of dietary fiber per day for a healthy digestive system.",
-                "Choose products where whole grains are listed as the first ingredient.",
-                "Products with less than 600mg sodium per serving are considered low-sodium.",
-                "Snacks with at least 5g protein help keep you fuller for longer.",
-                "Look for products with no artificial colors, flavors, or preservatives.",
-                "A health score above 7 generally indicates a nutritionally balanced product.",
-                "Read ingredient lists: shorter lists usually mean fewer processed ingredients."
-            };
-            int dayOfYear = java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_YEAR);
-            tipText.setText(tips[dayOfYear % tips.length]);
-        } catch (Exception e) {
-            Log.e(TAG, "Error rotating daily tip", e);
         }
     }
 
