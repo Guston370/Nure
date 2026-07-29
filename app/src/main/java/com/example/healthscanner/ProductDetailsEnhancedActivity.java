@@ -53,6 +53,8 @@ public class ProductDetailsEnhancedActivity extends AppCompatActivity {
     private RequestQueue requestQueue;
     private boolean isDarkMode;
     private SyncManager syncManager;
+    // Guard flag to prevent duplicate navigation to ProductCreationActivity
+    private volatile boolean alreadyNavigated = false;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,40 +186,211 @@ public class ProductDetailsEnhancedActivity extends AppCompatActivity {
         }
     }
     
-    private void fetchProductDetails(String barcode) {
-        Log.d(TAG, "Fetching product details for local barcode: " + barcode);
-        
-        new Thread(() -> {
-            try {
-                org.json.JSONArray jsonArray = DatabaseHelper.loadLocalDatabase(this);
-                boolean found = false;
+    private void fetchProductDetails(String rawBarcode) {
+        if (rawBarcode == null || rawBarcode.trim().isEmpty()) {
+            Log.e(TAG, "[LOOKUP] No valid barcode provided — using demo product");
+            createDemoProduct("1234567890123");
+            return;
+        }
 
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    org.json.JSONObject obj = jsonArray.getJSONObject(i);
-                    if (obj.getString("barcode").equals(barcode)) {
-                        found = true;
-                        parseProductResponseLocal(obj, barcode);
-                        break;
+        final String cleanBarcode = rawBarcode.trim();
+        alreadyNavigated = false;
+        Log.d(TAG, "[LOOKUP] ======== BARCODE LOOKUP STARTED ========");
+        Log.d(TAG, "[LOOKUP] Barcode value: '" + cleanBarcode + "' (length=" + cleanBarcode.length() + ")");
+
+        new Thread(() -> {
+            // ---- TIER 1: Local JSON Database (products.json) ----
+            Log.d(TAG, "[LOOKUP] Tier 1: Searching local JSON database (products.json)...");
+            org.json.JSONObject localObj = null;
+            try {
+                localObj = DatabaseHelper.findLocalProductByBarcode(this, cleanBarcode);
+            } catch (Exception localEx) {
+                Log.e(TAG, "[LOOKUP] Tier 1: EXCEPTION during local DB search: " + localEx.getMessage(), localEx);
+            }
+
+            if (localObj != null) {
+                Log.d(TAG, "[LOOKUP] Tier 1: HIT — product found in local JSON DB");
+                Log.d(TAG, "[LOOKUP] Tier 1: product_name='" + localObj.optString("product_name") + "'");
+                Log.d(TAG, "[LOOKUP] Navigation target: ProductDetailsEnhancedActivity (stay here)");
+                parseProductResponseLocal(localObj, cleanBarcode);
+                return;  // Done — product found, display it.
+            }
+            Log.d(TAG, "[LOOKUP] Tier 1: MISS — not in local JSON DB");
+
+            // ---- TIER 2: Room Database (offline / user-added products) ----
+            Log.d(TAG, "[LOOKUP] Tier 2: Searching Room database (data_queue)...");
+            com.example.healthscanner.database.queue.DataQueueEntity roomMatch = null;
+            try {
+                java.util.List<com.example.healthscanner.database.queue.DataQueueEntity> pendingList =
+                        com.example.healthscanner.database.queue.AppDatabase
+                                .getDatabase(this).queueDao().getPendingUploads();
+                Log.d(TAG, "[LOOKUP] Tier 2: Room returned " +
+                        (pendingList != null ? pendingList.size() : 0) + " queued entries");
+                if (pendingList != null) {
+                    for (com.example.healthscanner.database.queue.DataQueueEntity entity : pendingList) {
+                        Log.d(TAG, "[LOOKUP] Tier 2: comparing entity barcode='" + entity.barcode + "' with scan='" + cleanBarcode + "'");
+                        if (DatabaseHelper.isBarcodeMatch(entity.barcode, cleanBarcode)) {
+                            roomMatch = entity;
+                            Log.d(TAG, "[LOOKUP] Tier 2: HIT — matched Room entity label='" + entity.label + "'");
+                            break;
+                        }
                     }
                 }
-
-                if (!found) {
-                    runOnUiThread(() -> {
-                        Toast.makeText(ProductDetailsEnhancedActivity.this, "Barcode unused. Beginning Creation Flow.", Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(ProductDetailsEnhancedActivity.this, ProductCreationActivity.class);
-                        intent.putExtra("barcode", barcode);
-                        startActivity(intent);
-                        finish();
-                    });
-                }
-
-            } catch (Exception e) {
-                Log.e(TAG, "Database parsing error", e);
-                runOnUiThread(() -> {
-                    Toast.makeText(ProductDetailsEnhancedActivity.this, "Database Error", Toast.LENGTH_SHORT).show();
-                });
+            } catch (Exception roomEx) {
+                Log.e(TAG, "[LOOKUP] Tier 2: EXCEPTION during Room search: " + roomEx.getMessage(), roomEx);
             }
+
+            if (roomMatch != null) {
+                Log.d(TAG, "[LOOKUP] Navigation target: ProductDetailsEnhancedActivity (Room product)");
+                final com.example.healthscanner.database.queue.DataQueueEntity finalMatch = roomMatch;
+                runOnUiThread(() -> {
+                    currentProduct = new ProductInfo();
+                    currentProduct.barcode = cleanBarcode;
+                    currentProduct.name = finalMatch.label != null ? finalMatch.label : "Custom Product";
+                    currentProduct.brand = "User Added";
+                    currentProduct.ingredients = "Custom added product";
+                    currentProduct.imageUrl = finalMatch.localImagePath != null ? finalMatch.localImagePath : "";
+                    displayProductDetails();
+                });
+                return;  // Done.
+            }
+            Log.d(TAG, "[LOOKUP] Tier 2: MISS — not in Room database");
+
+            // ---- TIER 3: Firebase Firestore ----
+            Log.d(TAG, "[LOOKUP] Tier 3: Searching Firebase Firestore (scans collection)...");
+            searchFirebaseDatabase(cleanBarcode);
+
         }).start();
+    }
+
+    private void searchFirebaseDatabase(String cleanBarcode) {
+        Log.d(TAG, "[LOOKUP] Tier 3: Firebase query started for barcode: '" + cleanBarcode + "'");
+        try {
+            com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                    .collection("scans")
+                    .whereEqualTo("barcode", cleanBarcode)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        int docCount = (queryDocumentSnapshots != null) ? queryDocumentSnapshots.size() : 0;
+                        Log.d(TAG, "[LOOKUP] Tier 3: Firebase query completed. Documents found: " + docCount);
+                        if (queryDocumentSnapshots != null && !queryDocumentSnapshots.isEmpty()) {
+                            Log.d(TAG, "[LOOKUP] Tier 3: HIT — product found in Firebase Firestore");
+                            com.google.firebase.firestore.DocumentSnapshot doc =
+                                    queryDocumentSnapshots.getDocuments().get(0);
+                            String fbName = doc.getString("productName");
+                            Log.d(TAG, "[LOOKUP] Tier 3: productName='" + fbName + "'");
+                            Log.d(TAG, "[LOOKUP] Navigation target: ProductDetailsEnhancedActivity (Firebase product)");
+                            currentProduct = new ProductInfo();
+                            currentProduct.barcode = cleanBarcode;
+                            currentProduct.name = (fbName != null && !fbName.isEmpty()) ? fbName : "Scanned Product";
+                            currentProduct.brand = nonEmpty(doc.getString("brand"), "Unknown Brand");
+                            currentProduct.calories = safeDouble(doc.getDouble("calories"));
+                            currentProduct.protein = safeDouble(doc.getDouble("protein"));
+                            currentProduct.sugar = safeDouble(doc.getDouble("sugar"));
+                            currentProduct.fat = safeDouble(doc.getDouble("fat"));
+                            currentProduct.carbs = safeDouble(doc.getDouble("carbs"));
+                            currentProduct.fiber = safeDouble(doc.getDouble("fiber"));
+                            currentProduct.sodium = safeDouble(doc.getDouble("sodium"));
+                            currentProduct.ingredients = nonEmpty(doc.getString("ingredients"), "Ingredients not available");
+                            currentProduct.imageUrl = nonEmpty(doc.getString("imageUrl"), "");
+                            runOnUiThread(this::displayProductDetails);
+                        } else {
+                            Log.d(TAG, "[LOOKUP] Tier 3: MISS — Firebase has no matching document");
+                            searchRemoteProductApi(cleanBarcode);
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.w(TAG, "[LOOKUP] Tier 3: Firebase query FAILED (" + e.getMessage() + ") — proceeding to Tier 4");
+                        searchRemoteProductApi(cleanBarcode);
+                    });
+        } catch (Exception e) {
+            Log.e(TAG, "[LOOKUP] Tier 3: EXCEPTION initializing Firebase query: " + e.getMessage());
+            searchRemoteProductApi(cleanBarcode);
+        }
+    }
+
+    /** Helper: return fallback string if value is null/empty */
+    private String nonEmpty(String value, String fallback) {
+        return (value != null && !value.trim().isEmpty()) ? value.trim() : fallback;
+    }
+
+    /** Helper: safely unbox Double to double */
+    private double safeDouble(Double value) {
+        return value != null ? value : 0.0;
+    }
+
+    private void searchRemoteProductApi(String cleanBarcode) {
+        Log.d(TAG, "[LOOKUP] Tier 4: Querying ProductApiService for barcode: '" + cleanBarcode + "'");
+        ProductApiService apiService = new ProductApiService(this);
+        apiService.fetchProductInfo(cleanBarcode, new ProductApiService.ProductCallback() {
+            @Override
+            public void onSuccess(ProductApiService.ProductInfo apiProduct) {
+                Log.d(TAG, "[LOOKUP] Tier 4: ProductApiService onSuccess fired");
+                if (apiProduct == null) {
+                    Log.d(TAG, "[LOOKUP] Tier 4: apiProduct is NULL — conclusively NOT found");
+                    Log.d(TAG, "[LOOKUP] Navigation target: ProductCreationActivity (all tiers exhausted)");
+                    onProductNotFoundConclusively(cleanBarcode);
+                    return;
+                }
+                Log.d(TAG, "[LOOKUP] Tier 4: apiProduct.name='" + apiProduct.name + "' apiProduct.brand='" + apiProduct.brand + "'");
+
+                // A product is considered FOUND if name is non-null and is not the generic default "Unknown Product".
+                // NOTE: Also accept products whose name is empty-string (API returned a real response).
+                boolean nameIsGenericDefault = "Unknown Product".equalsIgnoreCase(apiProduct.name);
+                boolean nameIsNullOrBlank = (apiProduct.name == null || apiProduct.name.trim().isEmpty());
+
+                if (!nameIsNullOrBlank && !nameIsGenericDefault) {
+                    Log.d(TAG, "[LOOKUP] Tier 4: HIT — product found in remote API: '" + apiProduct.name + "'");
+                    Log.d(TAG, "[LOOKUP] Navigation target: ProductDetailsEnhancedActivity (remote API product)");
+                    currentProduct = new ProductInfo();
+                    currentProduct.barcode = cleanBarcode;
+                    currentProduct.name = apiProduct.name;
+                    currentProduct.brand = apiProduct.brand;
+                    currentProduct.calories = apiProduct.calories;
+                    currentProduct.protein = apiProduct.protein;
+                    currentProduct.sugar = apiProduct.sugar;
+                    currentProduct.fat = apiProduct.fat;
+                    currentProduct.carbs = apiProduct.carbs;
+                    currentProduct.sodium = apiProduct.sodium;
+                    currentProduct.fiber = apiProduct.fiber;
+                    currentProduct.ingredients = apiProduct.ingredients;
+                    currentProduct.imageUrl = apiProduct.imageUrl != null ? apiProduct.imageUrl : "";
+                    runOnUiThread(ProductDetailsEnhancedActivity.this::displayProductDetails);
+                } else {
+                    Log.d(TAG, "[LOOKUP] Tier 4: MISS — remote API returned only generic defaults (name='" + apiProduct.name + "')");
+                    Log.d(TAG, "[LOOKUP] Navigation target: ProductCreationActivity (all tiers exhausted)");
+                    onProductNotFoundConclusively(cleanBarcode);
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                Log.w(TAG, "[LOOKUP] Tier 4: ProductApiService onError: '" + error + "'");
+                Log.d(TAG, "[LOOKUP] Reason for fallback: all 4 tiers completed without finding barcode '" + cleanBarcode + "'");
+                Log.d(TAG, "[LOOKUP] Navigation target: ProductCreationActivity");
+                onProductNotFoundConclusively(cleanBarcode);
+            }
+        });
+    }
+
+    private void onProductNotFoundConclusively(String barcode) {
+        // Guard: never navigate to creation screen more than once
+        if (alreadyNavigated) {
+            Log.w(TAG, "[LOOKUP] onProductNotFoundConclusively called again — suppressing duplicate navigation");
+            return;
+        }
+        alreadyNavigated = true;
+        Log.d(TAG, "[LOOKUP] ======== ALL TIERS EXHAUSTED — OPENING ProductCreationActivity ========");
+        Log.d(TAG, "[LOOKUP] Barcode that was NOT found: '" + barcode + "'");
+        runOnUiThread(() -> {
+            Toast.makeText(ProductDetailsEnhancedActivity.this,
+                    "Product not found. Please add product details.",
+                    Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(ProductDetailsEnhancedActivity.this, ProductCreationActivity.class);
+            intent.putExtra("barcode", barcode);
+            startActivity(intent);
+            finish();
+        });
     }
     
     private void parseProductResponseLocal(JSONObject product, String barcode) {

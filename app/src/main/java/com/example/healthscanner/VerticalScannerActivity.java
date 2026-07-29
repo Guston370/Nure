@@ -969,7 +969,19 @@ public class VerticalScannerActivity extends BaseActivity {
         scanStatusCard.setVisibility(View.VISIBLE);
     }
 
-    private void fetchProductForPreview(String barcode) {
+    private void fetchProductForPreview(String rawBarcode) {
+        if (rawBarcode == null || rawBarcode.trim().isEmpty()) return;
+        final String barcode = rawBarcode.trim();
+
+        // Check local database first for instant preview
+        org.json.JSONObject localProduct = DatabaseHelper.findLocalProductByBarcode(this, barcode);
+        if (localProduct != null) {
+            String name = localProduct.optString("product_name", localProduct.optString("name", "Product Detected"));
+            String brand = localProduct.optString("brand", "Local Database");
+            populatePreviewCard(barcode, name, brand, null, 85);
+            return;
+        }
+
         String url = "https://world.openfoodfacts.org/api/v0/product/" + barcode + ".json";
         okhttp3.Request request = new okhttp3.Request.Builder()
                 .url(url)
@@ -980,7 +992,7 @@ public class VerticalScannerActivity extends BaseActivity {
             public void onFailure(okhttp3.Call call, java.io.IOException e) {
                 Log.e(TAG, "Failed to fetch product preview", e);
                 runOnUiThread(() -> {
-                    populatePreviewCard(barcode, "Product Detected", "Tap to view details", null, 70);
+                    populatePreviewCard(barcode, "Barcode: " + barcode, "Tap to view details", null, 70);
                 });
             }
 
@@ -988,7 +1000,7 @@ public class VerticalScannerActivity extends BaseActivity {
             public void onResponse(okhttp3.Call call, okhttp3.Response response) throws java.io.IOException {
                 if (!response.isSuccessful()) {
                     runOnUiThread(() -> {
-                        populatePreviewCard(barcode, "Product Detected", "Tap to view details", null, 70);
+                        populatePreviewCard(barcode, "Barcode: " + barcode, "Tap to view details", null, 70);
                     });
                     return;
                 }
@@ -1047,30 +1059,13 @@ public class VerticalScannerActivity extends BaseActivity {
                         });
                     } else {
                         runOnUiThread(() -> {
-                            int type = Math.abs(barcode.hashCode()) % 4;
-                            String name = "Organic Whole Grain Cereal";
-                            String brand = "HealthyChoice";
-                            int score = 85;
-                            if (type == 1) {
-                                name = "Greek Yogurt Natural";
-                                brand = "FreshDairy";
-                                score = 90;
-                            } else if (type == 2) {
-                                name = "Dark Chocolate Bar 70%";
-                                brand = "SweetTreats";
-                                score = 45;
-                            } else if (type == 3) {
-                                name = "Fresh Red Apple";
-                                brand = "Nature's Best";
-                                score = 98;
-                            }
-                            populatePreviewCard(barcode, name, brand, null, score);
+                            populatePreviewCard(barcode, "Barcode: " + barcode, "Searching product databases...", null, 70);
                         });
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Error parsing preview response", e);
                     runOnUiThread(() -> {
-                        populatePreviewCard(barcode, "Product Detected", "Tap to view details", null, 70);
+                        populatePreviewCard(barcode, "Barcode: " + barcode, "Tap to view details", null, 70);
                     });
                 }
             }
