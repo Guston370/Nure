@@ -631,11 +631,10 @@ public class MainActivity extends BaseActivity {
             View sidebarHelp = findViewById(R.id.sidebarHelp);
             if (sidebarHelp != null) {
                 sidebarHelp.setOnClickListener(v -> {
-                    // Close sidebar - no dedicated help activity yet
                     if (drawerLayout != null) {
                         drawerLayout.closeDrawers();
                     }
-                    android.widget.Toast.makeText(this, "Help & Support coming soon!", android.widget.Toast.LENGTH_SHORT).show();
+                    showHelpDialog();
                 });
             }
 
@@ -668,6 +667,49 @@ public class MainActivity extends BaseActivity {
             Log.d(TAG, "Sidebar setup successfully");
         } catch (Exception e) {
             Log.e(TAG, "Error setting up sidebar: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Show in-app help with a route to email support.
+     *
+     * <p>There is no dedicated help screen; the dialog covers the core flows and hands off
+     * to the user's mail app for anything else.</p>
+     */
+    private void showHelpDialog() {
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle("Help & Support")
+                .setMessage("Getting the most out of Nure:\n\n" +
+                        "• Tap Scan to read a barcode, or switch to Detect to recognise food from a photo\n" +
+                        "• Favourite a product from its details screen to find it again\n" +
+                        "• Stats shows your weekly trend, top categories and average health score\n" +
+                        "• Settings lets you export your scan history as CSV\n\n" +
+                        "Still stuck? Get in touch and we'll help.")
+                .setPositiveButton("Got it", null)
+                .setNeutralButton("Contact Support", (dialog, which) -> contactSupport())
+                .show();
+    }
+
+    /**
+     * Open the user's mail app pre-filled with a support request.
+     */
+    private void contactSupport() {
+        String body = "\n\n---\n"
+                + "App version: 1.0.0\n"
+                + "Android: " + android.os.Build.VERSION.RELEASE
+                + " (API " + android.os.Build.VERSION.SDK_INT + ")\n"
+                + "Device: " + android.os.Build.MANUFACTURER + " " + android.os.Build.MODEL;
+
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(android.net.Uri.parse("mailto:" + getString(R.string.settings_support_email)));
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.settings_support_subject));
+        intent.putExtra(Intent.EXTRA_TEXT, body);
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            android.widget.Toast.makeText(this, R.string.settings_no_email_app,
+                    android.widget.Toast.LENGTH_LONG).show();
         }
     }
 
