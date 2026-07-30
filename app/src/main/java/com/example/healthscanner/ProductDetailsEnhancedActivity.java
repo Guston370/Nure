@@ -26,7 +26,15 @@ import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import com.example.healthscanner.database.ScanHistoryStore;
 import com.example.healthscanner.database.SyncManager;
+import com.example.healthscanner.models.Scan;
+
+import android.net.Uri;
+import android.provider.MediaStore;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 
 /**
  * Enhanced Product Details Activity with Dark Mode Support
@@ -53,6 +61,10 @@ public class ProductDetailsEnhancedActivity extends AppCompatActivity {
     private RequestQueue requestQueue;
     private boolean isDarkMode;
     private SyncManager syncManager;
+    private ScanHistoryStore scanHistoryStore;
+    private boolean isFavorite;
+    private ActivityResultLauncher<String> galleryLauncher;
+    private GalleryBarcodeScanner galleryScanner;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +78,10 @@ public class ProductDetailsEnhancedActivity extends AppCompatActivity {
         try {
             setContentView(R.layout.activity_product_details_enhanced);
             Log.d(TAG, "Enhanced layout set successfully");
+            
+            // Scan history must exist before the buttons that read favourite state.
+            scanHistoryStore = ScanHistoryStore.getInstance(this);
+            registerGalleryPicker();
             
             // Initialize components
             initializeViews();
@@ -169,10 +185,7 @@ public class ProductDetailsEnhancedActivity extends AppCompatActivity {
         }
         
         if (galleryButton != null) {
-            galleryButton.setOnClickListener(v -> {
-                // TODO: Implement gallery selection
-                Log.d(TAG, "Gallery selection not yet implemented");
-            });
+            galleryButton.setOnClickListener(v -> openGallery());
         }
         
         if (shareButton != null) {
@@ -182,6 +195,63 @@ public class ProductDetailsEnhancedActivity extends AppCompatActivity {
         if (favoriteButton != null) {
             favoriteButton.setOnClickListener(v -> toggleFavorite());
         }
+    }
+    
+    /**
+     * Register the gallery picker. Must happen during {@code onCreate} so the result
+     * callback survives configuration changes.
+     */
+    private void registerGalleryPicker() {
+        galleryScanner = new GalleryBarcodeScanner(this);
+        galleryLauncher = registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri == null) {
+                        Log.d(TAG, "Gallery selection cancelled");
+                        return;
+                    }
+                    scanBarcodeFromGallery(uri);
+                });
+    }
+    
+    /** Open the system picker. {@code GetContent} needs no storage permission. */
+    private void openGallery() {
+        if (galleryLauncher == null) {
+            Toast.makeText(this, "Gallery is unavailable right now", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Toast.makeText(this, "Pick a photo of a barcode", Toast.LENGTH_SHORT).show();
+        galleryLauncher.launch("image/*");
+    }
+    
+    /**
+     * Run ML Kit barcode detection on a picked image and reload this screen with the result.
+     */
+    private void scanBarcodeFromGallery(Uri imageUri) {
+        Toast.makeText(this, "Looking for a barcode...", Toast.LENGTH_SHORT).show();
+        
+        galleryScanner.scanImageFromUri(imageUri, new GalleryBarcodeScanner.GalleryScanCallback() {
+            @Override
+            public void onBarcodeDetected(String barcode) {
+                runOnUiThread(() -> {
+                    Log.d(TAG, "Gallery barcode detected: " + barcode);
+                    Intent intent = new Intent(ProductDetailsEnhancedActivity.this,
+                            ProductDetailsEnhancedActivity.class);
+                    intent.putExtra("barcode", barcode);
+                    startActivity(intent);
+                    finish();
+                });
+            }
+            
+            @Override
+            public void onError(String error) {
+                runOnUiThread(() -> {
+                    Log.w(TAG, "Gallery barcode scan failed: " + error);
+                    Toast.makeText(ProductDetailsEnhancedActivity.this,
+                            "No barcode found in that image", Toast.LENGTH_LONG).show();
+                });
+            }
+        });
     }
     
     private void fetchProductDetails(String barcode) {
@@ -244,6 +314,8 @@ public class ProductDetailsEnhancedActivity extends AppCompatActivity {
             currentProduct.fiber = nutriments.optDouble("fiber_100g", 0);
             currentProduct.sodium = nutriments.optDouble("sodium_100g", 0) * 1000; // Convert to mg
         }
+        
+        currentProduct.category = extractCategory(product);
         
         String ingredients = getFirstNonEmpty(product,
             "ingredients_text",
@@ -331,6 +403,10 @@ public class ProductDetailsEnhancedActivity extends AppCompatActivity {
                 break;
         }
         
+        // Demo products still need a category so the analytics breakdown stays meaningful.
+        String[] demoCategories = { "Breakfast cereals", "Dairy", "Chocolate", "Fruits" };
+        currentProduct.category = demoCategories[productType];
+        
         displayProductDetails();
     }
     
@@ -377,6 +453,10 @@ public class ProductDetailsEnhancedActivity extends AppCompatActivity {
         // Save to scan history
         saveToScanHistory();
         
+        // Reflect the stored favourite state on the button
+        isFavorite = scanHistoryStore != null && scanHistoryStore.isFavorite(currentProduct.barcode);
+        updateFavoriteButton();
+        
         Log.d(TAG, "Enhanced product details display completed");
     }
 
@@ -398,6 +478,32 @@ public class ProductDetailsEnhancedActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Pick a single display category from the OpenFoodFacts response.
+     *
+     * <p>OpenFoodFacts returns a long comma separated hierarchy ("Plant-based foods,
+     * Cereals, Breakfast cereals"). The most specific entry is the last one, which is the
+     * most useful label for the analytics breakdown.</p>
+     */
+    private String extractCategory(JSONObject product) {
+        String categories = getFirstNonEmpty(product, "categories", "categories_tags");
+        if (categories.isEmpty()) {
+            return "Other";
+        }
+        
+        String[] parts = categories.split(",");
+        String candidate = parts[parts.length - 1].trim();
+        
+        // categories_tags entries are prefixed with a language code, e.g. "en:snacks".
+        int colon = candidate.indexOf(':');
+        if (colon >= 0 && colon < candidate.length() - 1) {
+            candidate = candidate.substring(colon + 1);
+        }
+        candidate = candidate.replace('-', ' ').trim();
+        
+        return candidate.isEmpty() ? "Other" : candidate;
+    }
+    
     private String getFirstNonEmpty(JSONObject product, String... keys) {
         if (product == null || keys == null) return "";
         for (String key : keys) {
@@ -431,50 +537,9 @@ public class ProductDetailsEnhancedActivity extends AppCompatActivity {
     }
     
     private double calculateHealthScore() {
-        double score = 0;
-        
-        // Calorie scoring (0-20 points)
-        if (currentProduct.calories <= 100) score += 20;
-        else if (currentProduct.calories <= 200) score += 16;
-        else if (currentProduct.calories <= 300) score += 12;
-        else if (currentProduct.calories <= 400) score += 8;
-        else if (currentProduct.calories <= 500) score += 4;
-        
-        // Sugar scoring (0-20 points)
-        if (currentProduct.sugar <= 2) score += 20;
-        else if (currentProduct.sugar <= 5) score += 16;
-        else if (currentProduct.sugar <= 10) score += 12;
-        else if (currentProduct.sugar <= 15) score += 8;
-        else if (currentProduct.sugar <= 20) score += 4;
-        
-        // Fat scoring (0-15 points)
-        if (currentProduct.fat <= 3) score += 15;
-        else if (currentProduct.fat <= 10) score += 12;
-        else if (currentProduct.fat <= 15) score += 8;
-        else if (currentProduct.fat <= 20) score += 4;
-        
-        // Protein scoring (0-15 points)
-        if (currentProduct.protein >= 20) score += 15;
-        else if (currentProduct.protein >= 15) score += 12;
-        else if (currentProduct.protein >= 10) score += 9;
-        else if (currentProduct.protein >= 5) score += 6;
-        else if (currentProduct.protein >= 2) score += 3;
-        
-        // Fiber scoring (0-15 points)
-        if (currentProduct.fiber >= 10) score += 15;
-        else if (currentProduct.fiber >= 6) score += 12;
-        else if (currentProduct.fiber >= 3) score += 9;
-        else if (currentProduct.fiber >= 1.5) score += 6;
-        else if (currentProduct.fiber >= 0.5) score += 3;
-        
-        // Sodium scoring (0-15 points)
-        if (currentProduct.sodium <= 100) score += 15;
-        else if (currentProduct.sodium <= 300) score += 12;
-        else if (currentProduct.sodium <= 600) score += 9;
-        else if (currentProduct.sodium <= 1000) score += 6;
-        else if (currentProduct.sodium <= 1500) score += 3;
-        
-        return Math.min(score, 100); // Cap at 100
+        // Scoring rules live in HealthScoreCalculator so analytics, CSV export and this
+        // screen can never drift apart.
+        return HealthScoreCalculator.calculate(currentProduct != null ? currentProduct.toNutrition() : null);
     }
     
     private void displayHealthScore(double score) {
@@ -482,22 +547,8 @@ public class ProductDetailsEnhancedActivity extends AppCompatActivity {
             healthScoreText.setText(String.format("Health Score: %.0f/100", score));
         }
         
-        // Set emoji and description based on score
-        String emoji;
-        if (score >= 85) {
-            emoji = "🌟"; // Excellent
-        } else if (score >= 70) {
-            emoji = "😊"; // Good
-        } else if (score >= 55) {
-            emoji = "😐"; // Fair
-        } else if (score >= 40) {
-            emoji = "😕"; // Poor
-        } else {
-            emoji = "😰"; // Very Poor
-        }
-        
         if (healthEmoji != null) {
-            healthEmoji.setText(emoji);
+            healthEmoji.setText(HealthScoreCalculator.emojiFor(score));
         }
     }
     
@@ -569,135 +620,80 @@ public class ProductDetailsEnhancedActivity extends AppCompatActivity {
     }
     
     private void toggleFavorite() {
-        // TODO: Implement favorite functionality
-        Log.d(TAG, "Favorite functionality not yet implemented");
+        if (currentProduct == null || currentProduct.barcode == null || currentProduct.barcode.isEmpty()) {
+            Toast.makeText(this, "Nothing to favourite yet", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        boolean nowFavorite = scanHistoryStore.toggleFavorite(currentProduct.barcode);
+        isFavorite = nowFavorite;
+        updateFavoriteButton();
+        
+        Toast.makeText(this,
+                nowFavorite ? "Added to favourites" : "Removed from favourites",
+                Toast.LENGTH_SHORT).show();
     }
     
-    private void saveToScanHistory() {
-        try {
-            SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-            String historyJson = prefs.getString("recent_scans", "[]");
-            
-            org.json.JSONArray historyArray = new org.json.JSONArray(historyJson);
-            org.json.JSONObject productJson = new org.json.JSONObject();
-            
-            double healthScore = calculateHealthScore();
-            
-            productJson.put("productName", currentProduct.name);
-            productJson.put("name", currentProduct.name); // Keep both for compatibility
-            productJson.put("brand", currentProduct.brand);
-            productJson.put("barcode", currentProduct.barcode);
-            productJson.put("calories", currentProduct.calories);
-            productJson.put("healthScore", healthScore);
-            productJson.put("timestamp", System.currentTimeMillis());
-            
-            historyArray.put(0, productJson);
-            
-            // Keep only last 50 scans
-            if (historyArray.length() > 50) {
-                org.json.JSONArray trimmedArray = new org.json.JSONArray();
-                for (int i = 0; i < 50; i++) {
-                    trimmedArray.put(historyArray.get(i));
-                }
-                historyArray = trimmedArray;
-            }
-            
-            // Save to local storage
-            prefs.edit().putString("recent_scans", historyArray.toString()).apply();
-            
-            // Also sync with Firebase database
-            syncScanWithFirebase(productJson, historyArray.length());
-            
-            // Immediately sync scan history to Firebase
-            if (syncManager != null) {
-                syncManager.syncOnScanHistoryChange(new SyncManager.SyncCallback() {
-                    @Override
-                    public void onSuccess() {
-                        Log.d(TAG, "Scan data synced to Firebase immediately");
-                    }
-                    
-                    @Override
-                    public void onFailure(String error) {
-                        Log.w(TAG, "Failed to sync scan data: " + error);
-                        // Don't show error to user, sync will retry later
-                    }
-                });
-            }
-            
-            Log.d(TAG, "Product saved to scan history and syncing with Firebase");
-            
-        } catch (org.json.JSONException e) {
-            Log.e(TAG, "Error saving to scan history", e);
+    /** Reflect the current favourite state on the button. */
+    private void updateFavoriteButton() {
+        if (favoriteButton == null) {
+            return;
         }
+        favoriteButton.setText(isFavorite ? "Favourited" : "Favourite");
+        favoriteButton.setIconResource(isFavorite ? R.drawable.ic_favorite : R.drawable.ic_favorite_border);
+        favoriteButton.setContentDescription(isFavorite
+                ? "Remove product from favourites"
+                : "Add product to favourites");
     }
     
     /**
-     * Sync scan data with Firebase database
+     * Persist the scan through {@link ScanHistoryStore}, which handles local storage,
+     * cached statistics and the Firebase mirror in one place.
      */
-    private void syncScanWithFirebase(org.json.JSONObject scanData, int totalScans) {
-        try {
-            AuthManager authManager = AuthManager.getInstance(this);
-            String userId = authManager.getCurrentUserId();
-            
-            if (userId != null && !userId.isEmpty()) {
-                // Update user statistics in Firebase
-                java.util.Map<String, Object> updates = new java.util.HashMap<>();
-                updates.put("totalScans", totalScans);
-                updates.put("lastScanTimestamp", System.currentTimeMillis());
-                
-                // Calculate if this is a healthy choice (health score >= 7.0)
-                double healthScore = scanData.getDouble("healthScore");
-                if (healthScore >= 70.0) { // Health score is on 0-100 scale
-                    SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-                    int currentHealthyChoices = prefs.getInt("healthy_choices", 0);
-                    updates.put("healthyChoices", currentHealthyChoices + 1);
-                    prefs.edit().putInt("healthy_choices", currentHealthyChoices + 1).apply();
-                }
-                
-                // Update average health score
-                SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-                String allScansJson = prefs.getString("recent_scans", "[]");
-                org.json.JSONArray allScans = new org.json.JSONArray(allScansJson);
-                
-                double totalHealthScore = 0;
-                int validScans = 0;
-                for (int i = 0; i < allScans.length(); i++) {
-                    org.json.JSONObject scan = allScans.getJSONObject(i);
-                    if (scan.has("healthScore")) {
-                        totalHealthScore += scan.getDouble("healthScore");
-                        validScans++;
-                    }
-                }
-                
-                if (validScans > 0) {
-                    double avgHealthScore = totalHealthScore / validScans;
-                    updates.put("averageHealthScore", avgHealthScore); // Keep on 0-100 scale
-                }
-                
-                // Use FirebaseManager to update user statistics
-                com.example.healthscanner.database.FirebaseManager firebaseManager = 
-                    com.example.healthscanner.database.FirebaseManager.getInstance();
-                
-                firebaseManager.updateUserPreferences(userId, updates, 
-                    new com.example.healthscanner.database.FirebaseManager.OperationCallback() {
-                        @Override
-                        public void onSuccess() {
-                            Log.d(TAG, "User statistics synced with Firebase successfully");
-                        }
-                        
-                        @Override
-                        public void onFailure(String error) {
-                            Log.w(TAG, "Failed to sync with Firebase: " + error);
-                        }
-                    });
-                
-                Log.d(TAG, "Syncing scan data with Firebase for user: " + userId);
-            } else {
-                Log.d(TAG, "No user ID available, skipping Firebase sync");
-            }
-            
-        } catch (Exception e) {
-            Log.e(TAG, "Error syncing with Firebase: " + e.getMessage(), e);
+    private void saveToScanHistory() {
+        if (currentProduct == null) {
+            return;
+        }
+        
+        // Viewing an existing entry from history shouldn't create a duplicate scan.
+        if (getIntent().getBooleanExtra("from_history", false)
+                || getIntent().getBooleanExtra("from_recent_scans", false)) {
+            Log.d(TAG, "Opened from history, skipping re-save");
+            return;
+        }
+        
+        double healthScore = calculateHealthScore();
+        
+        Scan scan = new Scan();
+        scan.setProductName(currentProduct.name);
+        scan.setBrand(currentProduct.brand);
+        scan.setBarcode(currentProduct.barcode);
+        scan.setCategory(currentProduct.category);
+        scan.setImageUrl(currentProduct.imageUrl);
+        scan.setScanDate(new java.util.Date());
+        scan.setHealthScore(healthScore);
+        scan.setHealthGrade(HealthScoreCalculator.gradeFor(healthScore));
+        scan.setCalories((int) Math.round(currentProduct.calories));
+        scan.setProtein(currentProduct.protein);
+        scan.setCarbs(currentProduct.carbs);
+        scan.setFat(currentProduct.fat);
+        scan.setSugar(currentProduct.sugar);
+        scan.setSodium(currentProduct.sodium);
+        scan.setFiber(currentProduct.fiber);
+        scan.setScanMethod("camera");
+        scan.setFavorite(isFavorite);
+        
+        scanHistoryStore.addScan(scan);
+        Log.d(TAG, "Product saved to scan history: " + currentProduct.name);
+    }
+    
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (galleryScanner != null) {
+            galleryScanner.cleanup();
+            galleryScanner = null;
         }
     }
     
@@ -963,7 +959,12 @@ public class ProductDetailsEnhancedActivity extends AppCompatActivity {
     
     // Data class
     private static class ProductInfo {
-        String barcode, name, brand, ingredients, imageUrl;
+        String barcode, name, brand, ingredients, imageUrl, category;
         double calories, protein, sugar, fat, carbs, fiber, sodium;
+
+        /** Nutrition facts in the shape the shared score calculator expects. */
+        HealthScoreCalculator.Nutrition toNutrition() {
+            return new HealthScoreCalculator.Nutrition(calories, protein, sugar, fat, carbs, fiber, sodium);
+        }
     }
 }

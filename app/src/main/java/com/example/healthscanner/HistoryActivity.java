@@ -317,16 +317,65 @@ public class HistoryActivity extends BaseActivity {
             String barcode, String category, String healthRating,
             int calories, int sugar, int protein, String ingredients) {
         try {
-            // For now, just log the scan
-            Log.d("HistoryActivity", "Scan added to history: " + productName + " (" + brand + ")");
-            Log.d("HistoryActivity", "Nutrition: " + calories + " cal, " + sugar + "g sugar, " + protein + "g protein");
+            com.example.healthscanner.models.Scan scan = new com.example.healthscanner.models.Scan();
+            scan.setProductName(productName);
+            scan.setBrand(brand);
+            scan.setBarcode(barcode);
+            scan.setCategory(category);
+            scan.setScanDate(new java.util.Date());
+            scan.setCalories(calories);
+            scan.setSugar(sugar);
+            scan.setProtein(protein);
+            scan.setScanMethod("manual_entry");
 
-            // TODO: Implement actual history storage using SharedPreferences or database
-            SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-            // Add implementation for storing scan history
+            // Callers pass a health rating string ("A".."E" or a numeric score). Derive the
+            // 0-100 score so this scan aggregates the same way as barcode scans.
+            double healthScore = parseHealthRating(healthRating);
+            scan.setHealthScore(healthScore);
+            scan.setHealthGrade(HealthScoreCalculator.gradeFor(healthScore));
+
+            com.example.healthscanner.database.ScanHistoryStore.getInstance(context).addScan(scan);
+
+            Log.d(TAG, "Scan added to history: " + productName + " (" + brand + ")");
 
         } catch (Exception e) {
-            Log.e("HistoryActivity", "Error adding scan to history: " + e.getMessage());
+            Log.e(TAG, "Error adding scan to history: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Convert a health rating into a 0-100 score.
+     *
+     * <p>Accepts a numeric score ("82", "8.2") or an A-E letter grade; anything else
+     * yields 0 so the scan is still stored but excluded from score averages.</p>
+     */
+    static double parseHealthRating(String healthRating) {
+        if (healthRating == null || healthRating.trim().isEmpty()) {
+            return 0;
+        }
+
+        String rating = healthRating.trim();
+        try {
+            double value = Double.parseDouble(rating);
+            // Tolerate the legacy 0-10 scale that some callers still use.
+            return value <= 10 ? value * 10 : Math.min(value, 100);
+        } catch (NumberFormatException ignored) {
+            // Not numeric, fall through to letter grades.
+        }
+
+        switch (Character.toUpperCase(rating.charAt(0))) {
+            case 'A':
+                return 90;
+            case 'B':
+                return 75;
+            case 'C':
+                return 60;
+            case 'D':
+                return 45;
+            case 'E':
+                return 25;
+            default:
+                return 0;
         }
     }
 }

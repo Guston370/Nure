@@ -1,5 +1,8 @@
 package com.example.healthscanner.models;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -94,6 +97,87 @@ public class Scan {
         map.put("scanMethod", scanMethod);
         
         return map;
+    }
+
+    /**
+     * Serialise to the JSON shape used by the local {@code recent_scans} history.
+     *
+     * <p>The legacy {@code name} key is written alongside {@code productName} because older
+     * records (and some read paths) still rely on it.</p>
+     */
+    public JSONObject toJson() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("scanId", scanId);
+        json.put("userId", userId);
+        json.put("productName", productName);
+        json.put("name", productName); // legacy alias
+        json.put("brand", brand);
+        json.put("barcode", barcode);
+        json.put("category", category);
+        json.put("subCategory", subCategory);
+        json.put("imageUrl", imageUrl);
+        json.put("healthScore", healthScore);
+        json.put("healthGrade", healthGrade);
+        json.put("calories", calories);
+        json.put("protein", protein);
+        json.put("carbs", carbs);
+        json.put("fat", fat);
+        json.put("sugar", sugar);
+        json.put("sodium", sodium);
+        json.put("fiber", fiber);
+        json.put("isFavorite", isFavorite);
+        json.put("scanMethod", scanMethod);
+        json.put("timestamp", scanDate != null ? scanDate.getTime() : System.currentTimeMillis());
+        return json;
+    }
+
+    /**
+     * Rebuild a scan from a local history JSON object, tolerating records written by
+     * earlier versions of the app that only stored a handful of fields.
+     */
+    public static Scan fromJson(JSONObject json) {
+        if (json == null) {
+            return null;
+        }
+
+        Scan scan = new Scan();
+        scan.scanId = optString(json, "scanId", null);
+        scan.userId = optString(json, "userId", null);
+        scan.productName = optString(json, "productName", optString(json, "name", "Unknown Product"));
+        scan.brand = optString(json, "brand", "Unknown Brand");
+        scan.barcode = optString(json, "barcode", "");
+        scan.category = optString(json, "category", "Other");
+        scan.subCategory = optString(json, "subCategory", null);
+        scan.imageUrl = optString(json, "imageUrl", null);
+        scan.healthScore = json.optDouble("healthScore", 0);
+        scan.healthGrade = optString(json, "healthGrade", null);
+        scan.calories = json.optInt("calories", 0);
+        scan.protein = json.optDouble("protein", 0);
+        scan.carbs = json.optDouble("carbs", 0);
+        scan.fat = json.optDouble("fat", 0);
+        scan.sugar = json.optDouble("sugar", 0);
+        scan.sodium = json.optDouble("sodium", 0);
+        scan.fiber = json.optDouble("fiber", 0);
+        scan.isFavorite = json.optBoolean("isFavorite", false);
+        scan.scanMethod = optString(json, "scanMethod", null);
+        scan.scanDate = new Date(json.optLong("timestamp", System.currentTimeMillis()));
+
+        if (scan.scanId == null || scan.scanId.isEmpty()) {
+            // Older records predate scan IDs; derive a stable one from barcode + timestamp
+            // so favourite toggles and de-duplication still work.
+            scan.scanId = "scan_" + scan.scanDate.getTime() + "_" + scan.barcode.hashCode();
+        }
+
+        return scan;
+    }
+
+    /** {@link JSONObject#optString} returns the literal "null" string for JSON nulls. */
+    private static String optString(JSONObject json, String key, String fallback) {
+        if (!json.has(key) || json.isNull(key)) {
+            return fallback;
+        }
+        String value = json.optString(key, "");
+        return value.isEmpty() ? fallback : value;
     }
 
     // Getters and Setters
