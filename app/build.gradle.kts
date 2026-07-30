@@ -61,9 +61,12 @@ dependencies {
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.google.zxing:core:3.4.1")
 
-    // ML Kit Barcode Scanning & Text Recognition
+    // ML Kit Barcode Scanning, Text Recognition & Image Labelling
     implementation("com.google.mlkit:barcode-scanning:17.2.0")
     implementation("com.google.mlkit:text-recognition:16.0.1")
+    // On-device general image labelling: names the food in a photo. Replaces the previously
+    // bundled food_classifier.onnx, which shipped untrained weights.
+    implementation("com.google.mlkit:image-labeling:17.0.8")
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
     implementation(libs.googleid)
@@ -110,9 +113,6 @@ dependencies {
     
     // Lottie for animations
     implementation("com.airbnb.android:lottie:6.2.0")
-
-    // ONNX Runtime
-    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.17.1")
 
     // Testing
     testImplementation(libs.junit)

@@ -51,17 +51,11 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
-import ai.onnxruntime.OnnxTensor;
-import ai.onnxruntime.OrtEnvironment;
-import ai.onnxruntime.OrtSession;
-import java.nio.FloatBuffer;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Iterator;
-import org.json.JSONObject;
+
+import com.example.healthscanner.database.ScanHistoryStore;
+import com.example.healthscanner.models.Scan;
 
 /**
  * Vertical Scanner Activity with modern camera interface
@@ -97,9 +91,11 @@ public class VerticalScannerActivity extends BaseActivity {
     private boolean isCapturing = false;
 
     private OkHttpClient httpClient;
-    private OrtEnvironment ortEnv;
-    private OrtSession ortSession;
-    private Map<Integer, String> imagenetFoodMap = new HashMap<>();
+
+    /** Names the food in a photo (ML Kit image labelling, with OCR as a second pass). */
+    private FoodRecognizer foodRecognizer;
+    /** Turns a food name into nutrition facts. Shared with the barcode path. */
+    private NutritionRepository nutritionRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +103,8 @@ public class VerticalScannerActivity extends BaseActivity {
         setContentView(R.layout.activity_scanner_simple);
 
         httpClient = new OkHttpClient();
-        initONNX();
+        foodRecognizer = new FoodRecognizer(this);
+        nutritionRepository = NutritionRepository.getInstance(this);
 
         // Initialize views
         initializeViews();
@@ -391,7 +388,7 @@ public class VerticalScannerActivity extends BaseActivity {
                     @Override
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                         Log.d(TAG, "Photo captured: " + photoFile.getAbsolutePath());
-                        detectFoodLocally(photoFile);
+                        recognizeFood(photoFile);
                     }
 
                     @Override
@@ -404,186 +401,165 @@ public class VerticalScannerActivity extends BaseActivity {
                 });
     }
 
-    private void detectFoodLocally(File photoFile) {
-        new Thread(() -> {
-            try {
-                Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, 224, 224, true);
-                
-                FloatBuffer imgData = FloatBuffer.allocate(1 * 3 * 224 * 224);
-                imgData.rewind();
-                
-                float[] mean = {0.485f, 0.456f, 0.406f};
-                float[] std = {0.229f, 0.224f, 0.225f};
+    /**
+     * Identify the food in a captured photo and resolve its nutrition.
+     *
+     * <p>Two stages, deliberately decoupled: {@link FoodRecognizer} only names the food,
+     * {@link NutritionRepository} only supplies numbers for a name. The photo path and the
+     * barcode path therefore share one nutrition layer and one health score model.</p>
+     */
+    private void recognizeFood(File photoFile) {
+        showScanStatus("🔍 Identifying food...", true);
 
-                int[] pixels = new int[224 * 224];
-                scaledBitmap.getPixels(pixels, 0, 224, 0, 0, 224, 224);
-                
-                for (int c = 0; c < 3; c++) {
-                    for (int i = 0; i < 224 * 224; i++) {
-                        int val = pixels[i];
-                        float p = 0;
-                        if (c == 0) p = ((val >> 16) & 0xFF) / 255.0f; // R
-                        if (c == 1) p = ((val >> 8) & 0xFF) / 255.0f;  // G
-                        if (c == 2) p = (val & 0xFF) / 255.0f;         // B
-                        
-                        p = (p - mean[c]) / std[c];
-                        imgData.put(p);
-                    }
-                }
-                
-                imgData.rewind();
-                long[] shape = {1, 3, 224, 224};
-                
-                if (ortEnv == null || ortSession == null) {
-                    throw new Exception("ONNX not initialized");
-                }
-                OnnxTensor tensor = OnnxTensor.createTensor(ortEnv, imgData, shape);
-                
-                Map<String, OnnxTensor> inputs = Collections.singletonMap("input", tensor);
-                OrtSession.Result result = ortSession.run(inputs);
-                float[][] output = (float[][]) result.get(0).getValue();
-                
-                float[] probs = softmax(output[0]);
-                
-                int maxIdx = -1;
-                float maxConf = 0.05f; // Require at least 5% confidence
-                for (int i = 0; i < probs.length; i++) {
-                    if (imagenetFoodMap.containsKey(i)) {
-                        if (probs[i] > maxConf) {
-                            maxConf = probs[i];
-                            maxIdx = i;
-                        }
-                    }
-                }
-                
-                String predictedProduct = maxIdx != -1 ? imagenetFoodMap.get(maxIdx) : "unknown";
-                float finalConfidence = maxConf;
-                
-                runOnUiThread(() -> {
-                    isCapturing = false;
-                    setCaptureButtonEnabled(true);
-                    
-                    if (!predictedProduct.equals("unknown")) {
-                        showScanStatus("✅ Food recognized: " + predictedProduct.replace("_", " "), true);
-                        fetchNutritionAndLaunchResult(photoFile, predictedProduct, (double) finalConfidence);
-                    } else {
-                        showScanStatus("⚠️ Low confidence, trying OCR...", true);
-                        runOcrFallback(photoFile);
-                    }
-                });
-                
-            } catch (Exception e) {
-                Log.e(TAG, "Local detection failed", e);
-                 runOnUiThread(() -> {
-                    isCapturing = false;
-                    setCaptureButtonEnabled(true);
-                    showScanStatus("❌ Local detection failed", false);
-                });
-            }
-        }).start();
-    }
-    
-    private float[] softmax(float[] input) {
-        float max = input[0];
-        for (int i = 1; i < input.length; i++) if (input[i] > max) max = input[i];
-        float sum = 0;
-        float[] result = new float[input.length];
-        for (int i = 0; i < input.length; i++) {
-            result[i] = (float) Math.exp(input[i] - max);
-            sum += result[i];
+        Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
+        if (bitmap == null) {
+            onRecognitionFailed("❌ Could not read the photo");
+            return;
         }
-        for (int i = 0; i < input.length; i++) result[i] /= sum;
-        return result;
-    }
 
-    private void initONNX() {
-        try {
-            ortEnv = OrtEnvironment.getEnvironment();
-            InputStream is = getAssets().open("food_classifier.onnx");
-            byte[] modelData = new byte[is.available()];
-            is.read(modelData);
-            is.close();
-            ortSession = ortEnv.createSession(modelData, new OrtSession.SessionOptions());
-            
-            InputStream js = getAssets().open("imagenet_food_map.json");
-            byte[] jsonBytes = new byte[js.available()];
-            js.read(jsonBytes);
-            js.close();
-            String jsonStr = new String(jsonBytes, "UTF-8");
-            JSONObject json = new JSONObject(jsonStr);
-            Iterator<String> keys = json.keys();
-            while (keys.hasNext()) {
-                String key = keys.next();
-                imagenetFoodMap.put(Integer.parseInt(key), json.getString(key));
+        foodRecognizer.recognize(bitmap, recognition -> {
+            if (!recognition.isIdentified()) {
+                // Distinguish "that isn't food" from "I can't name this food", then let the
+                // user type it rather than dead-ending the scan.
+                String message = recognition.looksLikeFood
+                        ? "🤔 Looks like food, but I can't name it"
+                        : "❌ No food detected in that photo";
+                showScanStatus(message, false);
+                promptForFoodName(photoFile, null);
+                return;
             }
-            Log.d(TAG, "ONNX model and ImageNet mapping loaded.");
-        } catch (Exception e) {
-            Log.e(TAG, "ONNX init failed", e);
-        }
+
+            String display = FoodLabelMapper.toDisplayCase(recognition.foodName);
+            showScanStatus("✅ " + display + " — looking up nutrition...", true);
+            resolveNutritionAndLaunch(photoFile, recognition, recognition.foodName);
+        });
     }
 
-    private void runOcrFallback(File photoFile) {
-        try {
-            Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-            if (bitmap == null) throw new Exception("Failed to decode image");
+    /**
+     * Look the food's nutrition up and open the result screen.
+     *
+     * @param recognition may be {@code null} when the name came from manual entry
+     */
+    private void resolveNutritionAndLaunch(File photoFile,
+            FoodRecognizer.Recognition recognition, String foodName) {
+        if (scanProgress != null) scanProgress.setVisibility(View.VISIBLE);
 
-            com.google.mlkit.vision.common.InputImage image =
-                    com.google.mlkit.vision.common.InputImage.fromBitmap(bitmap, 0);
-            com.google.mlkit.vision.text.TextRecognizer recognizer =
-                    TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
-
-            recognizer.process(image)
-                    .addOnSuccessListener(visionText -> {
-                        String text = visionText.getText();
-                        if (text != null && !text.trim().isEmpty()) {
-                            sendOcrToApi(text, photoFile);
-                        } else {
-                            isCapturing = false;
-                            setCaptureButtonEnabled(true);
-                            showScanStatus("❌ Could not recognize food", false);
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e(TAG, "OCR processing failed", e);
-                        isCapturing = false;
-                        setCaptureButtonEnabled(true);
-                        showScanStatus("❌ OCR Failed", false);
-                    });
-        } catch (Exception e) {
-            Log.e(TAG, "OCR initialization failed", e);
+        nutritionRepository.resolve(foodName, resolution -> {
             isCapturing = false;
             setCaptureButtonEnabled(true);
-            showScanStatus("❌ Error starting OCR", false);
-        }
+            if (scanProgress != null) scanProgress.setVisibility(View.GONE);
+
+            if (!resolution.hasNutrition()) {
+                showScanStatus("⚠️ No nutrition data for " + FoodLabelMapper.toDisplayCase(foodName), false);
+                promptForFoodName(photoFile, foodName);
+                return;
+            }
+
+            launchResult(photoFile, resolution, recognition, foodName);
+        });
     }
 
-    private void sendOcrToApi(String text, File photoFile) {
-        String lowerText = text.toLowerCase();
-        String detectedFood = "Unknown";
-        for (String food : imagenetFoodMap.values()) {
-            if (lowerText.contains(food.replace("_", " "))) {
-                detectedFood = food;
-                break;
-            }
+    /**
+     * Persist the scan and hand it to the result screen.
+     *
+     * <p>The scan goes through {@link ScanHistoryStore}, the same path barcode scans use, so
+     * photo scans now show up in history, analytics and CSV export. They previously did
+     * not.</p>
+     */
+    private void launchResult(File photoFile, NutritionRepository.Resolution resolution,
+            FoodRecognizer.Recognition recognition, String queriedName) {
+        double healthScore = resolution.healthScore();
+        NutritionRepository.DietInfo diet =
+                NutritionRepository.classifyDiet(resolution.foodName, resolution.ingredients);
+
+        Scan scan = new Scan();
+        scan.setProductName(resolution.foodName);
+        scan.setBrand(resolution.brand);
+        scan.setCategory(resolution.category != null ? resolution.category : "Photo scan");
+        scan.setImageUrl(resolution.imageUrl);
+        scan.setScanDate(new Date());
+        scan.setHealthScore(healthScore);
+        scan.setHealthGrade(HealthScoreCalculator.gradeFor(healthScore));
+        scan.setCalories((int) Math.round(resolution.nutrition.calories));
+        scan.setProtein(resolution.nutrition.protein);
+        scan.setCarbs(resolution.nutrition.carbs);
+        scan.setFat(resolution.nutrition.fat);
+        scan.setSugar(resolution.nutrition.sugar);
+        scan.setSodium(resolution.nutrition.sodium);
+        scan.setFiber(resolution.nutrition.fiber);
+        scan.setScanMethod(recognition != null && recognition.method == FoodRecognizer.Method.OCR_TEXT
+                ? "photo_ocr"
+                : (recognition == null ? "manual_entry" : "photo_label"));
+
+        ScanHistoryStore.getInstance(this).addScan(scan);
+
+        Intent intent = new Intent(this, ApiDetectionResultActivity.class);
+        intent.putExtra("image_path", photoFile.getAbsolutePath());
+        intent.putExtra("confidence", recognition != null ? (double) recognition.confidence : 1.0);
+        intent.putExtra("nutrition_source", resolution.source.displayName);
+        intent.putExtra("is_vegetarian", diet.vegetarian);
+        intent.putExtra("is_vegan", diet.vegan);
+        intent.putExtra("ingredients", resolution.ingredients);
+        intent.putExtra("queried_name", queriedName);
+
+        try {
+            intent.putExtra("scan_json", scan.toJson().toString());
+        } catch (Exception e) {
+            Log.e(TAG, "Could not serialise scan: " + e.getMessage(), e);
         }
-        
-        if (!detectedFood.equals("Unknown")) {
-            String finalFood = detectedFood;
-            runOnUiThread(() -> {
-                isCapturing = false;
-                setCaptureButtonEnabled(true);
-                showScanStatus("✅ OCR Matched: " + finalFood.replace("_", " "), true);
-                fetchNutritionAndLaunchResult(photoFile, finalFood, 0.9);
-            });
-        } else {
-            runOnUiThread(() -> {
-                isCapturing = false;
-                setCaptureButtonEnabled(true);
-                showScanStatus("❌ OCR could not find food", false);
-            });
+
+        if (recognition != null && !recognition.alternatives.isEmpty()) {
+            intent.putExtra("alternatives", new org.json.JSONArray(recognition.alternatives).toString());
         }
+
+        startActivity(intent);
     }
+
+    /**
+     * Ask the user to name the food when recognition or lookup came up empty.
+     *
+     * <p>Better than the old behaviour, which showed "Could not recognize food" and stopped.</p>
+     */
+    private void promptForFoodName(File photoFile, String prefill) {
+        isCapturing = false;
+        setCaptureButtonEnabled(true);
+        if (scanProgress != null) scanProgress.setVisibility(View.GONE);
+
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        builder.setTitle("What is this?");
+        builder.setMessage("Type the food name and we'll look up its nutrition.");
+
+        final android.widget.EditText input = new android.widget.EditText(this);
+        input.setHint("e.g. paneer butter masala");
+        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT
+                | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        if (prefill != null && !prefill.isEmpty()) {
+            input.setText(prefill);
+        }
+        builder.setView(input);
+
+        builder.setPositiveButton("Look up", (dialog, which) -> {
+            String name = input.getText().toString().trim();
+            if (name.isEmpty()) {
+                showScanStatus("Enter a food name to continue", false);
+                return;
+            }
+            isCapturing = true;
+            setCaptureButtonEnabled(false);
+            showScanStatus("🔍 Looking up " + name + "...", true);
+            resolveNutritionAndLaunch(photoFile, null, name);
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
+    private void onRecognitionFailed(String message) {
+        isCapturing = false;
+        setCaptureButtonEnabled(true);
+        if (scanProgress != null) scanProgress.setVisibility(View.GONE);
+        showScanStatus(message, false);
+    }
+
     private void setCaptureButtonEnabled(boolean enabled) {
         if (cameraCaptureButton != null) {
             cameraCaptureButton.setEnabled(enabled);
@@ -731,108 +707,11 @@ public class VerticalScannerActivity extends BaseActivity {
         if (cameraProvider != null) {
             cameraProvider.unbindAll();
         }
+        if (foodRecognizer != null) {
+            foodRecognizer.close();
+            foodRecognizer = null;
+        }
     }
 
-    private void fetchNutritionAndLaunchResult(File photoFile, String foodKey, double confidence) {
-        showScanStatus("🔍 Loading nutrition from database...", true);
-        if (scanProgress != null) scanProgress.setVisibility(View.VISIBLE);
-
-        String cleanKey = foodKey.toLowerCase().replace(" ", "_");
-        com.google.firebase.firestore.FirebaseFirestore db = com.google.firebase.firestore.FirebaseFirestore.getInstance();
-
-        db.collection("nutrition_dataset").document(cleanKey).get()
-            .addOnCompleteListener(task -> {
-                if (scanProgress != null) scanProgress.setVisibility(View.GONE);
-                
-                boolean isVegetarian = true;
-                boolean isVegan = true;
-                int healthScore = 80;
-                String servingSize = "1 serving (100g)";
-                String ingredientsJson = "[\"" + foodKey.replace("_", " ").substring(0, 1).toUpperCase() + foodKey.replace("_", " ").substring(1) + "\"]";
-                String nutritionJson = "{}";
-                String healthTagsJson = "[]";
-                String allergensJson = "[]";
-                String similarProductsStr = "[]";
-
-                // Standard vegetarianness logic as fallback
-                String lowerLabel = cleanKey.toLowerCase();
-                if (lowerLabel.contains("chicken") || lowerLabel.contains("beef") || 
-                    lowerLabel.contains("fish") || lowerLabel.contains("mutton") || 
-                    lowerLabel.contains("meat") || lowerLabel.contains("prawn") ||
-                    lowerLabel.contains("egg") || lowerLabel.contains("omelette")) {
-                    isVegetarian = false;
-                    isVegan = false;
-                } else if (lowerLabel.contains("milk") || lowerLabel.contains("butter") || 
-                           lowerLabel.contains("paneer") || lowerLabel.contains("cheese") || 
-                           lowerLabel.contains("cream") || lowerLabel.contains("lassi") || 
-                           lowerLabel.contains("kheer") || lowerLabel.contains("yogurt")) {
-                    isVegan = false;
-                }
-
-                if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
-                    com.google.firebase.firestore.DocumentSnapshot doc = task.getResult();
-                    Log.d(TAG, "✅ Loaded nutrition from Firestore for: " + cleanKey);
-                    
-                    isVegetarian = doc.getBoolean("is_vegetarian") != null ? doc.getBoolean("is_vegetarian") : isVegetarian;
-                    isVegan = doc.getBoolean("is_vegan") != null ? doc.getBoolean("is_vegan") : isVegan;
-                    
-                    double calories = doc.getDouble("calories") != null ? doc.getDouble("calories") : 0.0;
-                    double protein = doc.getDouble("protein_g") != null ? doc.getDouble("protein_g") : 0.0;
-                    double fat = doc.getDouble("fat_g") != null ? doc.getDouble("fat_g") : 0.0;
-                    double carbs = doc.getDouble("carbohydrates_g") != null ? doc.getDouble("carbohydrates_g") : 0.0;
-                    double fiber = doc.getDouble("fiber_g") != null ? doc.getDouble("fiber_g") : 0.0;
-
-                    healthScore = isVegetarian ? (calories < 100 ? 90 : 80) : 60;
-
-                    // Build nutrition JSON mapping
-                    try {
-                        org.json.JSONObject nutrObj = new org.json.JSONObject();
-                        nutrObj.put("calories", String.format(Locale.getDefault(), "%.0f kcal", calories));
-                        nutrObj.put("protein", String.format(Locale.getDefault(), "%.1fg", protein));
-                        nutrObj.put("total_fat", String.format(Locale.getDefault(), "%.1fg", fat));
-                        nutrObj.put("carbohydrates", String.format(Locale.getDefault(), "%.1fg", carbs));
-                        nutrObj.put("fiber", String.format(Locale.getDefault(), "%.1fg", fiber));
-                        nutritionJson = nutrObj.toString();
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error building nutrition JSON", e);
-                    }
-
-                    // Build health tags
-                    try {
-                        org.json.JSONArray tags = new org.json.JSONArray();
-                        if (calories < 100) tags.put("Low Calorie");
-                        if (fiber > 2.0) tags.put("High Fiber");
-                        if (protein > 5.0) tags.put("Good Protein Source");
-                        healthTagsJson = tags.toString();
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error building tags", e);
-                    }
-
-                } else {
-                    Log.d(TAG, "⚠️ Firestore doc not found for: " + cleanKey + ". Using standard defaults.");
-                    try {
-                        org.json.JSONObject nutrObj = new org.json.JSONObject();
-                        nutrObj.put("calories", "—");
-                        nutritionJson = nutrObj.toString();
-                    } catch (Exception e) {}
-                }
-
-                Intent intent = new Intent(VerticalScannerActivity.this, ApiDetectionResultActivity.class);
-                intent.putExtra("image_path", photoFile.getAbsolutePath());
-                intent.putExtra("product", foodKey);
-                intent.putExtra("confidence", confidence);
-                intent.putExtra("is_vegetarian", isVegetarian);
-                intent.putExtra("is_vegan", isVegan);
-                intent.putExtra("health_score", healthScore);
-                intent.putExtra("serving_size", servingSize);
-                intent.putExtra("ingredients_json", ingredientsJson);
-                intent.putExtra("nutrition_json", nutritionJson);
-                intent.putExtra("health_tags_json", healthTagsJson);
-                intent.putExtra("allergens_json", allergensJson);
-                intent.putExtra("similar_products", similarProductsStr);
-
-                startActivity(intent);
-            });
-    }
 
 }

@@ -21,6 +21,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
+import com.example.healthscanner.database.ScanHistoryStore;
+import com.example.healthscanner.models.Scan;
 import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONArray;
@@ -28,24 +30,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import java.util.Locale;
 
 /**
- * Displays the result of Food Recognition via ML model.
- * Shows: Food name, confidence, ingredients, nutrition, health score,
- * allergens, diet info, and RLHF feedback mechanism.
+ * Displays the result of a photo food scan.
+ *
+ * <p>Renders a {@link Scan} that {@code VerticalScannerActivity} has already resolved and
+ * persisted, showing nutrition, the shared health score, diet badges and where the numbers
+ * came from. If the recognised food is wrong, the user can correct it and the nutrition is
+ * re-resolved through {@link NutritionRepository}.</p>
  */
 public class ApiDetectionResultActivity extends AppCompatActivity {
 
@@ -71,16 +67,18 @@ public class ApiDetectionResultActivity extends AppCompatActivity {
     private MaterialButton btnScanAnother;
     private MaterialButton btnGoHome;
 
-    private OkHttpClient httpClient;
     private String currentProduct;
     private String imagePath;
+
+    /** The scan being displayed, as persisted by {@link ScanHistoryStore}. */
+    private Scan currentScan;
+    /** Other food names the recogniser considered, offered for correction. */
+    private final List<String> alternatives = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_api_detection_result);
-
-        httpClient = new OkHttpClient();
 
         initViews();
         setupButtons();
@@ -117,6 +115,17 @@ public class ApiDetectionResultActivity extends AppCompatActivity {
     private void setupButtons() {
         if (btnScanAnother != null) {
             btnScanAnother.setOnClickListener(v -> finish());
+        }
+
+        // Recognition is probabilistic, so make correcting it a first-class action rather
+        // than a hidden gesture.
+        if (productNameText != null) {
+            productNameText.setOnClickListener(v -> {
+                if (currentScan != null) {
+                    showCorrectionDialog();
+                }
+            });
+            productNameText.setContentDescription("Tap to correct the recognised food name");
         }
 
         if (btnGoHome != null) {
@@ -157,15 +166,41 @@ public class ApiDetectionResultActivity extends AppCompatActivity {
             return;
         }
 
-        // --- Product name ---
-        currentProduct = intent.getStringExtra("product");
-        if (currentProduct != null && !currentProduct.isEmpty()) {
-            String displayName = currentProduct.substring(0, 1).toUpperCase() + currentProduct.substring(1);
-            if (productNameText != null) {
-                productNameText.setText(displayName);
+        // --- The resolved scan ---
+        String scanJson = intent.getStringExtra("scan_json");
+        if (scanJson != null && !scanJson.isEmpty()) {
+            try {
+                currentScan = Scan.fromJson(new JSONObject(scanJson));
+            } catch (JSONException e) {
+                Log.e(TAG, "Could not parse scan payload", e);
             }
-        } else {
-            if (productNameText != null) productNameText.setText("Unknown Food");
+        }
+
+        if (currentScan == null) {
+            showError("Could not read the scan result.");
+            return;
+        }
+
+        // --- Product name ---
+        currentProduct = currentScan.getProductName();
+        if (productNameText != null) {
+            productNameText.setText(FoodLabelMapper.toDisplayCase(currentProduct));
+        }
+
+        // --- Alternatives the recogniser also considered ---
+        String alternativesJson = intent.getStringExtra("alternatives");
+        if (alternativesJson != null && !alternativesJson.isEmpty()) {
+            try {
+                JSONArray arr = new JSONArray(alternativesJson);
+                for (int i = 0; i < arr.length(); i++) {
+                    String name = arr.optString(i, "").trim();
+                    if (!name.isEmpty()) {
+                        alternatives.add(name);
+                    }
+                }
+            } catch (JSONException e) {
+                Log.w(TAG, "Could not parse alternatives");
+            }
         }
 
         // --- Confidence ---
@@ -184,28 +219,28 @@ public class ApiDetectionResultActivity extends AppCompatActivity {
             }
         }
 
-        // --- Serving Size ---
-        String servingSize = intent.getStringExtra("serving_size");
-        if (servingSize != null && servingSizeText != null) {
-            servingSizeText.setText("Serving: " + servingSize);
+        // --- Serving size + data source, so the numbers are attributable ---
+        String source = intent.getStringExtra("nutrition_source");
+        if (servingSizeText != null) {
+            String servingLine = "Per 100g";
+            if (source != null && !source.isEmpty()) {
+                servingLine += "  •  " + source;
+            }
+            servingSizeText.setText(servingLine);
             servingSizeText.setVisibility(View.VISIBLE);
         }
 
-        // --- Health Score ---
-        int healthScore = intent.getIntExtra("health_score", -1);
-        if (healthScore >= 0 && healthScoreText != null) {
-            healthScoreText.setText(String.valueOf(healthScore));
-            int scoreColor;
-            if (healthScore >= 75) scoreColor = ContextCompat.getColor(this, R.color.health_excellent);
-            else if (healthScore >= 50) scoreColor = ContextCompat.getColor(this, R.color.health_moderate);
-            else scoreColor = ContextCompat.getColor(this, R.color.health_unhealthy);
-            healthScoreText.setTextColor(scoreColor);
-        }
+        // --- Health Score, from the one shared calculator ---
+        renderHealthScore((int) Math.round(currentScan.getHealthScore()));
 
         // --- Diet Badge ---
-        boolean isVeg = intent.getBooleanExtra("is_vegetarian", false);
+        boolean isVeg = intent.getBooleanExtra("is_vegetarian", true);
+        boolean isVegan = intent.getBooleanExtra("is_vegan", false);
         if (dietBadgeText != null) {
-            if (isVeg) {
+            if (isVegan) {
+                dietBadgeText.setText("🟢 Vegan");
+                dietBadgeText.setTextColor(ContextCompat.getColor(this, R.color.health_excellent));
+            } else if (isVeg) {
                 dietBadgeText.setText("🟢 Vegetarian");
                 dietBadgeText.setTextColor(ContextCompat.getColor(this, R.color.health_excellent));
             } else {
@@ -215,69 +250,226 @@ public class ApiDetectionResultActivity extends AppCompatActivity {
             dietBadgeText.setVisibility(View.VISIBLE);
         }
 
-        // --- Ingredients ---
-        String ingredientsJson = intent.getStringExtra("ingredients_json");
-        if (ingredientsJson != null && !ingredientsJson.isEmpty()) {
-            try {
-                JSONArray arr = new JSONArray(ingredientsJson);
-                populateIngredients(arr);
-            } catch (JSONException e) {
-                Log.e(TAG, "Error parsing ingredients", e);
-            }
+        // --- Ingredients, when the data source provided them ---
+        String ingredients = intent.getStringExtra("ingredients");
+        if (ingredients != null && !ingredients.trim().isEmpty()) {
+            populateIngredients(splitIngredients(ingredients));
         }
 
-        // --- Nutrition ---
-        String nutritionJson = intent.getStringExtra("nutrition_json");
-        if (nutritionJson != null && !nutritionJson.isEmpty()) {
-            try {
-                JSONObject nutrition = new JSONObject(nutritionJson);
-                populateNutrition(nutrition);
-            } catch (JSONException e) {
-                Log.e(TAG, "Error parsing nutrition JSON", e);
+        populateNutrition(buildNutritionJson(currentScan));
+        populateHealthTags(buildHealthTags(currentScan));
+    }
+
+    /**
+     * Build the nutrition rows from the scan. Replaces the previous contract, where the
+     * scanner pre-formatted a JSON blob of display strings and passed it through the intent.
+     */
+    private JSONObject buildNutritionJson(Scan scan) {
+        JSONObject nutrition = new JSONObject();
+        try {
+            nutrition.put("calories", scan.getCalories() + " kcal");
+            nutrition.put("protein", format(scan.getProtein()) + "g");
+            nutrition.put("total_fat", format(scan.getFat()) + "g");
+            nutrition.put("carbohydrates", format(scan.getCarbs()) + "g");
+            nutrition.put("fiber", format(scan.getFiber()) + "g");
+            nutrition.put("sugar", format(scan.getSugar()) + "g");
+            nutrition.put("sodium", String.format(Locale.getDefault(), "%.0fmg", scan.getSodium()));
+        } catch (JSONException e) {
+            Log.e(TAG, "Could not build nutrition rows", e);
+        }
+        return nutrition;
+    }
+
+    /**
+     * Derive the health chips from the resolved nutrition rather than from a hardcoded list.
+     */
+    private JSONArray buildHealthTags(Scan scan) {
+        JSONArray tags = new JSONArray();
+        if (scan.getCalories() > 0 && scan.getCalories() < 100) {
+            tags.put("Low Calorie");
+        }
+        if (scan.getFiber() >= 3) {
+            tags.put("High Fibre");
+        }
+        if (scan.getProtein() >= 10) {
+            tags.put("Good Protein Source");
+        }
+        if (scan.getSugar() > 15) {
+            tags.put("High Sugar");
+        }
+        if (scan.getSodium() > 600) {
+            tags.put("High Sodium");
+        }
+        if (scan.getFat() <= 3) {
+            tags.put("Low Fat");
+        }
+        tags.put("Grade " + (scan.getHealthGrade() != null
+                ? scan.getHealthGrade()
+                : HealthScoreCalculator.gradeFor(scan.getHealthScore())));
+        return tags;
+    }
+
+    /** Split a free-text ingredients string into a displayable list. */
+    private JSONArray splitIngredients(String ingredients) {
+        JSONArray list = new JSONArray();
+        for (String part : ingredients.split("[,;]")) {
+            String trimmed = part.trim();
+            if (!trimmed.isEmpty()) {
+                list.put(trimmed);
             }
         }
-
-        // --- Health Tags ---
-        String healthTagsJson = intent.getStringExtra("health_tags_json");
-        if (healthTagsJson != null && !healthTagsJson.isEmpty()) {
-            try {
-                JSONArray tags = new JSONArray(healthTagsJson);
-                populateHealthTags(tags);
-            } catch (JSONException e) {
-                Log.e(TAG, "Error parsing health tags", e);
-            }
+        if (list.length() == 0) {
+            list.put(ingredients.trim());
         }
+        return list;
+    }
 
-        // --- Allergens ---
-        String allergensJson = intent.getStringExtra("allergens_json");
-        if (allergensJson != null && !allergensJson.isEmpty()) {
-            try {
-                JSONArray allergens = new JSONArray(allergensJson);
-                populateAllergens(allergens);
-            } catch (JSONException e) {
-                Log.e(TAG, "Error parsing allergens", e);
-            }
+    private String format(double value) {
+        return String.format(Locale.getDefault(), "%.1f", value);
+    }
+
+    /**
+     * Let the user fix a wrong recognition.
+     *
+     * <p>Shows the runners-up from the recogniser plus a free-text field, then re-resolves
+     * nutrition for the corrected name and rewrites the stored scan. The previous version of
+     * this screen posted corrections to the LAN-hosted RLHF endpoint to retrain a model that
+     * no longer exists, and left the displayed data untouched.</p>
+     */
+    private void showCorrectionDialog() {
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(dpToPx(24), dpToPx(8), dpToPx(24), dpToPx(8));
+
+        final EditText input = new EditText(this);
+        input.setHint("Correct food name");
+        if (currentProduct != null) {
+            input.setText(currentProduct);
         }
+        layout.addView(input);
 
-        // --- RLHF Feedback Popup ---
-        List<String> similarProducts = new ArrayList<>();
-        String similarProductsStr = intent.getStringExtra("similar_products");
-        if (similarProductsStr != null && !similarProductsStr.isEmpty()) {
-            try {
-                JSONArray arr = new JSONArray(similarProductsStr);
-                for (int i = 0; i < arr.length(); i++) {
-                    similarProducts.add(arr.getString(i));
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle("Not quite right?")
+                .setView(layout)
+                .setPositiveButton("Look up", (dialog, which) -> {
+                    String corrected = input.getText().toString().trim();
+                    if (!corrected.isEmpty()) {
+                        reresolve(corrected);
+                    }
+                })
+                .setNegativeButton("Cancel", null);
+
+        if (!alternatives.isEmpty()) {
+            TextView label = new TextView(this);
+            label.setText("Did you mean:");
+            label.setTextSize(13);
+            label.setTypeface(null, Typeface.BOLD);
+            label.setPadding(0, dpToPx(12), 0, dpToPx(4));
+            layout.addView(label);
+
+            ListView listView = new ListView(this);
+            List<String> display = new ArrayList<>();
+            for (String alternative : alternatives) {
+                display.add(FoodLabelMapper.toDisplayCase(alternative));
+            }
+            listView.setAdapter(new ArrayAdapter<>(this,
+                    android.R.layout.simple_list_item_1, display));
+            listView.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(160)));
+            layout.addView(listView);
+
+            AlertDialog dialog = builder.create();
+            listView.setOnItemClickListener((parent, view, position, id) -> {
+                dialog.dismiss();
+                reresolve(alternatives.get(position));
+            });
+            dialog.show();
+        } else {
+            builder.show();
+        }
+    }
+
+    /**
+     * Re-run the nutrition lookup for a corrected food name and refresh the screen.
+     */
+    private void reresolve(String foodName) {
+        Toast.makeText(this, "Looking up " + foodName + "...", Toast.LENGTH_SHORT).show();
+
+        NutritionRepository.getInstance(this).resolve(foodName, resolution -> {
+            if (!resolution.hasNutrition()) {
+                Toast.makeText(this, "No nutrition data found for " + foodName,
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            double healthScore = resolution.healthScore();
+            currentScan.setProductName(resolution.foodName);
+            currentScan.setBrand(resolution.brand);
+            currentScan.setCategory(resolution.category != null ? resolution.category : "Photo scan");
+            currentScan.setHealthScore(healthScore);
+            currentScan.setHealthGrade(HealthScoreCalculator.gradeFor(healthScore));
+            currentScan.setCalories((int) Math.round(resolution.nutrition.calories));
+            currentScan.setProtein(resolution.nutrition.protein);
+            currentScan.setCarbs(resolution.nutrition.carbs);
+            currentScan.setFat(resolution.nutrition.fat);
+            currentScan.setSugar(resolution.nutrition.sugar);
+            currentScan.setFiber(resolution.nutrition.fiber);
+            currentScan.setSodium(resolution.nutrition.sodium);
+            currentScan.setScanMethod("photo_corrected");
+
+            // Overwrite the history entry rather than adding a second one for the same photo.
+            ScanHistoryStore.getInstance(this).addScan(currentScan);
+
+            // Rebuild the dynamic sections in place.
+            if (nutritionContainer != null) nutritionContainer.removeAllViews();
+            if (healthTagsContainer != null) healthTagsContainer.removeAllViews();
+            if (ingredientsContainer != null) ingredientsContainer.removeAllViews();
+
+            currentProduct = resolution.foodName;
+            if (productNameText != null) {
+                productNameText.setText(FoodLabelMapper.toDisplayCase(currentProduct));
+            }
+            if (servingSizeText != null) {
+                servingSizeText.setText("Per 100g  •  " + resolution.source.displayName);
+            }
+            renderHealthScore((int) Math.round(healthScore));
+
+            NutritionRepository.DietInfo diet =
+                    NutritionRepository.classifyDiet(resolution.foodName, resolution.ingredients);
+            if (dietBadgeText != null) {
+                if (diet.vegan) {
+                    dietBadgeText.setText("🟢 Vegan");
+                    dietBadgeText.setTextColor(ContextCompat.getColor(this, R.color.health_excellent));
+                } else if (diet.vegetarian) {
+                    dietBadgeText.setText("🟢 Vegetarian");
+                    dietBadgeText.setTextColor(ContextCompat.getColor(this, R.color.health_excellent));
+                } else {
+                    dietBadgeText.setText("🔴 Non-Vegetarian");
+                    dietBadgeText.setTextColor(ContextCompat.getColor(this, R.color.health_unhealthy));
                 }
-            } catch (Exception e) {
-                Log.e(TAG, "Failed parsing similar products");
             }
-        }
 
-        // Show RLHF feedback dialog after a short delay
-        // if (capturedImageView != null) {
-        //     capturedImageView.postDelayed(() ->
-        //             showRLHFFeedbackDialog(currentProduct, imagePath, similarProducts), 1200);
-        // }
+            if (resolution.ingredients != null && !resolution.ingredients.trim().isEmpty()) {
+                populateIngredients(splitIngredients(resolution.ingredients));
+            }
+            populateNutrition(buildNutritionJson(currentScan));
+            populateHealthTags(buildHealthTags(currentScan));
+
+            Toast.makeText(this, "Updated to " + resolution.foodName, Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    /** Apply a score to the score view, colour-coded by band. */
+    private void renderHealthScore(int healthScore) {
+        if (healthScoreText == null) {
+            return;
+        }
+        healthScoreText.setText(String.valueOf(healthScore));
+        int scoreColor;
+        if (healthScore >= 75) scoreColor = ContextCompat.getColor(this, R.color.health_excellent);
+        else if (healthScore >= 50) scoreColor = ContextCompat.getColor(this, R.color.health_moderate);
+        else scoreColor = ContextCompat.getColor(this, R.color.health_unhealthy);
+        healthScoreText.setTextColor(scoreColor);
     }
 
     /**
@@ -364,146 +556,6 @@ public class ApiDetectionResultActivity extends AppCompatActivity {
 
             allergensContainer.addView(tv);
         }
-    }
-
-    /**
-     * RLHF Interactive Feedback Dialog.
-     * The user can confirm, correct, or select from similar foods.
-     * This feedback is sent back to the server to improve the model.
-     */
-    private void showRLHFFeedbackDialog(String predictedProduct, String imgPath, List<String> similarProducts) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("🧠 Help Improve Recognition");
-
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(dpToPx(24), dpToPx(16), dpToPx(24), dpToPx(16));
-
-        // Header
-        TextView headerText = new TextView(this);
-        headerText.setText("Is this correct?\nDetected: " + (predictedProduct != null ? predictedProduct : "Unknown"));
-        headerText.setTextSize(15);
-        headerText.setLineSpacing(dpToPx(4), 1f);
-        headerText.setPadding(0, 0, 0, dpToPx(16));
-        layout.addView(headerText);
-
-        // RLHF explanation
-        TextView rlhfNote = new TextView(this);
-        rlhfNote.setText("Your feedback helps the AI learn and improve over time (RLHF).");
-        rlhfNote.setTextSize(12);
-        rlhfNote.setTextColor(ContextCompat.getColor(this, R.color.text_secondary_light));
-        rlhfNote.setPadding(0, 0, 0, dpToPx(12));
-        layout.addView(rlhfNote);
-
-        // Custom input
-        final EditText searchInput = new EditText(this);
-        searchInput.setHint("Or type the correct food name...");
-        layout.addView(searchInput);
-
-        if (!similarProducts.isEmpty()) {
-            // Similar products list
-            TextView suggestLabel = new TextView(this);
-            suggestLabel.setText("Similar foods:");
-            suggestLabel.setTextSize(13);
-            suggestLabel.setTypeface(null, Typeface.BOLD);
-            suggestLabel.setPadding(0, dpToPx(12), 0, dpToPx(4));
-            layout.addView(suggestLabel);
-
-            ListView listView = new ListView(this);
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                    android.R.layout.simple_list_item_1, similarProducts);
-            listView.setAdapter(adapter);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(200));
-            listView.setLayoutParams(lp);
-            layout.addView(listView);
-
-            AlertDialog dialog = builder.setView(layout)
-                    .setPositiveButton("Submit Correction", (d, which) -> {
-                        String correctLabel = searchInput.getText().toString().trim();
-                        if (!correctLabel.isEmpty()) {
-                            sendRLHFFeedback(correctLabel, predictedProduct, imgPath);
-                        }
-                    })
-                    .setNegativeButton("✅ Confirm Correct", (d, which) -> {
-                        if (predictedProduct != null && !predictedProduct.equals("Unknown")) {
-                            sendRLHFFeedback(predictedProduct, predictedProduct, imgPath);
-                            Toast.makeText(this, "Thanks! Positive feedback recorded.", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .setNeutralButton("Skip", null)
-                    .create();
-
-            listView.setOnItemClickListener((parent, view, position, id) -> {
-                String selected = similarProducts.get(position);
-                sendRLHFFeedback(selected, predictedProduct, imgPath);
-                Toast.makeText(this, "Feedback: " + selected, Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-            });
-
-            dialog.show();
-        } else {
-            builder.setView(layout)
-                    .setPositiveButton("Submit", (dialog, which) -> {
-                        String correctLabel = searchInput.getText().toString().trim();
-                        if (!correctLabel.isEmpty()) {
-                            sendRLHFFeedback(correctLabel, predictedProduct, imgPath);
-                        }
-                    })
-                    .setNeutralButton("✅ Confirm Correct", (dialog, which) -> {
-                        sendRLHFFeedback(predictedProduct, predictedProduct, imgPath);
-                        Toast.makeText(this, "Positive feedback recorded!", Toast.LENGTH_SHORT).show();
-                    })
-                    .setNegativeButton("Skip", null)
-                    .show();
-        }
-    }
-
-    /**
-     * Send RLHF feedback to the server.
-     * The server stores this and uses it to fine-tune the model.
-     */
-    private void sendRLHFFeedback(String correctLabel, String predictedLabel, String imgPath) {
-        File file = new File(imgPath);
-        if (!file.exists()) return;
-
-        MultipartBody.Builder bodyBuilder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("image", file.getName(),
-                        RequestBody.create(file, MediaType.parse("image/jpeg")))
-                .addFormDataPart("label", correctLabel);
-
-        if (predictedLabel != null) {
-            bodyBuilder.addFormDataPart("predicted_label", predictedLabel);
-        }
-
-        Request request = new Request.Builder()
-                .url(ApiConfig.API_URL_STORE_FEEDBACK)
-                .post(bodyBuilder.build())
-                .build();
-
-        httpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e(TAG, "RLHF feedback failed", e);
-                runOnUiThread(() -> Toast.makeText(ApiDetectionResultActivity.this,
-                        "Failed to send feedback", Toast.LENGTH_SHORT).show());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) {
-                runOnUiThread(() -> {
-                    if (response.isSuccessful()) {
-                        Toast.makeText(ApiDetectionResultActivity.this,
-                                "🧠 Feedback recorded! Model will learn from this.",
-                                Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(ApiDetectionResultActivity.this,
-                                "Failed to record feedback.", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
     }
 
     /**
