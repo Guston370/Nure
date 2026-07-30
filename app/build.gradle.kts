@@ -116,6 +116,9 @@ dependencies {
 
     // Testing
     testImplementation(libs.junit)
+    // Real org.json implementation: the android.jar on the unit test classpath only has
+    // stubs that throw, so JSON serialisation tests need this on the classpath first.
+    testImplementation("org.json:json:20231013")
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }

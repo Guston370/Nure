@@ -756,10 +756,11 @@ public class MainActivity extends BaseActivity {
 
             org.json.JSONArray scanArray = new org.json.JSONArray(scanHistoryJson);
 
-            // Show only the most recent 4 scans that the user actually performed
+            // Show only the most recent 4 scans that the user actually performed.
+            // The history array is stored newest-first, so read from the front.
             int recentCount = Math.min(scanArray.length(), 4);
 
-            for (int i = scanArray.length() - 1; i >= scanArray.length() - recentCount; i--) {
+            for (int i = 0; i < recentCount; i++) {
                 org.json.JSONObject scan = scanArray.getJSONObject(i);
 
                 // Only add if it has required fields (real scan data)
