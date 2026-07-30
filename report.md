@@ -528,3 +528,6 @@ This appendix provides additional details and artifacts that support the Nure pr
 6. Simonyan, K., & Zisserman, A. (2014). Very deep convolutional networks for large-scale image recognition. *arXiv preprint arXiv:1409.1556*.
 7. United States Department of Agriculture. (2024). *USDA food and nutrient database*. Retrieved from https://fdc.nal.usda.gov/
 8. Yang, W., Chen, J., Shah, M., & Wang, X. (2022). AI-based food recognition and nutrition estimation: A review. *IEEE Access*, 10, 123456–123470.
+
+
+backend\venv\Scripts\python.exe backend\app.py
