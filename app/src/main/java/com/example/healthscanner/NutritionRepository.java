@@ -231,12 +231,103 @@ public class NutritionRepository {
     }
 
     /**
-     * Pick the first search hit that actually carries an energy value.
+     * Maximum believable energy per 100g. Pure fat is about 900 kcal/100g, so anything above
+     * this is a data-entry error in the crowd-sourced database, typically a per-pack value
+     * recorded in a per-100g field.
+     */
+    static final double MAX_PLAUSIBLE_CALORIES = 900;
+
+    /** A 100g sample cannot contain more than 100g of any single macronutrient. */
+    static final double MAX_PLAUSIBLE_GRAMS = 100;
+
+    /** Salt-cured extremes sit near 8000mg sodium per 100g; above that is an error. */
+    static final double MAX_PLAUSIBLE_SODIUM_MG = 10000;
+
+    /**
+     * Reject nutrition that cannot physically describe 100g of food.
      *
-     * <p>Static and pure so the parsing (including the grams-to-milligrams sodium
-     * conversion) is unit testable.</p>
+     * <p>Open Food Facts is crowd-sourced and contains per-pack figures mistakenly entered
+     * into per-100g fields. Without this check the app happily displayed 2250 kcal/100g.</p>
+     */
+    static boolean isPlausible(HealthScoreCalculator.Nutrition nutrition) {
+        if (nutrition == null) {
+            return false;
+        }
+        if (nutrition.calories <= 0 || nutrition.calories > MAX_PLAUSIBLE_CALORIES) {
+            return false;
+        }
+        if (nutrition.protein < 0 || nutrition.protein > MAX_PLAUSIBLE_GRAMS
+                || nutrition.carbs < 0 || nutrition.carbs > MAX_PLAUSIBLE_GRAMS
+                || nutrition.fat < 0 || nutrition.fat > MAX_PLAUSIBLE_GRAMS
+                || nutrition.sugar < 0 || nutrition.sugar > MAX_PLAUSIBLE_GRAMS
+                || nutrition.fiber < 0 || nutrition.fiber > MAX_PLAUSIBLE_GRAMS) {
+            return false;
+        }
+        if (nutrition.sodium < 0 || nutrition.sodium > MAX_PLAUSIBLE_SODIUM_MG) {
+            return false;
+        }
+        // Macros must roughly fit inside 100g; allow slack for rounding and water content.
+        if (nutrition.protein + nutrition.carbs + nutrition.fat > 105) {
+            return false;
+        }
+        // Sugar is a subset of carbohydrate, fibre is counted within it too.
+        if (nutrition.sugar > nutrition.carbs + 1) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * How well a search hit matches what we asked for, higher is better, 0 means irrelevant.
      *
-     * @return a resolution, or {@code null} when no hit has usable nutrition
+     * <p>A free-text search for "banana" will happily return "Blue Bird Chips" because the
+     * search engine ranks on popularity as much as on relevance. Requiring a real token
+     * overlap between the query and the hit's name or categories stops the app attaching
+     * an unrelated product's nutrition to the photo.</p>
+     */
+    static int relevanceScore(String productName, String categories, String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return 0;
+        }
+
+        String haystack = ((productName == null ? "" : productName) + " "
+                + (categories == null ? "" : categories)).toLowerCase(Locale.US);
+        if (haystack.trim().isEmpty()) {
+            return 0;
+        }
+
+        int score = 0;
+        boolean matchedAnyToken = false;
+
+        for (String token : query.toLowerCase(Locale.US).split("[^a-z0-9]+")) {
+            // Very short tokens ("of", "a") match everything and carry no signal.
+            if (token.length() < 3) {
+                continue;
+            }
+            if (haystack.contains(token)) {
+                matchedAnyToken = true;
+                score += token.length();
+                // A hit whose name (not just its category tree) mentions the term is better.
+                if (productName != null
+                        && productName.toLowerCase(Locale.US).contains(token)) {
+                    score += 5;
+                }
+            }
+        }
+
+        return matchedAnyToken ? score : 0;
+    }
+
+    /**
+     * Choose the best relevant, plausible hit from a search response.
+     *
+     * <p>Previously this took the first hit carrying an energy value, which is how a photo of
+     * bananas ended up showing branded crisps at 2250 kcal. Hits are now filtered by
+     * {@link #isPlausible} and {@link #relevanceScore}, and the highest scoring survivor
+     * wins. If nothing is both relevant and plausible we return {@code null} so the caller
+     * can ask the user instead of showing wrong numbers.</p>
+     *
+     * @return the best resolution, or {@code null} when no hit is usable
      */
     static Resolution parseOpenFoodFactsSearch(JSONObject root, String queriedName) {
         if (root == null) {
@@ -252,6 +343,9 @@ public class NutritionRepository {
             return null;
         }
 
+        Resolution best = null;
+        int bestScore = 0;
+
         for (int i = 0; i < hits.length(); i++) {
             JSONObject product = hits.optJSONObject(i);
             if (product == null) {
@@ -263,13 +357,8 @@ public class NutritionRepository {
                 continue;
             }
 
-            double calories = nutriments.optDouble("energy-kcal_100g", 0);
-            if (calories <= 0) {
-                continue; // Nothing useful without an energy value.
-            }
-
             HealthScoreCalculator.Nutrition nutrition = new HealthScoreCalculator.Nutrition();
-            nutrition.calories = calories;
+            nutrition.calories = nutriments.optDouble("energy-kcal_100g", 0);
             nutrition.protein = nutriments.optDouble("proteins_100g", 0);
             nutrition.sugar = nutriments.optDouble("sugars_100g", 0);
             nutrition.fat = nutriments.optDouble("fat_100g", 0);
@@ -278,22 +367,32 @@ public class NutritionRepository {
             // Open Food Facts reports sodium in grams; the score model expects milligrams.
             nutrition.sodium = nutriments.optDouble("sodium_100g", 0) * 1000;
 
-            String name = product.optString("product_name", "").trim();
-            if (name.isEmpty()) {
-                name = FoodLabelMapper.toDisplayCase(queriedName);
+            if (!isPlausible(nutrition)) {
+                continue;
             }
 
-            return new Resolution(
-                    name,
-                    emptyToNull(product.optString("brands", "")),
-                    firstCategory(product.optString("categories", "")),
-                    emptyToNull(product.optString("image_front_url", "")),
-                    emptyToNull(product.optString("ingredients_text", "")),
-                    nutrition,
-                    Source.OPEN_FOOD_FACTS);
+            String name = product.optString("product_name", "").trim();
+            String categories = product.optString("categories", "");
+
+            int score = relevanceScore(name, categories, queriedName);
+            if (score == 0) {
+                continue; // Unrelated product; do not attach its nutrition to this photo.
+            }
+
+            if (score > bestScore) {
+                bestScore = score;
+                best = new Resolution(
+                        name.isEmpty() ? FoodLabelMapper.toDisplayCase(queriedName) : name,
+                        emptyToNull(product.optString("brands", "")),
+                        firstCategory(categories),
+                        emptyToNull(product.optString("image_front_url", "")),
+                        emptyToNull(product.optString("ingredients_text", "")),
+                        nutrition,
+                        Source.OPEN_FOOD_FACTS);
+            }
         }
 
-        return null;
+        return best;
     }
 
     private Resolution lookupUsda(String foodName) {
@@ -384,11 +483,15 @@ public class NutritionRepository {
                 }
             }
 
-            if (!hasEnergy) {
+            if (!hasEnergy || !isPlausible(nutrition)) {
                 continue;
             }
 
             String description = food.optString("description", "").trim();
+            if (relevanceScore(description, food.optString("foodCategory", ""), queriedName) == 0) {
+                continue;
+            }
+
             return new Resolution(
                     !description.isEmpty()
                             ? FoodLabelMapper.toDisplayCase(description)

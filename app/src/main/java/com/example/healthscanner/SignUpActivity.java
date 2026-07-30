@@ -59,6 +59,7 @@ public class SignUpActivity extends AppCompatActivity {
         
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup_modern);
+        SystemBarInsets.applyTopInset(this);
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();

@@ -30,6 +30,7 @@ public class SimpleProductActivity extends AppCompatActivity {
         try {
             // Set the enhanced layout
             setContentView(R.layout.activity_enhanced_product);
+            SystemBarInsets.applyTopInset(this);
             Log.d(TAG, "Enhanced layout set successfully");
             
             // Setup toolbar

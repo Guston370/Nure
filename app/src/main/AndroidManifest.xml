@@ -24,6 +24,15 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.HealthScanner">
 
+        <!--
+          Ask Play Services to fetch the ML Kit models at install time rather than on first
+          use, so the first scan isn't blocked on a download.
+          barcode = barcode scanning, ocr = text recognition, ica = image labelling.
+        -->
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="barcode,ocr,ica" />
+
         <!-- LoginActivity as launcher -->
         <activity
             android:name=".LoginActivity"

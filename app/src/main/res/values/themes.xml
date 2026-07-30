@@ -69,11 +69,11 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 
-    <!-- Login Theme with Gradient Background -->
+    <!-- Login Theme - matches the inner app light theme -->
     <style name="Theme.HealthScanner.Login" parent="Theme.HealthScanner">
-        <item name="android:windowBackground">@drawable/health_gradient_background</item>
+        <item name="android:windowBackground">@color/md_theme_light_background</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <!-- Splash Theme -->

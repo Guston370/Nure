@@ -59,6 +59,7 @@ public class ProductSelectionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_selection);
+        SystemBarInsets.applyTopInset(this);
 
         capturedImagePath = getIntent().getStringExtra("image_path");
         if (capturedImagePath == null) {

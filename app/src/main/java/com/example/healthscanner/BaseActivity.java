@@ -59,6 +59,41 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected abstract int getCurrentNavigationItemId();
 
     // ---------------------------------------------------------------
+    //  Status bar offset
+    // ---------------------------------------------------------------
+
+    /**
+     * Whether this screen should be padded clear of the status bar.
+     *
+     * <p>Defaults to {@code true}. Full-bleed screens such as the camera scanner override
+     * this to {@code false} so the preview can fill the display.</p>
+     */
+    protected boolean shouldApplyTopInset() {
+        return true;
+    }
+
+    /**
+     * Apply the status bar inset to every screen that extends this class, so content is
+     * never drawn under the clock. Hooked into {@code setContentView} so subclasses get it
+     * for free without remembering to call anything.
+     */
+    @Override
+    public void setContentView(int layoutResID) {
+        super.setContentView(layoutResID);
+        if (shouldApplyTopInset()) {
+            SystemBarInsets.applyTopInset(this);
+        }
+    }
+
+    @Override
+    public void setContentView(View view) {
+        super.setContentView(view);
+        if (shouldApplyTopInset()) {
+            SystemBarInsets.applyTopInset(this);
+        }
+    }
+
+    // ---------------------------------------------------------------
     //  Bottom‐nav initialisation – call after setContentView()
     // ---------------------------------------------------------------
 

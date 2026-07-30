@@ -166,12 +166,13 @@ public class FoodRecognizer {
         }
 
         // Nothing specific was named. Packaged food usually has its name printed on it, so
-        // read the label before giving up. Unmapped image labels stay as fallback options.
-        List<String> fallbacks = new ArrayList<>();
-        for (FoodLabelMapper.Candidate candidate : outcome.candidates) {
-            fallbacks.add(candidate.foodName);
-        }
-        runOcr(image, outcome.looksLikeFood, fallbacks, callback);
+        // read the label before giving up.
+        //
+        // Unmapped image labels are deliberately NOT used as search terms. They are things
+        // like "Plant", "Tableware" or "Yellow", and feeding them to a product search
+        // returns an arbitrary branded item whose nutrition then gets attached to the photo.
+        // They are only kept as suggestions the user can pick from.
+        runOcr(image, outcome.looksLikeFood, new ArrayList<>(), callback);
     }
 
     private void runOcr(InputImage image, boolean looksLikeFood, List<String> fallbacks,
@@ -195,18 +196,15 @@ public class FoodRecognizer {
     }
 
     /**
-     * If image labelling produced something (just not a mapped food) use it rather than
-     * failing outright; the nutrition search can still make sense of "Snack" or "Bottle".
+     * Report failure to identify the food, carrying any suggestions forward.
+     *
+     * <p>Reporting "not identified" is the honest outcome here: the caller prompts the user
+     * for the name, which is far better than searching a meaningless term and presenting
+     * whatever nutrition comes back as fact.</p>
      */
     private void finishWithFallbacks(boolean looksLikeFood, List<String> fallbacks,
             Callback callback) {
-        if (!fallbacks.isEmpty()) {
-            List<String> alternatives = new ArrayList<>(fallbacks.subList(1, fallbacks.size()));
-            callback.onResult(new Recognition(fallbacks.get(0), 0.3f,
-                    Method.IMAGE_LABEL, alternatives, looksLikeFood));
-            return;
-        }
-        callback.onResult(Recognition.none(looksLikeFood, new ArrayList<>()));
+        callback.onResult(Recognition.none(looksLikeFood, new ArrayList<>(fallbacks)));
     }
 
     /**

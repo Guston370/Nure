@@ -79,6 +79,7 @@ public class ApiDetectionResultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_api_detection_result);
+        SystemBarInsets.applyTopInset(this);
 
         initViews();
         setupButtons();

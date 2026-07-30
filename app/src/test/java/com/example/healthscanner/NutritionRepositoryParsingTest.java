@@ -32,7 +32,7 @@ public class NutritionRepositoryParsingTest {
             + "]}";
 
     @Test
-    public void openFoodFactsHitIsMappedOntoTheNutritionModel() {
+    public void openFoodFactsHitIsMappedOntoTheNutritionModel() throws Exception {
         NutritionRepository.Resolution resolution = NutritionRepository.parseOpenFoodFactsSearch(
                 new JSONObject(OFF_RESPONSE), "pizza");
 
@@ -54,7 +54,7 @@ public class NutritionRepositoryParsingTest {
     }
 
     @Test
-    public void sodiumIsConvertedFromGramsToMilligrams() {
+    public void sodiumIsConvertedFromGramsToMilligrams() throws Exception {
         // Open Food Facts reports sodium in grams; the score model works in milligrams.
         NutritionRepository.Resolution resolution = NutritionRepository.parseOpenFoodFactsSearch(
                 new JSONObject(OFF_RESPONSE), "pizza");
@@ -63,43 +63,55 @@ public class NutritionRepositoryParsingTest {
     }
 
     @Test
-    public void hitsWithoutAnEnergyValueAreSkipped() {
+    public void hitsWithoutAnEnergyValueAreSkipped() throws Exception {
         String json = "{\"hits\": ["
-                + " {\"product_name\": \"No data\", \"nutriments\": {\"proteins_100g\": 5}},"
-                + " {\"product_name\": \"Has data\", \"nutriments\": {\"energy-kcal_100g\": 120}}"
+                + " {\"product_name\": \"Yoghurt plain\", \"nutriments\": {\"proteins_100g\": 5}},"
+                + " {\"product_name\": \"Yoghurt Greek\", \"nutriments\": {\"energy-kcal_100g\": 120}}"
                 + "]}";
 
         NutritionRepository.Resolution resolution =
-                NutritionRepository.parseOpenFoodFactsSearch(new JSONObject(json), "thing");
+                NutritionRepository.parseOpenFoodFactsSearch(new JSONObject(json), "yoghurt");
 
         assertNotNull(resolution);
-        assertEquals("Has data", resolution.foodName);
+        assertEquals("Yoghurt Greek", resolution.foodName);
     }
 
     @Test
-    public void theLegacyProductsArrayIsAlsoAccepted() {
-        String json = "{\"products\": [{\"product_name\": \"Legacy\","
+    public void theLegacyProductsArrayIsAlsoAccepted() throws Exception {
+        String json = "{\"products\": [{\"product_name\": \"Oat biscuits\","
                 + " \"nutriments\": {\"energy-kcal_100g\": 200}}]}";
 
         NutritionRepository.Resolution resolution =
-                NutritionRepository.parseOpenFoodFactsSearch(new JSONObject(json), "thing");
+                NutritionRepository.parseOpenFoodFactsSearch(new JSONObject(json), "biscuits");
 
         assertNotNull(resolution);
-        assertEquals("Legacy", resolution.foodName);
+        assertEquals("Oat biscuits", resolution.foodName);
     }
 
     @Test
-    public void missingProductNameFallsBackToTheQuery() {
+    public void namelessHitsAreRejectedBecauseRelevanceCannotBeJudged() throws Exception {
+        // With neither a name nor categories there is nothing to match the query against, so
+        // the hit is discarded rather than presented under the searched-for name.
         String json = "{\"hits\": [{\"nutriments\": {\"energy-kcal_100g\": 200}}]}";
+
+        assertNull(NutritionRepository.parseOpenFoodFactsSearch(
+                new JSONObject(json), "french fries"));
+    }
+
+    @Test
+    public void nameIsTakenFromTheQueryWhenOnlyCategoriesMatch() throws Exception {
+        String json = "{\"hits\": [{\"product_name\": \"\", \"categories\": \"French fries\","
+                + " \"nutriments\": {\"energy-kcal_100g\": 200, \"carbohydrates_100g\": 30}}]}";
 
         NutritionRepository.Resolution resolution =
                 NutritionRepository.parseOpenFoodFactsSearch(new JSONObject(json), "french fries");
 
+        assertNotNull(resolution);
         assertEquals("French Fries", resolution.foodName);
     }
 
     @Test
-    public void emptyOrUnusableResponsesReturnNull() {
+    public void emptyOrUnusableResponsesReturnNull() throws Exception {
         assertNull(NutritionRepository.parseOpenFoodFactsSearch(null, "x"));
         assertNull(NutritionRepository.parseOpenFoodFactsSearch(new JSONObject("{}"), "x"));
         assertNull(NutritionRepository.parseOpenFoodFactsSearch(
@@ -109,7 +121,7 @@ public class NutritionRepositoryParsingTest {
     }
 
     @Test
-    public void usdaNutrientNumbersAreMappedToTheRightFields() {
+    public void usdaNutrientNumbersAreMappedToTheRightFields() throws Exception {
         String json = "{\"foods\": [{"
                 + "\"description\": \"APPLE, RAW\","
                 + "\"foodCategory\": \"Fruits\","
@@ -141,41 +153,41 @@ public class NutritionRepositoryParsingTest {
     }
 
     @Test
-    public void usdaFoodsWithoutEnergyAreSkipped() {
+    public void usdaFoodsWithoutEnergyAreSkipped() throws Exception {
         String json = "{\"foods\": ["
-                + " {\"description\": \"No energy\", \"foodNutrients\": ["
+                + " {\"description\": \"Spinach, frozen\", \"foodNutrients\": ["
                 + "   {\"nutrientNumber\": \"203\", \"value\": 5}]},"
-                + " {\"description\": \"Good\", \"foodNutrients\": ["
+                + " {\"description\": \"Spinach, raw\", \"foodNutrients\": ["
                 + "   {\"nutrientNumber\": \"208\", \"value\": 100}]}"
                 + "]}";
 
         NutritionRepository.Resolution resolution =
-                NutritionRepository.parseUsdaSearch(new JSONObject(json), "x");
+                NutritionRepository.parseUsdaSearch(new JSONObject(json), "spinach");
 
-        assertEquals("Good", resolution.foodName);
+        assertEquals("Spinach, Raw", resolution.foodName);
     }
 
     @Test
-    public void usdaLegacyNumberFieldIsAlsoRead() {
-        String json = "{\"foods\": [{\"description\": \"Legacy\", \"foodNutrients\": ["
+    public void usdaLegacyNumberFieldIsAlsoRead() throws Exception {
+        String json = "{\"foods\": [{\"description\": \"Lentils\", \"foodNutrients\": ["
                 + " {\"number\": \"208\", \"value\": 90}]}]}";
 
         NutritionRepository.Resolution resolution =
-                NutritionRepository.parseUsdaSearch(new JSONObject(json), "x");
+                NutritionRepository.parseUsdaSearch(new JSONObject(json), "lentils");
 
         assertNotNull(resolution);
         assertEquals(90, resolution.nutrition.calories, DELTA);
     }
 
     @Test
-    public void emptyUsdaResponsesReturnNull() {
+    public void emptyUsdaResponsesReturnNull() throws Exception {
         assertNull(NutritionRepository.parseUsdaSearch(null, "x"));
         assertNull(NutritionRepository.parseUsdaSearch(new JSONObject("{}"), "x"));
         assertNull(NutritionRepository.parseUsdaSearch(new JSONObject("{\"foods\": []}"), "x"));
     }
 
     @Test
-    public void resolvedNutritionFeedsTheSharedHealthScore() {
+    public void resolvedNutritionFeedsTheSharedHealthScore() throws Exception {
         NutritionRepository.Resolution resolution = NutritionRepository.parseOpenFoodFactsSearch(
                 new JSONObject(OFF_RESPONSE), "pizza");
 
@@ -185,7 +197,7 @@ public class NutritionRepositoryParsingTest {
     }
 
     @Test
-    public void meatAndFishAreClassifiedNonVegetarian() {
+    public void meatAndFishAreClassifiedNonVegetarian() throws Exception {
         assertFalse(NutritionRepository.classifyDiet("butter chicken", null).vegetarian);
         assertFalse(NutritionRepository.classifyDiet("Fish Curry", null).vegetarian);
         assertFalse(NutritionRepository.classifyDiet("cake", "flour, gelatin, sugar").vegetarian);
@@ -193,7 +205,7 @@ public class NutritionRepositoryParsingTest {
     }
 
     @Test
-    public void dairyIsVegetarianButNotVegan() {
+    public void dairyIsVegetarianButNotVegan() throws Exception {
         NutritionRepository.DietInfo paneer = NutritionRepository.classifyDiet("paneer tikka", null);
 
         assertTrue(paneer.vegetarian);
@@ -201,7 +213,7 @@ public class NutritionRepositoryParsingTest {
     }
 
     @Test
-    public void dairyInIngredientsIsDetectedEvenWhenTheNameIsNeutral() {
+    public void dairyInIngredientsIsDetectedEvenWhenTheNameIsNeutral() throws Exception {
         NutritionRepository.DietInfo resolution =
                 NutritionRepository.classifyDiet("pizza", "wheat flour, tomato, mozzarella cheese");
 
@@ -210,7 +222,7 @@ public class NutritionRepositoryParsingTest {
     }
 
     @Test
-    public void plantFoodsAreVegan() {
+    public void plantFoodsAreVegan() throws Exception {
         NutritionRepository.DietInfo apple = NutritionRepository.classifyDiet("apple", "apple");
 
         assertTrue(apple.vegetarian);
@@ -218,7 +230,7 @@ public class NutritionRepositoryParsingTest {
     }
 
     @Test
-    public void unknownFoodsDefaultToVegetarian() {
+    public void unknownFoodsDefaultToVegetarian() throws Exception {
         // No evidence either way: stay conservative rather than guessing non-vegetarian.
         NutritionRepository.DietInfo unknown = NutritionRepository.classifyDiet(null, null);
 
@@ -226,7 +238,7 @@ public class NutritionRepositoryParsingTest {
     }
 
     @Test
-    public void notFoundResolutionsReportNoNutrition() {
+    public void notFoundResolutionsReportNoNutrition() throws Exception {
         NutritionRepository.Resolution notFound =
                 NutritionRepository.Resolution.notFound("mystery dish");
 

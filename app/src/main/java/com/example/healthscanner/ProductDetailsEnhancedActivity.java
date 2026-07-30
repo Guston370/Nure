@@ -77,6 +77,7 @@ public class ProductDetailsEnhancedActivity extends AppCompatActivity {
         
         try {
             setContentView(R.layout.activity_product_details_enhanced);
+            SystemBarInsets.applyTopInset(this);
             Log.d(TAG, "Enhanced layout set successfully");
             
             // Scan history must exist before the buttons that read favourite state.

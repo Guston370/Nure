@@ -692,6 +692,12 @@ public class VerticalScannerActivity extends BaseActivity {
         return R.id.nav_scan;
     }
 
+    /** The camera preview is full-bleed by design, so it must not be inset. */
+    @Override
+    protected boolean shouldApplyTopInset() {
+        return false;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
