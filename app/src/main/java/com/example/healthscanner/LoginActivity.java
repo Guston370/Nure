@@ -19,7 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.button.MaterialButton;
+import android.widget.TextView;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
@@ -42,7 +42,8 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputLayout tilEmail, tilPassword;
     private TextInputEditText etEmail, etPassword;
     private MaterialCheckBox cbRememberMe;
-    private MaterialButton btnLogin, btnGoogleSignIn, btnSignup, btnForgotPassword;
+    private View btnLogin, btnGoogleSignIn;
+    private TextView btnSignup, btnForgotPassword;
     private CircularProgressIndicator progressLogin;
 
     // Firebase
@@ -1431,12 +1432,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setLoginLoading(boolean loading) {
-        if (loading) {
-            btnLogin.setEnabled(false);
-            progressLogin.setVisibility(View.VISIBLE);
-        } else {
-            btnLogin.setEnabled(true);
-            progressLogin.setVisibility(View.GONE);
+        if (btnLogin != null) {
+            btnLogin.setAlpha(loading ? 0.6f : 1.0f);
+            btnLogin.setClickable(!loading);
+        }
+        if (progressLogin != null) {
+            progressLogin.setVisibility(loading ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -1447,48 +1448,17 @@ public class LoginActivity extends AppCompatActivity {
     private void setGoogleSignInLoading(boolean loading) {
         runOnUiThread(() -> {
             try {
-                if (loading) {
-                    // Disable button and show loading text
-                    btnGoogleSignIn.setEnabled(false);
-                    btnGoogleSignIn.setText("Signing in with Google...");
-                    btnGoogleSignIn.setIcon(null); // Remove Google icon during loading
-                    
-                    // Show progress indicator
-                    if (progressLogin != null) {
-                        progressLogin.setVisibility(View.VISIBLE);
-                    }
-                    
-                    // Disable other buttons during Google Sign-In
-                    if (btnLogin != null) btnLogin.setEnabled(false);
-                    if (btnSignup != null) btnSignup.setEnabled(false);
-                    if (btnForgotPassword != null) btnForgotPassword.setEnabled(false);
-                    
-                    Log.d(TAG, "Google Sign-In loading state: ON");
-                    
-                } else {
-                    // Re-enable button and restore original text
-                    btnGoogleSignIn.setEnabled(true);
-                    btnGoogleSignIn.setText("Continue with Google");
-                    
-                    // Restore Google icon
-                    try {
-                        btnGoogleSignIn.setIcon(getDrawable(R.drawable.ic_google));
-                    } catch (Exception e) {
-                        Log.w(TAG, "Could not restore Google icon", e);
-                    }
-                    
-                    // Hide progress indicator
-                    if (progressLogin != null) {
-                        progressLogin.setVisibility(View.GONE);
-                    }
-                    
-                    // Re-enable other buttons
-                    if (btnLogin != null) btnLogin.setEnabled(true);
-                    if (btnSignup != null) btnSignup.setEnabled(true);
-                    if (btnForgotPassword != null) btnForgotPassword.setEnabled(true);
-                    
-                    Log.d(TAG, "Google Sign-In loading state: OFF");
+                if (btnGoogleSignIn != null) {
+                    btnGoogleSignIn.setAlpha(loading ? 0.6f : 1.0f);
+                    btnGoogleSignIn.setClickable(!loading);
                 }
+                if (btnLogin != null) {
+                    btnLogin.setAlpha(loading ? 0.6f : 1.0f);
+                    btnLogin.setClickable(!loading);
+                }
+                if (btnSignup != null) btnSignup.setEnabled(!loading);
+                if (btnForgotPassword != null) btnForgotPassword.setEnabled(!loading);
+                Log.d(TAG, "Google Sign-In loading state: " + (loading ? "ON" : "OFF"));
             } catch (Exception e) {
                 Log.e(TAG, "Error updating Google Sign-In loading state", e);
             }
