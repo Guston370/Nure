@@ -1,22 +1,38 @@
 package com.example.healthscanner;
 
+import android.Manifest;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import android.widget.LinearLayout;
 
+import com.example.healthscanner.database.ScanHistoryStore;
+import com.example.healthscanner.models.Scan;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /**
  * Settings Activity for app configuration and user preferences
@@ -25,7 +41,11 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 public class SettingsActivity extends BaseActivity {
 
     private static final String TAG = "SettingsActivity";
-    private static final String PREFS_NAME = "HealthScannerSettings";
+    /**
+     * Shared with {@link DarkModeManager} and the rest of the app. This screen previously
+     * used its own preferences file, so the dark mode toggle here never affected the theme.
+     */
+    private static final String PREFS_NAME = "HealthScannerPrefs";
     private static final String KEY_NOTIFICATIONS = "notifications_enabled";
     private static final String KEY_DARK_MODE = "dark_mode_enabled";
 
@@ -39,22 +59,35 @@ public class SettingsActivity extends BaseActivity {
     private View darkModeCard;
     private View privacyPolicyCard;
     private View exportHistoryCard;
+    private View clearDataCard;
     private View logoutCard;
 
     // Switches
     private SwitchMaterial notificationSwitch;
     private SwitchMaterial darkModeSwitch;
 
-    // Auth Manager
+    // Managers
     private AuthManager authManager;
+    private DarkModeManager darkModeManager;
+    private DataResetManager dataResetManager;
+    private ScanHistoryStore scanHistoryStore;
+
+    /** Set while {@link #loadSettings()} is populating switches, to suppress listeners. */
+    private boolean isBindingSettings;
+
+    private ActivityResultLauncher<String> notificationPermissionLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings_enhanced);
 
-        // Initialize AuthManager
+        // Initialize managers
         authManager = AuthManager.getInstance(this);
+        darkModeManager = DarkModeManager.getInstance(this);
+        dataResetManager = DataResetManager.getInstance(this);
+        scanHistoryStore = ScanHistoryStore.getInstance(this);
+        registerNotificationPermissionLauncher();
 
         // Check authentication
         if (!authManager.isUserAuthenticated()) {
@@ -80,6 +113,7 @@ public class SettingsActivity extends BaseActivity {
         darkModeCard = findViewById(R.id.darkModeCard);
         privacyPolicyCard = findViewById(R.id.privacyPolicyCard);
         exportHistoryCard = findViewById(R.id.exportHistoryCard);
+        clearDataCard = findViewById(R.id.clearDataCard);
         logoutCard = findViewById(R.id.logoutCard);
 
         // Switches
@@ -107,8 +141,9 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void animateCardsSequentially() {
-        View[] cards = { notificationsCard, darkModeCard, privacyPolicyCard, exportHistoryCard, logoutCard };
-        int[] delays = { 400, 500, 600, 700, 800 };
+        View[] cards = { notificationsCard, darkModeCard, privacyPolicyCard, exportHistoryCard,
+                clearDataCard, logoutCard };
+        int[] delays = { 400, 500, 600, 700, 800, 900 };
 
         for (int i = 0; i < cards.length; i++) {
             if (cards[i] != null) {
@@ -176,6 +211,14 @@ public class SettingsActivity extends BaseActivity {
             });
         }
 
+        // Clear scan history card click
+        if (clearDataCard != null) {
+            clearDataCard.setOnClickListener(v -> {
+                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_bounce));
+                showClearDataConfirmation();
+            });
+        }
+
         // Logout card click
         if (logoutCard != null) {
             logoutCard.setOnClickListener(v -> {
@@ -192,53 +235,100 @@ public class SettingsActivity extends BaseActivity {
         // Notification switch
         if (notificationSwitch != null) {
             notificationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isBindingSettings) {
+                    return;
+                }
                 buttonView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_bounce));
-                saveNotificationSetting(isChecked);
 
-                String message = isChecked ? "Notifications enabled" : "Notifications disabled";
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                if (isChecked && !hasNotificationPermission()) {
+                    // Android 13+ needs runtime consent before we can post health tips.
+                    requestNotificationPermission();
+                    return;
+                }
+
+                saveNotificationSetting(isChecked);
+                Toast.makeText(this, isChecked ? "Notifications enabled" : "Notifications disabled",
+                        Toast.LENGTH_SHORT).show();
             });
         }
 
         // Dark mode switch
         if (darkModeSwitch != null) {
             darkModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isBindingSettings) {
+                    return;
+                }
                 buttonView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_bounce));
-                saveDarkModeSetting(isChecked);
 
-                String message = isChecked ? "Dark mode enabled" : "Dark mode disabled";
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-
-                // Note: In a full implementation, you'd restart the activity or apply theme
-                // changes
+                // DarkModeManager persists the flag and applies the night mode immediately,
+                // which recreates this activity with the new theme.
+                darkModeManager.toggleDarkMode(isChecked);
             });
+        }
+    }
+
+    /**
+     * Register the POST_NOTIFICATIONS permission request. Must happen in {@code onCreate}.
+     */
+    private void registerNotificationPermissionLauncher() {
+        notificationPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                granted -> {
+                    saveNotificationSetting(granted);
+                    if (granted) {
+                        Toast.makeText(this, "Notifications enabled", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Reflect the denial in the UI rather than leaving the switch on.
+                        isBindingSettings = true;
+                        if (notificationSwitch != null) {
+                            notificationSwitch.setChecked(false);
+                        }
+                        isBindingSettings = false;
+                        Toast.makeText(this, R.string.settings_notifications_denied,
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    /** Below Android 13 notifications need no runtime permission. */
+    private boolean hasNotificationPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return true;
+        }
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && notificationPermissionLauncher != null) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
         }
     }
 
     private void loadSettings() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
-        // Load notification setting
-        boolean notificationsEnabled = prefs.getBoolean(KEY_NOTIFICATIONS, true);
+        // Suppress the listeners while binding so restoring state isn't treated as a toggle.
+        isBindingSettings = true;
+
         if (notificationSwitch != null) {
-            notificationSwitch.setChecked(notificationsEnabled);
+            boolean enabled = prefs.getBoolean(KEY_NOTIFICATIONS, true) && hasNotificationPermission();
+            notificationSwitch.setChecked(enabled);
         }
 
-        // Load dark mode setting
-        boolean darkModeEnabled = prefs.getBoolean(KEY_DARK_MODE, false);
         if (darkModeSwitch != null) {
-            darkModeSwitch.setChecked(darkModeEnabled);
+            darkModeSwitch.setChecked(darkModeManager.isDarkModeEnabled());
         }
+
+        isBindingSettings = false;
     }
 
     private void saveNotificationSetting(boolean enabled) {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        prefs.edit().putBoolean(KEY_NOTIFICATIONS, enabled).apply();
-    }
-
-    private void saveDarkModeSetting(boolean enabled) {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        prefs.edit().putBoolean(KEY_DARK_MODE, enabled).apply();
+        getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .edit()
+                .putBoolean(KEY_NOTIFICATIONS, enabled)
+                .apply();
     }
 
     private void showHelpDialog() {
@@ -250,11 +340,31 @@ public class SettingsActivity extends BaseActivity {
                 "• Track your health journey with statistics\n\n" +
                 "For more support, contact us through the app.");
         builder.setPositiveButton("Got it", null);
-        builder.setNeutralButton("Contact Support", (dialog, which) -> {
-            // Handle contact support
-            Toast.makeText(this, "Contact support feature coming soon!", Toast.LENGTH_SHORT).show();
-        });
+        builder.setNeutralButton("Contact Support", (dialog, which) -> contactSupport());
         builder.show();
+    }
+
+    /**
+     * Open the user's mail app pre-filled with a support request.
+     *
+     * <p>Uses the {@code mailto:} scheme so only email apps can handle the intent.</p>
+     */
+    private void contactSupport() {
+        String body = "\n\n---\n"
+                + "App version: 1.0.0\n"
+                + "Android: " + Build.VERSION.RELEASE + " (API " + Build.VERSION.SDK_INT + ")\n"
+                + "Device: " + Build.MANUFACTURER + " " + Build.MODEL;
+
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:" + getString(R.string.settings_support_email)));
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.settings_support_subject));
+        intent.putExtra(Intent.EXTRA_TEXT, body);
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, R.string.settings_no_email_app, Toast.LENGTH_LONG).show();
+        }
     }
 
     private void openPrivacyPolicy() {
@@ -278,26 +388,97 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void exportScanHistory() {
-        // Show progress and simulate export
+        List<Scan> scans = scanHistoryStore.getScans();
+
+        if (scans.isEmpty()) {
+            Toast.makeText(this, R.string.settings_export_empty, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
         builder.setTitle("Export Scan History");
-        builder.setMessage("Export your scan history as a CSV file?\n\n" +
+        builder.setMessage("Export " + scans.size() + " scan" + (scans.size() == 1 ? "" : "s")
+                + " as a CSV file?\n\n" +
                 "This will include:\n" +
                 "• Product names and brands\n" +
                 "• Scan dates and times\n" +
                 "• Nutrition information\n" +
                 "• Health scores");
-        builder.setPositiveButton("Export", (dialog, which) -> {
-            // Simulate export process
-            Toast.makeText(this, "Exporting scan history...", Toast.LENGTH_SHORT).show();
-
-            // In a real app, this would generate and save a CSV file
-            new Handler().postDelayed(() -> {
-                Toast.makeText(this, "Export completed! Check your Downloads folder.", Toast.LENGTH_LONG).show();
-            }, 2000);
-        });
+        builder.setPositiveButton("Export", (dialog, which) -> writeAndShareCsv(scans));
         builder.setNegativeButton("Cancel", null);
         builder.show();
+    }
+
+    /**
+     * Write the CSV to app-private cache storage and hand it to the share sheet.
+     *
+     * <p>Cache + {@link FileProvider} avoids needing storage permissions on any API level,
+     * and lets the user pick where the file ends up (Drive, email, Files, ...).</p>
+     */
+    private void writeAndShareCsv(List<Scan> scans) {
+        try {
+            File exportDir = new File(getCacheDir(), "exports");
+            if (!exportDir.exists() && !exportDir.mkdirs()) {
+                throw new IOException("Could not create export directory");
+            }
+
+            File csvFile = new File(exportDir, ScanCsvExporter.suggestedFileName(System.currentTimeMillis()));
+            try (FileOutputStream out = new FileOutputStream(csvFile)) {
+                out.write(ScanCsvExporter.toCsv(scans).getBytes(StandardCharsets.UTF_8));
+            }
+
+            Uri uri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", csvFile);
+
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/csv");
+            shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Nure scan history");
+            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            startActivity(Intent.createChooser(shareIntent, "Export scan history"));
+            Log.d(TAG, "Exported " + scans.size() + " scans to " + csvFile.getAbsolutePath());
+
+        } catch (Exception e) {
+            Log.e(TAG, "CSV export failed: " + e.getMessage(), e);
+            Toast.makeText(this, R.string.settings_export_failed, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Confirm before clearing scan history. This is destructive and not recoverable, so the
+     * dialog spells out exactly what will be removed.
+     */
+    private void showClearDataConfirmation() {
+        DataResetManager.ResetStats stats = dataResetManager.getResetStats();
+
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
+        builder.setTitle(R.string.settings_clear_data);
+        builder.setMessage("This permanently deletes:\n\n" +
+                "• " + stats.totalScans + " scan" + (stats.totalScans == 1 ? "" : "s") + "\n" +
+                "• " + stats.savedItems + " saved product" + (stats.savedItems == 1 ? "" : "s") + "\n" +
+                "• Your statistics and averages\n\n" +
+                "Your profile, health concerns and dietary preferences are kept. " +
+                "This cannot be undone.");
+        builder.setPositiveButton("Delete", (dialog, which) -> clearScanData());
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
+    }
+
+    private void clearScanData() {
+        dataResetManager.clearScanDataOnly(new DataResetManager.ResetCallback() {
+            @Override
+            public void onSuccess() {
+                runOnUiThread(() -> Toast.makeText(SettingsActivity.this,
+                        "Scan history cleared", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Log.e(TAG, "Failed to clear scan data: " + error);
+                runOnUiThread(() -> Toast.makeText(SettingsActivity.this,
+                        "Could not clear scan history", Toast.LENGTH_LONG).show());
+            }
+        });
     }
 
     private void showLogoutConfirmation() {

@@ -1,139 +1,105 @@
 package com.example.healthscanner;
 
 import android.animation.ValueAnimator;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.example.healthscanner.database.FirebaseScanManager;
+import com.example.healthscanner.database.ScanHistoryStore;
 import com.example.healthscanner.models.Scan;
-import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /**
- * Enhanced Analytics Activity with Firebase data and advanced charts
- * Shows comprehensive statistics with animated charts and real data
+ * Analytics screen.
+ *
+ * <p>Numbers are derived by {@link ScanAnalyzer} from the user's scans. The local history is
+ * rendered first so the screen is useful offline and on first paint, then the Firestore
+ * {@code scans} collection is queried and, when it holds more history than the device does,
+ * the screen re-renders from it.</p>
  */
 public class AnalyticsActivity extends BaseActivity {
 
     private static final String TAG = "AnalyticsActivity";
 
-    // UI Elements
-    private TextView analyticsTitle;
-    private TextView analyticsSubtitle;
-    private View refreshIcon;
+    /** Daily scan target shown in the goal strip. */
+    private static final int DAILY_GOAL = 5;
 
-    // Statistics Cards
+    private static final int TREND_BAR_MAX_HEIGHT_DP = 110;
+    private static final int TREND_BAR_MIN_HEIGHT_DP = 6;
+
+    // Header
+    private TextView analyticsTitle;
+    private View refreshIcon;
+    private View backButton;
+
+    // Metric cards
     private View totalScansCard;
     private View weeklyScansCard;
-    private View monthlyScansCard;
-    private View avgHealthScoreCard;
+    private View healthScoreCard;
     private View avgCaloriesCard;
-    private View avgTimeBetweenCard;
+    private View categoriesCard;
+    private View trendsCard;
+    private View insightsCard;
 
-    // Data Elements
+    // Metric values
     private TextView totalScansNumber;
     private TextView weeklyScansNumber;
-    private TextView monthlyScansNumber;
     private TextView avgHealthScoreNumber;
     private TextView avgCaloriesNumber;
-    private TextView avgTimeBetweenNumber;
     private ProgressBar healthScoreProgress;
+
+    // Breakdown + trend + insight
+    private LinearLayout categoryBarsContainer;
+    private TextView categoriesEmptyText;
+    private LinearLayout trendBarsContainer;
+    private LinearLayout trendLabelsContainer;
     private TextView personalInsightText;
+    private TextView goalProgressText;
 
-    // Charts
-    private PieChart categoryPieChart;
-    private BarChart scanFrequencyChart;
-    private LineChart trendsLineChart;
-
-    // Firebase managers
     private AuthManager authManager;
     private FirebaseScanManager scanManager;
+    private ScanHistoryStore scanHistoryStore;
+
+    /** Number of scans the currently rendered stats were built from. */
+    private int renderedScanCount = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_analytics_enhanced);
 
-        // Initialize managers
         authManager = AuthManager.getInstance(this);
         scanManager = FirebaseScanManager.getInstance();
+        scanHistoryStore = ScanHistoryStore.getInstance(this);
 
-        // Simple authentication check - trust navigation from authenticated home page
+        // Trust navigation from the authenticated home screen; only guard direct launches.
         boolean fromNavigation = getIntent().getBooleanExtra("from_navigation", false);
         if (!fromNavigation && !authManager.isUserAuthenticated()) {
-            // Only check auth for direct launches, not navigation
             authManager.navigateToLogin(this);
             return;
         }
 
         initializeViews();
         initializeBottomNavigation();
-        setupCharts();
         setupEntranceAnimations();
         setupClickListeners();
-        loadRealAnalyticsData();
+        loadAnalytics(false);
     }
 
-    private void initializeViews() {
-        // Header elements
-        analyticsTitle = findViewById(R.id.analyticsTitle);
-        analyticsSubtitle = findViewById(R.id.analyticsSubtitle);
-        refreshIcon = findViewById(R.id.refreshIcon); // FrameLayout in XML, use View
-
-        // Statistics Cards (using existing IDs for now)
-        totalScansCard = findViewById(R.id.dailyCaloriesCard); // Temporary mapping
-        weeklyScansCard = findViewById(R.id.healthScoreCard); // Temporary mapping
-        monthlyScansCard = findViewById(R.id.categoriesCard); // Temporary mapping
-        avgHealthScoreCard = findViewById(R.id.trendsCard); // Temporary mapping
-        avgCaloriesCard = findViewById(R.id.insightsCard); // Temporary mapping
-        // avgTimeBetweenCard = null; // Not in current layout
-
-        // Data elements (using existing IDs for now)
-        totalScansNumber = findViewById(R.id.dailyCaloriesNumber); // Temporary mapping
-        // weeklyScansNumber = null; // Not in current layout
-        // monthlyScansNumber = null; // Not in current layout
-        avgHealthScoreNumber = findViewById(R.id.healthScoreNumber); // Temporary mapping
-        // avgCaloriesNumber = null; // Not in current layout
-        // avgTimeBetweenNumber = null; // Not in current layout
-        healthScoreProgress = findViewById(R.id.healthScoreProgress);
-        personalInsightText = findViewById(R.id.personalInsightText);
-
-        // Charts (not in current layout - will be null)
-        // categoryPieChart = null;
-        // scanFrequencyChart = null;
-        // trendsLineChart = null;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadAnalytics(false);
     }
 
     @Override
@@ -141,655 +107,270 @@ public class AnalyticsActivity extends BaseActivity {
         return R.id.nav_stats;
     }
 
-    private void setupEntranceAnimations() {
-        // Header title animation
-        if (analyticsTitle != null) {
-            analyticsTitle.postDelayed(() -> {
-                analyticsTitle.setAlpha(1f);
-                analyticsTitle.setTranslationY(0f);
-                analyticsTitle.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in_slide_down));
-            }, 300);
-        }
+    private void initializeViews() {
+        analyticsTitle = findViewById(R.id.analyticsTitle);
+        refreshIcon = findViewById(R.id.refreshIcon);
+        backButton = findViewById(R.id.backButton);
 
-        // Staggered card animations
-        animateCardsSequentially();
+        totalScansCard = findViewById(R.id.totalScansCard);
+        weeklyScansCard = findViewById(R.id.weeklyScansCard);
+        healthScoreCard = findViewById(R.id.healthScoreCard);
+        avgCaloriesCard = findViewById(R.id.avgCaloriesCard);
+        categoriesCard = findViewById(R.id.categoriesCard);
+        trendsCard = findViewById(R.id.trendsCard);
+        insightsCard = findViewById(R.id.insightsCard);
+
+        totalScansNumber = findViewById(R.id.totalScansNumber);
+        weeklyScansNumber = findViewById(R.id.weeklyScansNumber);
+        avgHealthScoreNumber = findViewById(R.id.healthScoreNumber);
+        avgCaloriesNumber = findViewById(R.id.avgCaloriesNumber);
+        healthScoreProgress = findViewById(R.id.healthScoreProgress);
+
+        categoryBarsContainer = findViewById(R.id.categoryBarsContainer);
+        categoriesEmptyText = findViewById(R.id.categoriesEmptyText);
+        trendBarsContainer = findViewById(R.id.trendBarsContainer);
+        trendLabelsContainer = findViewById(R.id.trendLabelsContainer);
+        personalInsightText = findViewById(R.id.personalInsightText);
+        goalProgressText = findViewById(R.id.goalProgressText);
     }
 
-    private void animateCardsSequentially() {
-        View[] cards = { totalScansCard, weeklyScansCard, monthlyScansCard, avgHealthScoreCard, avgCaloriesCard,
-                avgTimeBetweenCard };
-        int[] delays = { 400, 500, 600, 700, 800 };
+    private void setupEntranceAnimations() {
+        if (analyticsTitle != null) {
+            analyticsTitle.postDelayed(
+                    () -> analyticsTitle.startAnimation(
+                            AnimationUtils.loadAnimation(this, R.anim.fade_in_slide_down)),
+                    150);
+        }
 
+        View[] cards = { totalScansCard, healthScoreCard, weeklyScansCard, avgCaloriesCard,
+                categoriesCard, trendsCard, insightsCard };
         for (int i = 0; i < cards.length; i++) {
-            if (cards[i] != null) {
-                final View card = cards[i];
-                final boolean isInsights = (i == cards.length - 1);
-
-                card.postDelayed(() -> {
-                    if (isInsights) {
-                        // Insights card gets fade animation
-                        card.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
-                    } else {
-                        // Other cards get slide up animation
-                        card.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_up));
-                    }
-                }, delays[i]);
+            final View card = cards[i];
+            if (card == null) {
+                continue;
             }
+            final boolean isLast = i == cards.length - 1;
+            card.postDelayed(() -> card.startAnimation(AnimationUtils.loadAnimation(
+                    this, isLast ? R.anim.fade_in : R.anim.slide_up)), 250 + i * 80L);
         }
     }
 
     private void setupClickListeners() {
-        // Refresh icon click
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> finish());
+        }
+
         if (refreshIcon != null) {
             refreshIcon.setOnClickListener(v -> {
-                // Rotate animation for refresh
-                v.animate()
-                        .rotation(v.getRotation() + 360f)
-                        .setDuration(500)
-                        .start();
-
-                // Scale bounce animation
+                v.animate().rotation(v.getRotation() + 360f).setDuration(500).start();
                 v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_bounce));
-
-                // Refresh data
-                refreshAnalyticsData();
+                loadAnalytics(true);
             });
         }
-
-        // Card click listeners for interactive feedback
-        setupCardClickListeners();
-    }
-
-    private void setupCardClickListeners() {
-        // Total scans card click
-        if (totalScansCard != null) {
-            totalScansCard.setOnClickListener(v -> {
-                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_bounce));
-                // Handle total scans detail view
-            });
-        }
-
-        // Weekly scans card click
-        if (weeklyScansCard != null) {
-            weeklyScansCard.setOnClickListener(v -> {
-                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_bounce));
-                // Handle weekly scans detail view
-            });
-        }
-
-        // Monthly scans card click
-        if (monthlyScansCard != null) {
-            monthlyScansCard.setOnClickListener(v -> {
-                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_bounce));
-                // Handle monthly scans detail view
-            });
-        }
-
-        // Average health score card click
-        if (avgHealthScoreCard != null) {
-            avgHealthScoreCard.setOnClickListener(v -> {
-                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_bounce));
-                // Handle health score detail view
-            });
-        }
-
-        // Average calories card click
-        if (avgCaloriesCard != null) {
-            avgCaloriesCard.setOnClickListener(v -> {
-                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_bounce));
-                // Handle calories detail view
-            });
-        }
-    }
-
-    private void loadAnalyticsData() {
-        // Load REAL user analytics data from SharedPreferences and Firebase
-        loadRealUserAnalytics();
-    }
-
-    private void loadRealUserAnalytics() {
-        try {
-            android.content.SharedPreferences prefs = getSharedPreferences("HealthScannerPrefs", MODE_PRIVATE);
-
-            // Get real user scan history
-            String scanHistoryJson = prefs.getString("recent_scans", "[]");
-            org.json.JSONArray scanArray = new org.json.JSONArray(scanHistoryJson);
-
-            // Calculate real statistics
-            int totalScans = scanArray.length();
-            double totalCalories = 0;
-            double totalHealthScore = 0;
-            int validScans = 0;
-
-            for (int i = 0; i < scanArray.length(); i++) {
-                org.json.JSONObject scan = scanArray.getJSONObject(i);
-                if (scan.has("calories")) {
-                    totalCalories += scan.getDouble("calories");
-                    validScans++;
-                }
-                if (scan.has("healthScore")) {
-                    totalHealthScore += scan.getDouble("healthScore");
-                }
-            }
-
-            // Calculate averages
-            double avgCalories = validScans > 0 ? totalCalories / validScans : 0;
-            double avgHealthScore = totalScans > 0 ? totalHealthScore / totalScans : 0;
-
-            // Animate real data
-            animateCaloriesCounter((int) avgCalories);
-            animateHealthScore(avgHealthScore);
-
-            // Load real insights
-            loadRealPersonalInsights(totalScans, avgHealthScore, avgCalories);
-
-            Log.d(TAG, "Real analytics loaded - Scans: " + totalScans + ", Avg Calories: " + avgCalories
-                    + ", Avg Health Score: " + avgHealthScore);
-
-        } catch (Exception e) {
-            Log.e(TAG, "Error loading real analytics data", e);
-            // Fallback to show empty state
-            showEmptyAnalytics();
-        }
-    }
-
-    private void animateCaloriesCounter(int targetCalories) {
-        if (avgCaloriesNumber != null) {
-            if (targetCalories == 0) {
-                avgCaloriesNumber.setText("--");
-                return;
-            }
-
-            ValueAnimator animator = ValueAnimator.ofInt(0, targetCalories);
-            animator.setDuration(2000);
-            animator.addUpdateListener(animation -> {
-                int value = (int) animation.getAnimatedValue();
-                avgCaloriesNumber.setText(String.format("%,d", value));
-            });
-
-            // Start animation after card appears
-            new Handler().postDelayed(() -> animator.start(), 600);
-        }
-    }
-
-    private void animateHealthScore(double targetScore) {
-        if (avgHealthScoreNumber != null && healthScoreProgress != null) {
-            if (targetScore == 0) {
-                avgHealthScoreNumber.setText("--");
-                healthScoreProgress.setProgress(0);
-                return;
-            }
-
-            // Animate the score number (0-100 scale)
-            ValueAnimator scoreAnimator = ValueAnimator.ofFloat(0f, (float) targetScore);
-            scoreAnimator.setDuration(2000);
-            scoreAnimator.addUpdateListener(animation -> {
-                float value = (float) animation.getAnimatedValue();
-                avgHealthScoreNumber.setText(String.format("%.0f", value));
-            });
-
-            // Animate the progress bar (already 0-100 scale)
-            int progressTarget = (int) targetScore;
-            ValueAnimator progressAnimator = ValueAnimator.ofInt(0, progressTarget);
-            progressAnimator.setDuration(2000);
-            progressAnimator.addUpdateListener(animation -> {
-                int value = (int) animation.getAnimatedValue();
-                healthScoreProgress.setProgress(value);
-            });
-
-            // Start animations after card appears
-            new Handler().postDelayed(() -> {
-                scoreAnimator.start();
-                progressAnimator.start();
-            }, 700);
-        }
-    }
-
-    private void loadRealPersonalInsights(int totalScans, double avgHealthScore, double avgCalories) {
-        if (personalInsightText == null)
-            return;
-
-        StringBuilder insights = new StringBuilder();
-
-        if (totalScans == 0) {
-            insights.append(
-                    "🌟 Welcome to Health Scanner! Start scanning products to see your personalized health insights here. Your journey to healthier choices begins with your first scan!");
-        } else if (totalScans < 5) {
-            insights.append("🚀 Great start! You've scanned ").append(totalScans).append(" product")
-                    .append(totalScans > 1 ? "s" : "")
-                    .append(". Keep scanning to build your health profile and get more detailed insights!");
-        } else {
-            // Generate insights based on real data (health score is 0-100 scale)
-            if (avgHealthScore >= 70) {
-                insights.append("🌟 Excellent choices! Your average health score of ")
-                        .append(String.format("%.0f", avgHealthScore))
-                        .append("/100 shows you're making great nutritional decisions. ");
-            } else if (avgHealthScore >= 50) {
-                insights.append("👍 Good progress! Your average health score is ")
-                        .append(String.format("%.0f", avgHealthScore))
-                        .append("/100. Consider choosing more products with higher nutritional value. ");
-            } else if (avgHealthScore > 0) {
-                insights.append("💪 Room for improvement! Your average health score is ")
-                        .append(String.format("%.0f", avgHealthScore))
-                        .append("/100. Try scanning more fruits, vegetables, and whole grain products. ");
-            }
-
-            if (avgCalories > 400) {
-                insights.append("Consider choosing lower-calorie options to maintain a balanced diet. ");
-            } else if (avgCalories > 0 && avgCalories <= 200) {
-                insights.append("Great job choosing lower-calorie products! ");
-            }
-
-            insights.append("You've scanned ").append(totalScans).append(" products total. Keep it up! 🎯");
-        }
-
-        personalInsightText.setText(insights.toString());
-    }
-
-    private void showEmptyAnalytics() {
-        if (totalScansNumber != null)
-            totalScansNumber.setText("--");
-        if (weeklyScansNumber != null)
-            weeklyScansNumber.setText("--");
-        if (monthlyScansNumber != null)
-            monthlyScansNumber.setText("--");
-        if (avgHealthScoreNumber != null)
-            avgHealthScoreNumber.setText("--");
-        if (avgCaloriesNumber != null)
-            avgCaloriesNumber.setText("--");
-        if (avgTimeBetweenNumber != null)
-            avgTimeBetweenNumber.setText("--");
-        if (healthScoreProgress != null)
-            healthScoreProgress.setProgress(0);
-        if (personalInsightText != null) {
-            personalInsightText
-                    .setText("🌟 Start scanning products to see your personalized health analytics and insights!");
-        }
-    }
-
-    private void refreshAnalyticsData() {
-        // Refresh real analytics data
-        new Handler().postDelayed(() -> {
-            loadRealUserAnalytics();
-            android.widget.Toast.makeText(this, "Analytics refreshed!", android.widget.Toast.LENGTH_SHORT).show();
-        }, 1000);
     }
 
     /**
-     * Show authentication dialog for navigation context
+     * Render local history, then reconcile with Firestore.
+     *
+     * @param showFeedback whether to toast the outcome (used by the refresh button)
      */
-    private void showAuthenticationDialog() {
-        try {
-            new androidx.appcompat.app.AlertDialog.Builder(this)
-                    .setTitle("Authentication Required")
-                    .setMessage("Please sign in to access your analytics data.")
-                    .setPositiveButton("Sign In", (dialog, which) -> {
-                        authManager.navigateToLogin(this);
-                    })
-                    .setNegativeButton("Go Back", (dialog, which) -> {
-                        finish();
-                    })
-                    .setCancelable(false)
-                    .show();
-        } catch (Exception e) {
-            Log.e(TAG, "Error showing authentication dialog", e);
-            authManager.navigateToLogin(this);
-        }
-    }
+    private void loadAnalytics(boolean showFeedback) {
+        List<Scan> localScans = scanHistoryStore.getScans();
+        renderedScanCount = -1;
+        render(ScanAnalyzer.analyze(localScans), localScans.size());
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Refresh data when returning to the activity
-        loadRealAnalyticsData();
-    }
-
-    /**
-     * Load real analytics data from Firebase
-     */
-    private void loadRealAnalyticsData() {
         String userId = authManager.getCurrentUserId();
         if (userId == null || userId.isEmpty()) {
-            Log.w(TAG, "No user ID available for analytics");
-            showEmptyAnalytics();
+            Log.d(TAG, "No signed-in user, showing local analytics only");
+            if (showFeedback) {
+                Toast.makeText(this, R.string.analytics_refreshed, Toast.LENGTH_SHORT).show();
+            }
             return;
         }
 
-        Log.d(TAG, "🔥 Loading real analytics data from Firebase for user: " + userId);
-
-        // Show loading state
-        showLoadingState();
-
-        // Get comprehensive statistics from Firebase
-        scanManager.getScanStatistics(userId, new FirebaseScanManager.StatisticsCallback() {
-            @Override
-            public void onSuccess(FirebaseScanManager.ScanStatistics statistics) {
-                Log.d(TAG, "✅ Analytics data loaded successfully");
-                runOnUiThread(() -> {
-                    displayStatistics(statistics);
-                    loadWeeklyAndMonthlyData(userId);
-                    setupChartsWithData(statistics);
-                });
-            }
-
-            @Override
-            public void onFailure(String error) {
-                Log.e(TAG, "❌ Failed to load analytics data: " + error);
-                runOnUiThread(() -> {
-                    showEmptyAnalytics();
-                    android.widget.Toast.makeText(AnalyticsActivity.this,
-                            "Unable to load analytics data. Please check your connection.",
-                            android.widget.Toast.LENGTH_LONG).show();
-                });
-            }
-        });
-    }
-
-    /**
-     * Load weekly and monthly scan counts
-     */
-    private void loadWeeklyAndMonthlyData(String userId) {
-        // Get weekly scans
-        scanManager.getWeeklyScans(userId, new FirebaseScanManager.ScanListCallback() {
+        scanManager.getUserScans(userId, new FirebaseScanManager.ScanListCallback() {
             @Override
             public void onSuccess(List<Scan> scans) {
                 runOnUiThread(() -> {
-                    animateCounterValue(weeklyScansNumber, scans.size());
+                    // The device only keeps the most recent scans, so Firestore wins when it
+                    // has a longer history. Otherwise the local render already stands.
+                    if (scans.size() > renderedScanCount) {
+                        render(ScanAnalyzer.analyze(scans), scans.size());
+                    }
+                    if (showFeedback) {
+                        Toast.makeText(AnalyticsActivity.this,
+                                R.string.analytics_refreshed, Toast.LENGTH_SHORT).show();
+                    }
                 });
             }
 
             @Override
             public void onFailure(String error) {
-                Log.w(TAG, "Failed to load weekly scans: " + error);
-            }
-        });
-
-        // Get monthly scans
-        scanManager.getMonthlyScans(userId, new FirebaseScanManager.ScanListCallback() {
-            @Override
-            public void onSuccess(List<Scan> scans) {
-                runOnUiThread(() -> {
-                    animateCounterValue(monthlyScansNumber, scans.size());
-                });
-            }
-
-            @Override
-            public void onFailure(String error) {
-                Log.w(TAG, "Failed to load monthly scans: " + error);
-            }
-        });
-    }
-
-    /**
-     * Display statistics with animations
-     */
-    private void displayStatistics(FirebaseScanManager.ScanStatistics stats) {
-        // Animate total scans
-        animateCounterValue(totalScansNumber, stats.totalScans);
-
-        // Animate health score (0-100 scale)
-        if (stats.averageHealthScore > 0) {
-            animateHealthScore(stats.averageHealthScore);
-        } else {
-            if (avgHealthScoreNumber != null)
-                avgHealthScoreNumber.setText("--");
-            if (healthScoreProgress != null)
-                healthScoreProgress.setProgress(0);
-        }
-
-        // Animate average calories
-        if (stats.averageCalories > 0) {
-            animateCounterValue(avgCaloriesNumber, (int) stats.averageCalories);
-        } else {
-            if (avgCaloriesNumber != null)
-                avgCaloriesNumber.setText("--");
-        }
-
-        // Calculate and display average time between scans
-        if (avgTimeBetweenNumber != null) {
-            if (stats.averageTimeBetweenScans > 0) {
-                long hours = stats.averageTimeBetweenScans / (1000 * 60 * 60);
-                if (hours > 24) {
-                    long days = hours / 24;
-                    avgTimeBetweenNumber.setText(days + "d");
-                } else {
-                    avgTimeBetweenNumber.setText(hours + "h");
+                Log.w(TAG, "Firestore analytics unavailable, keeping local view: " + error);
+                if (showFeedback) {
+                    runOnUiThread(() -> Toast.makeText(AnalyticsActivity.this,
+                            R.string.analytics_load_failed, Toast.LENGTH_LONG).show());
                 }
-            } else {
-                avgTimeBetweenNumber.setText("--");
             }
-        }
-
-        // Generate insights
-        generateRealInsights(stats);
-    }
-
-    /**
-     * Setup charts with real data
-     */
-    private void setupChartsWithData(FirebaseScanManager.ScanStatistics stats) {
-        // Setup category pie chart
-        setupCategoryPieChart(stats.categoryBreakdown);
-
-        // Setup scan frequency chart (placeholder for now)
-        setupScanFrequencyChart();
-
-        // Setup trends line chart (placeholder for now)
-        setupTrendsLineChart();
-    }
-
-    /**
-     * Setup category breakdown pie chart
-     */
-    private void setupCategoryPieChart(Map<String, Integer> categoryData) {
-        if (categoryPieChart == null || categoryData.isEmpty()) {
-            return;
-        }
-
-        List<PieEntry> entries = new ArrayList<>();
-        int[] colors = {
-                Color.parseColor("#4CAF50"), // Food - Green
-                Color.parseColor("#FF9800"), // Cosmetics - Orange
-                Color.parseColor("#2196F3"), // Beverages - Blue
-                Color.parseColor("#9C27B0"), // Personal Care - Purple
-                Color.parseColor("#F44336"), // Other - Red
-        };
-
-        for (Map.Entry<String, Integer> entry : categoryData.entrySet()) {
-            entries.add(new PieEntry(entry.getValue(), entry.getKey()));
-        }
-
-        PieDataSet dataSet = new PieDataSet(entries, "Categories");
-        dataSet.setColors(colors);
-        dataSet.setValueTextSize(12f);
-        dataSet.setValueTextColor(Color.WHITE);
-
-        PieData data = new PieData(dataSet);
-        categoryPieChart.setData(data);
-        categoryPieChart.getDescription().setEnabled(false);
-        categoryPieChart.setDrawHoleEnabled(true);
-        categoryPieChart.setHoleColor(Color.TRANSPARENT);
-        categoryPieChart.setHoleRadius(40f);
-        categoryPieChart.setTransparentCircleRadius(45f);
-        categoryPieChart.animateY(1000);
-        categoryPieChart.invalidate();
-    }
-
-    /**
-     * Setup scan frequency bar chart
-     */
-    private void setupScanFrequencyChart() {
-        if (scanFrequencyChart == null) {
-            return;
-        }
-
-        // Placeholder data - will be enhanced with real daily scan data
-        List<BarEntry> entries = new ArrayList<>();
-        String[] days = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
-
-        for (int i = 0; i < 7; i++) {
-            entries.add(new BarEntry(i, (float) (Math.random() * 10))); // Placeholder
-        }
-
-        BarDataSet dataSet = new BarDataSet(entries, "Scans per Day");
-        dataSet.setColor(Color.parseColor("#4CAF50"));
-        dataSet.setValueTextSize(10f);
-
-        BarData data = new BarData(dataSet);
-        scanFrequencyChart.setData(data);
-
-        XAxis xAxis = scanFrequencyChart.getXAxis();
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(days));
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setGranularity(1f);
-
-        scanFrequencyChart.getDescription().setEnabled(false);
-        scanFrequencyChart.animateY(1000);
-        scanFrequencyChart.invalidate();
-    }
-
-    /**
-     * Setup trends line chart
-     */
-    private void setupTrendsLineChart() {
-        if (trendsLineChart == null) {
-            return;
-        }
-
-        // Placeholder data - will be enhanced with real trend data
-        List<Entry> entries = new ArrayList<>();
-        for (int i = 0; i < 30; i++) {
-            entries.add(new Entry(i, (float) (Math.random() * 10)));
-        }
-
-        LineDataSet dataSet = new LineDataSet(entries, "Health Score Trend");
-        dataSet.setColor(Color.parseColor("#2196F3"));
-        dataSet.setCircleColor(Color.parseColor("#2196F3"));
-        dataSet.setLineWidth(2f);
-        dataSet.setCircleRadius(3f);
-        dataSet.setDrawCircleHole(false);
-        dataSet.setValueTextSize(9f);
-        dataSet.setDrawFilled(true);
-        dataSet.setFillColor(Color.parseColor("#2196F3"));
-        dataSet.setFillAlpha(50);
-
-        LineData data = new LineData(dataSet);
-        trendsLineChart.setData(data);
-        trendsLineChart.getDescription().setEnabled(false);
-        trendsLineChart.animateX(1000);
-        trendsLineChart.invalidate();
-    }
-
-    /**
-     * Generate real insights based on statistics
-     */
-    private void generateRealInsights(FirebaseScanManager.ScanStatistics stats) {
-        if (personalInsightText == null)
-            return;
-
-        StringBuilder insights = new StringBuilder();
-
-        if (stats.totalScans == 0) {
-            insights.append(
-                    "🌟 Welcome to Health Scanner! Start scanning products to see your personalized health insights here. Your journey to healthier choices begins with your first scan!");
-        } else if (stats.totalScans < 5) {
-            insights.append("🚀 Great start! You've scanned ").append(stats.totalScans).append(" product")
-                    .append(stats.totalScans > 1 ? "s" : "")
-                    .append(". Keep scanning to build your health profile and get more detailed insights!");
-        } else {
-            // Generate insights based on real data (health score is 0-100 scale)
-            if (stats.averageHealthScore >= 70) {
-                insights.append("🌟 Excellent choices! Your average health score of ")
-                        .append(String.format("%.0f", stats.averageHealthScore))
-                        .append("/100 shows you're making great nutritional decisions. ");
-            } else if (stats.averageHealthScore >= 50) {
-                insights.append("👍 Good progress! Your average health score is ")
-                        .append(String.format("%.0f", stats.averageHealthScore))
-                        .append("/100. Consider choosing more products with higher nutritional value. ");
-            } else if (stats.averageHealthScore > 0) {
-                insights.append("💪 Room for improvement! Your average health score is ")
-                        .append(String.format("%.0f", stats.averageHealthScore))
-                        .append("/100. Try scanning more fruits, vegetables, and whole grain products. ");
-            }
-
-            if (stats.averageCalories > 400) {
-                insights.append("Consider choosing lower-calorie options to maintain a balanced diet. ");
-            } else if (stats.averageCalories > 0 && stats.averageCalories <= 200) {
-                insights.append("Great job choosing lower-calorie products! ");
-            }
-
-            // Category insights
-            if (!stats.categoryBreakdown.isEmpty()) {
-                String topCategory = stats.categoryBreakdown.entrySet().stream()
-                        .max(Map.Entry.comparingByValue())
-                        .map(Map.Entry::getKey)
-                        .orElse("products");
-                insights.append("You scan ").append(topCategory).append(" most frequently. ");
-            }
-
-            insights.append("You've scanned ").append(stats.totalScans).append(" products total. Keep it up! 🎯");
-        }
-
-        personalInsightText.setText(insights.toString());
-    }
-
-    /**
-     * Show loading state
-     */
-    private void showLoadingState() {
-        if (totalScansNumber != null)
-            totalScansNumber.setText("...");
-        if (weeklyScansNumber != null)
-            weeklyScansNumber.setText("...");
-        if (monthlyScansNumber != null)
-            monthlyScansNumber.setText("...");
-        if (avgHealthScoreNumber != null)
-            avgHealthScoreNumber.setText("...");
-        if (avgCaloriesNumber != null)
-            avgCaloriesNumber.setText("...");
-        if (avgTimeBetweenNumber != null)
-            avgTimeBetweenNumber.setText("...");
-        if (personalInsightText != null) {
-            personalInsightText.setText("📊 Loading your personalized analytics from Firebase...");
-        }
-    }
-
-    /**
-     * Animate counter values with count-up effect
-     */
-    private void animateCounterValue(TextView textView, int targetValue) {
-        if (textView == null)
-            return;
-
-        if (targetValue == 0) {
-            textView.setText("--");
-            return;
-        }
-
-        ValueAnimator animator = ValueAnimator.ofInt(0, targetValue);
-        animator.setDuration(1500);
-        animator.addUpdateListener(animation -> {
-            int value = (int) animation.getAnimatedValue();
-            textView.setText(String.valueOf(value));
         });
+    }
 
-        // Start animation after a delay for staggered effect
-        new Handler().postDelayed(() -> animator.start(), 300);
+    private void render(ScanAnalyzer.Stats stats, int sourceScanCount) {
+        renderedScanCount = sourceScanCount;
+
+        animateCounter(totalScansNumber, stats.totalScans, false);
+        animateCounter(weeklyScansNumber, stats.weeklyScans, false);
+        animateCounter(avgCaloriesNumber, (int) Math.round(stats.averageCalories), true);
+        renderHealthScore(stats.averageHealthScore);
+        renderCategories(stats);
+        renderTrend(stats);
+        renderInsight(stats);
     }
 
     /**
-     * Setup charts (initialize chart views)
+     * Count up to the target value.
+     *
+     * @param blankWhenZero show "--" instead of 0, used for averages that have no data yet
      */
-    private void setupCharts() {
-        // Initialize chart views - will be populated with data later
-        if (categoryPieChart != null) {
-            categoryPieChart.setNoDataText("Loading category data...");
+    private void animateCounter(TextView view, int target, boolean blankWhenZero) {
+        if (view == null) {
+            return;
         }
-        if (scanFrequencyChart != null) {
-            scanFrequencyChart.setNoDataText("Loading frequency data...");
+        if (target <= 0) {
+            view.setText(blankWhenZero ? "--" : "0");
+            return;
         }
-        if (trendsLineChart != null) {
-            trendsLineChart.setNoDataText("Loading trend data...");
+
+        ValueAnimator animator = ValueAnimator.ofInt(0, target);
+        animator.setDuration(900);
+        animator.addUpdateListener(animation ->
+                view.setText(String.format(Locale.getDefault(), "%,d", (int) animation.getAnimatedValue())));
+        animator.start();
+    }
+
+    private void renderHealthScore(double score) {
+        int rounded = (int) Math.round(score);
+
+        if (avgHealthScoreNumber != null) {
+            if (rounded <= 0) {
+                avgHealthScoreNumber.setText("--");
+            } else {
+                ValueAnimator animator = ValueAnimator.ofInt(0, rounded);
+                animator.setDuration(900);
+                animator.addUpdateListener(animation ->
+                        avgHealthScoreNumber.setText(String.valueOf((int) animation.getAnimatedValue())));
+                animator.start();
+            }
+        }
+
+        if (healthScoreProgress != null) {
+            ValueAnimator progressAnimator = ValueAnimator.ofInt(0, Math.max(rounded, 0));
+            progressAnimator.setDuration(900);
+            progressAnimator.addUpdateListener(animation ->
+                    healthScoreProgress.setProgress((int) animation.getAnimatedValue()));
+            progressAnimator.start();
+        }
+    }
+
+    /**
+     * Rebuild the "Most Scanned" rows from the real category breakdown.
+     */
+    private void renderCategories(ScanAnalyzer.Stats stats) {
+        if (categoryBarsContainer == null) {
+            return;
+        }
+
+        categoryBarsContainer.removeAllViews();
+
+        if (stats.topCategories.isEmpty()) {
+            categoryBarsContainer.setVisibility(View.GONE);
+            if (categoriesEmptyText != null) {
+                categoriesEmptyText.setVisibility(View.VISIBLE);
+            }
+            return;
+        }
+
+        categoryBarsContainer.setVisibility(View.VISIBLE);
+        if (categoriesEmptyText != null) {
+            categoriesEmptyText.setVisibility(View.GONE);
+        }
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        for (ScanAnalyzer.CategoryShare share : stats.topCategories) {
+            View row = inflater.inflate(R.layout.item_category_bar, categoryBarsContainer, false);
+
+            TextView name = row.findViewById(R.id.categoryName);
+            TextView count = row.findViewById(R.id.categoryCount);
+            ProgressBar progress = row.findViewById(R.id.categoryProgress);
+
+            name.setText(share.category);
+            count.setText(getResources().getQuantityString(
+                    R.plurals.analytics_category_scans, share.count, share.count));
+            progress.setProgress(share.percentOfTop);
+            progress.setContentDescription(share.category + ": " + share.count + " scans");
+
+            categoryBarsContainer.addView(row);
+        }
+    }
+
+    /**
+     * Draw one bar per day for the last week, scaled against the busiest day.
+     */
+    private void renderTrend(ScanAnalyzer.Stats stats) {
+        if (trendBarsContainer == null || trendLabelsContainer == null) {
+            return;
+        }
+
+        trendBarsContainer.removeAllViews();
+        trendLabelsContainer.removeAllViews();
+
+        int busiestDay = 0;
+        for (ScanAnalyzer.DayBucket bucket : stats.weeklyTrend) {
+            busiestDay = Math.max(busiestDay, bucket.count);
+        }
+
+        float density = getResources().getDisplayMetrics().density;
+        int minHeight = (int) (TREND_BAR_MIN_HEIGHT_DP * density);
+        int maxHeight = (int) (TREND_BAR_MAX_HEIGHT_DP * density);
+        int margin = (int) (4 * density);
+
+        for (ScanAnalyzer.DayBucket bucket : stats.weeklyTrend) {
+            int height = minHeight;
+            if (busiestDay > 0 && bucket.count > 0) {
+                height = minHeight + Math.round((maxHeight - minHeight) * (bucket.count / (float) busiestDay));
+            }
+
+            View bar = new View(this);
+            LinearLayout.LayoutParams barParams = new LinearLayout.LayoutParams(0, height, 1f);
+            barParams.setMargins(margin, 0, margin, 0);
+            bar.setLayoutParams(barParams);
+            bar.setBackgroundResource(R.drawable.chart_bar_gradient);
+            // Flatten empty days so the chart reads as "nothing scanned" rather than "a little".
+            bar.setAlpha(bucket.count > 0 ? 1f : 0.25f);
+            bar.setContentDescription(bucket.label + ": " + bucket.count + " scans");
+            trendBarsContainer.addView(bar);
+
+            TextView label = new TextView(this);
+            label.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+            label.setText(bucket.label);
+            label.setTextSize(11f);
+            label.setGravity(android.view.Gravity.CENTER);
+            label.setTextColor(0xFF999B96);
+            trendLabelsContainer.addView(label);
+        }
+    }
+
+    private void renderInsight(ScanAnalyzer.Stats stats) {
+        if (personalInsightText != null) {
+            personalInsightText.setText(ScanAnalyzer.buildInsight(stats));
+        }
+
+        if (goalProgressText != null) {
+            // Today is the last bucket in the weekly trend.
+            int today = stats.weeklyTrend.isEmpty()
+                    ? 0
+                    : stats.weeklyTrend.get(stats.weeklyTrend.size() - 1).count;
+            goalProgressText.setText(Math.min(today, DAILY_GOAL) + "/" + DAILY_GOAL);
         }
     }
 }

@@ -100,4 +100,23 @@
     <string name="achievement_desc_scans_10">Completed 10 product scans</string>
     <string name="achievement_desc_scans_50">Completed 50 product scans</string>
     <string name="achievement_desc_scans_100">Completed 100 product scans</string>
+
+    <!-- Analytics -->
+    <string name="analytics_no_categories">Scan a few products and your most-scanned categories will appear here.</string>
+    <string name="analytics_refreshed">Analytics refreshed</string>
+    <string name="analytics_load_failed">Showing your offline history. Connect to sync the latest data.</string>
+    <plurals name="analytics_category_scans">
+        <item quantity="one">%d scan</item>
+        <item quantity="other">%d scans</item>
+    </plurals>
+
+    <!-- Settings -->
+    <string name="settings_clear_data">Clear Scan History</string>
+    <string name="settings_clear_data_subtitle">Delete all scans and reset your statistics</string>
+    <string name="settings_export_empty">You have no scans to export yet</string>
+    <string name="settings_export_failed">Could not save the export file</string>
+    <string name="settings_support_email">support@nure.health</string>
+    <string name="settings_support_subject">Nure Health Scanner support request</string>
+    <string name="settings_no_email_app">No email app is available on this device</string>
+    <string name="settings_notifications_denied">Enable notifications in system settings to receive health tips</string>
 </resources>

@@ -456,6 +456,78 @@
                             android:contentDescription="Export"
                             app:tint="#C8CBC5" />
                     </LinearLayout>
+
+                    <!-- Divider -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="74dp"
+                        android:layout_marginEnd="18dp"
+                        android:background="@drawable/bg_settings_divider" />
+
+                    <!-- Clear Scan History Item -->
+                    <LinearLayout
+                        android:id="@+id/clearDataCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingStart="18dp"
+                        android:paddingEnd="18dp"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="16dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground">
+
+                        <FrameLayout
+                            android:layout_width="42dp"
+                            android:layout_height="42dp"
+                            android:background="@drawable/bg_icon_circle_orange"
+                            android:layout_marginEnd="14dp">
+
+                            <ImageView
+                                android:id="@+id/clearDataIcon"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_warning"
+                                android:contentDescription="@string/settings_clear_data"
+                                app:tint="#FF9800" />
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/settings_clear_data"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#1B1B1B"
+                                android:fontFamily="sans-serif-medium" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/settings_clear_data_subtitle"
+                                android:textSize="13sp"
+                                android:textColor="#999B96"
+                                android:fontFamily="sans-serif"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_arrow_forward"
+                            android:contentDescription="@string/settings_clear_data"
+                            app:tint="#C8CBC5" />
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
 
