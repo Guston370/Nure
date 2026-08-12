@@ -7,7 +7,7 @@
     android:layout_marginEnd="12dp"
     app:cardCornerRadius="20dp"
     app:cardElevation="0dp"
-    app:cardBackgroundColor="#FFFFFF"
+    app:cardBackgroundColor="@color/card_background_light"
     android:foreground="?attr/selectableItemBackground">
 
     <LinearLayout
@@ -41,7 +41,7 @@
             android:text="Product Name"
             android:textSize="15sp"
             android:textStyle="bold"
-            android:textColor="#1B1B1B"
+            android:textColor="@color/text_primary"
             android:fontFamily="sans-serif-medium"
             android:maxLines="2"
             android:ellipsize="end" />
@@ -76,7 +76,7 @@
                     android:layout_height="wrap_content"
                     android:text="150 cal"
                     android:textSize="11sp"
-                    android:textColor="#999B96"
+                    android:textColor="@color/text_secondary"
                     android:fontFamily="sans-serif"
                     android:layout_marginTop="2dp" />
             </LinearLayout>
@@ -102,7 +102,7 @@
                     android:layout_height="wrap_content"
                     android:text="8.5"
                     android:textSize="11sp"
-                    android:textColor="#999B96"
+                    android:textColor="@color/text_secondary"
                     android:fontFamily="sans-serif"
                     android:layout_marginTop="2dp" />
             </LinearLayout>
@@ -137,7 +137,7 @@
             android:progress="85"
             android:max="100"
             android:progressTint="@color/health_teal"
-            android:progressBackgroundTint="#EAECE7"
+            android:progressBackgroundTint="@color/divider_light"
             android:layout_marginTop="8dp" />
     </LinearLayout>
 

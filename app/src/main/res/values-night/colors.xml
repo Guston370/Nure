@@ -127,4 +127,21 @@
     <!-- Health concerns and preferences - Dark mode -->
     <color name="health_concerns_bg_dark">#4A1A1A</color>
     <color name="dietary_preferences_bg_dark">#1A2A4A</color>
+
+    <!-- Additional Night Mode Color Overrides for Nure Theme -->
+    <color name="card_background_light">@color/md_theme_dark_surface</color>
+    <color name="background_light">@color/md_theme_dark_background</color>
+    <color name="background_color">@color/md_theme_dark_background</color>
+    <color name="surface_color">@color/md_theme_dark_surface</color>
+    <color name="text_primary">@color/md_theme_dark_onBackground</color>
+    <color name="text_secondary">@color/md_theme_dark_onSurfaceVariant</color>
+    <color name="text_tertiary">@color/md_theme_dark_outline</color>
+    <color name="health_text_primary">@color/md_theme_dark_onBackground</color>
+    <color name="health_text_secondary">@color/md_theme_dark_onSurfaceVariant</color>
+    <color name="health_text_hint">@color/md_theme_dark_outline</color>
+    <color name="nutrition_card_background">@color/md_theme_dark_surfaceContainer</color>
+    <color name="divider_light">@color/md_theme_dark_outline</color>
+    <color name="health_light_gray">@color/md_theme_dark_surfaceVariant</color>
+    <color name="shimmer_base">@color/shimmer_base_dark</color>
+    <color name="shimmer_highlight">@color/shimmer_highlight_dark</color>
 </resources>

@@ -48,4 +48,26 @@
     </style>
 
     <style name="Theme.HealthScanner" parent="Base.Theme.HealthScanner" />
+
+    <!-- Bottom Sheet Theme - Dark Mode -->
+    <style name="Theme.HealthScanner.BottomSheet" parent="Theme.Material3.DayNight.BottomSheetDialog">
+        <item name="colorPrimary">@color/md_theme_dark_primary</item>
+        <item name="colorSurface">@color/md_theme_dark_surface</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
+    <!-- Alert Dialog Theme - Dark Mode -->
+    <style name="Theme.HealthScanner.AlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorPrimary">@color/md_theme_dark_primary</item>
+        <item name="colorSurface">@color/md_theme_dark_surface</item>
+        <item name="android:background">@color/md_theme_dark_surface</item>
+    </style>
+
+    <!-- Profile Activity Theme - Dark Mode -->
+    <style name="Theme.HealthScanner.Profile" parent="Theme.HealthScanner">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
 </resources>

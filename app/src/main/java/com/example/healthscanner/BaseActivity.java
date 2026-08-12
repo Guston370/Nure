@@ -127,12 +127,14 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private void highlightCurrentTab() {
         int currentId = getCurrentNavigationItemId();
+        int colorInactive = ContextCompat.getColor(this, R.color.bottom_nav_icon_inactive);
+        int colorActive = ContextCompat.getColor(this, R.color.bottom_nav_icon_active);
 
         // Reset all icons to inactive colour
-        tintIcon(navIconHome, COLOR_INACTIVE);
-        tintIcon(navIconHistory, COLOR_INACTIVE);
-        tintIcon(navIconStats, COLOR_INACTIVE);
-        tintIcon(navIconProfile, COLOR_INACTIVE);
+        tintIcon(navIconHome, colorInactive);
+        tintIcon(navIconHistory, colorInactive);
+        tintIcon(navIconStats, colorInactive);
+        tintIcon(navIconProfile, colorInactive);
 
         // Hide all dots
         setDotVisible(navDotHome, false);
@@ -142,16 +144,16 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         // Activate the correct one
         if (currentId == R.id.nav_home) {
-            tintIcon(navIconHome, COLOR_ACTIVE);
+            tintIcon(navIconHome, colorActive);
             setDotVisible(navDotHome, true);
         } else if (currentId == R.id.nav_history) {
-            tintIcon(navIconHistory, COLOR_ACTIVE);
+            tintIcon(navIconHistory, colorActive);
             setDotVisible(navDotHistory, true);
         } else if (currentId == R.id.nav_stats) {
-            tintIcon(navIconStats, COLOR_ACTIVE);
+            tintIcon(navIconStats, colorActive);
             setDotVisible(navDotStats, true);
         } else if (currentId == R.id.nav_profile) {
-            tintIcon(navIconProfile, COLOR_ACTIVE);
+            tintIcon(navIconProfile, colorActive);
             setDotVisible(navDotProfile, true);
         }
         // nav_scan (center) has no dot – it's always prominent

@@ -224,8 +224,8 @@ public class SettingsActivity extends BaseActivity {
             notificationSwitch.setChecked(notificationsEnabled);
         }
 
-        // Load dark mode setting
-        boolean darkModeEnabled = prefs.getBoolean(KEY_DARK_MODE, false);
+        // Load dark mode setting from DarkModeManager
+        boolean darkModeEnabled = DarkModeManager.getInstance(this).isDarkModeEnabled();
         if (darkModeSwitch != null) {
             darkModeSwitch.setChecked(darkModeEnabled);
         }
@@ -239,6 +239,7 @@ public class SettingsActivity extends BaseActivity {
     private void saveDarkModeSetting(boolean enabled) {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         prefs.edit().putBoolean(KEY_DARK_MODE, enabled).apply();
+        DarkModeManager.getInstance(this).toggleDarkMode(enabled);
     }
 
     private void showHelpDialog() {

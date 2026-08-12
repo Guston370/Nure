@@ -57,7 +57,7 @@
                         android:layout_gravity="center"
                         android:src="@drawable/ic_arrow_back"
                         android:contentDescription="Back"
-                        app:tint="#1B1B1B" />
+                        app:tint="@color/text_primary" />
                 </FrameLayout>
 
                 <View
@@ -81,7 +81,7 @@
                         android:layout_gravity="center"
                         android:src="@drawable/ic_support"
                         android:contentDescription="Help"
-                        app:tint="#1B1B1B" />
+                        app:tint="@color/text_primary" />
                 </FrameLayout>
             </LinearLayout>
 
@@ -102,7 +102,7 @@
                     android:text="App"
                     android:textSize="30sp"
                     android:textStyle="bold"
-                    android:textColor="#1B1B1B"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif-medium"
                     android:letterSpacing="-0.02"
                     android:lineSpacingMultiplier="1.1" />
@@ -136,7 +136,7 @@
                     android:text="PREFERENCES"
                     android:textSize="12sp"
                     android:textStyle="bold"
-                    android:textColor="#999B96"
+                    android:textColor="@color/text_secondary"
                     android:fontFamily="sans-serif-medium"
                     android:letterSpacing="0.08"
                     android:layout_marginBottom="10dp"
@@ -193,7 +193,7 @@
                                 android:text="Notifications"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
-                                android:textColor="#1B1B1B"
+                                android:textColor="@color/text_primary"
                                 android:fontFamily="sans-serif-medium" />
 
                             <TextView
@@ -201,7 +201,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Health tips and reminders"
                                 android:textSize="13sp"
-                                android:textColor="#999B96"
+                                android:textColor="@color/text_secondary"
                                 android:fontFamily="sans-serif"
                                 android:layout_marginTop="2dp" />
                         </LinearLayout>
@@ -266,7 +266,7 @@
                                 android:text="Dark Mode"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
-                                android:textColor="#1B1B1B"
+                                android:textColor="@color/text_primary"
                                 android:fontFamily="sans-serif-medium" />
 
                             <TextView
@@ -274,7 +274,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Better night viewing"
                                 android:textSize="13sp"
-                                android:textColor="#999B96"
+                                android:textColor="@color/text_secondary"
                                 android:fontFamily="sans-serif"
                                 android:layout_marginTop="2dp" />
                         </LinearLayout>
@@ -306,7 +306,7 @@
                     android:text="DATA &amp; PRIVACY"
                     android:textSize="12sp"
                     android:textStyle="bold"
-                    android:textColor="#999B96"
+                    android:textColor="@color/text_secondary"
                     android:fontFamily="sans-serif-medium"
                     android:letterSpacing="0.08"
                     android:layout_marginBottom="10dp"
@@ -362,7 +362,7 @@
                                 android:text="Privacy Policy"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
-                                android:textColor="#1B1B1B"
+                                android:textColor="@color/text_primary"
                                 android:fontFamily="sans-serif-medium" />
 
                             <TextView
@@ -370,7 +370,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Learn how we protect your data"
                                 android:textSize="13sp"
-                                android:textColor="#999B96"
+                                android:textColor="@color/text_secondary"
                                 android:fontFamily="sans-serif"
                                 android:layout_marginTop="2dp" />
                         </LinearLayout>
@@ -435,7 +435,7 @@
                                 android:text="Export Scan History"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
-                                android:textColor="#1B1B1B"
+                                android:textColor="@color/text_primary"
                                 android:fontFamily="sans-serif-medium" />
 
                             <TextView
@@ -443,7 +443,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Download your scan data as CSV"
                                 android:textSize="13sp"
-                                android:textColor="#999B96"
+                                android:textColor="@color/text_secondary"
                                 android:fontFamily="sans-serif"
                                 android:layout_marginTop="2dp" />
                         </LinearLayout>
@@ -475,7 +475,7 @@
                     android:text="ACCOUNT"
                     android:textSize="12sp"
                     android:textStyle="bold"
-                    android:textColor="#999B96"
+                    android:textColor="@color/text_secondary"
                     android:fontFamily="sans-serif-medium"
                     android:letterSpacing="0.08"
                     android:layout_marginBottom="10dp"
@@ -539,7 +539,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Sign out of your account"
                                 android:textSize="13sp"
-                                android:textColor="#999B96"
+                                android:textColor="@color/text_secondary"
                                 android:fontFamily="sans-serif"
                                 android:layout_marginTop="2dp" />
                         </LinearLayout>

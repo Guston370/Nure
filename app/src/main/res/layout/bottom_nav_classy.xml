@@ -20,7 +20,7 @@
         android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
         android:layout_marginBottom="8dp"
-        app:cardBackgroundColor="#FFFFFFFF"
+        app:cardBackgroundColor="@color/bottom_nav_background"
         app:cardCornerRadius="28dp"
         app:cardElevation="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
