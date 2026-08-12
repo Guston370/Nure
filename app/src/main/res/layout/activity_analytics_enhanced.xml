@@ -57,7 +57,7 @@
                         android:layout_gravity="center"
                         android:src="@drawable/ic_arrow_back"
                         android:contentDescription="Back"
-                        app:tint="@color/text_primary" />
+                        app:tint="#1B1B1B" />
                 </FrameLayout>
 
                 <View
@@ -81,7 +81,7 @@
                         android:layout_gravity="center"
                         android:src="@drawable/ic_refresh"
                         android:contentDescription="Refresh Analytics"
-                        app:tint="@color/text_primary" />
+                        app:tint="#1B1B1B" />
                 </FrameLayout>
             </LinearLayout>
 
@@ -167,7 +167,7 @@
                         android:text="0"
                         android:textSize="28sp"
                         android:textStyle="bold"
-                        android:textColor="@color/text_primary"
+                        android:textColor="#1B1B1B"
                         android:fontFamily="sans-serif-medium" />
 
                     <TextView
@@ -175,7 +175,7 @@
                         android:layout_height="wrap_content"
                         android:text="Total Scans"
                         android:textSize="13sp"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="#999B96"
                         android:fontFamily="sans-serif"
                         android:layout_marginTop="2dp" />
                 </LinearLayout>
@@ -227,7 +227,7 @@
                         android:layout_height="wrap_content"
                         android:text="Health Score"
                         android:textSize="13sp"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="#999B96"
                         android:fontFamily="sans-serif"
                         android:layout_marginTop="2dp" />
 
@@ -286,7 +286,7 @@
                         android:text="--"
                         android:textSize="28sp"
                         android:textStyle="bold"
-                        android:textColor="@color/text_primary"
+                        android:textColor="#1B1B1B"
                         android:fontFamily="sans-serif-medium" />
 
                     <TextView
@@ -294,7 +294,7 @@
                         android:layout_height="wrap_content"
                         android:text="This Week"
                         android:textSize="13sp"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="#999B96"
                         android:fontFamily="sans-serif"
                         android:layout_marginTop="2dp" />
                 </LinearLayout>
@@ -333,7 +333,7 @@
                         android:text="--"
                         android:textSize="28sp"
                         android:textStyle="bold"
-                        android:textColor="@color/text_primary"
+                        android:textColor="#1B1B1B"
                         android:fontFamily="sans-serif-medium" />
 
                     <TextView
@@ -341,7 +341,7 @@
                         android:layout_height="wrap_content"
                         android:text="Avg Calories"
                         android:textSize="13sp"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="#999B96"
                         android:fontFamily="sans-serif"
                         android:layout_marginTop="2dp" />
                 </LinearLayout>
@@ -388,7 +388,7 @@
                         android:text="Most Scanned"
                         android:textSize="18sp"
                         android:textStyle="bold"
-                        android:textColor="@color/text_primary"
+                        android:textColor="#1B1B1B"
                         android:fontFamily="sans-serif-medium" />
                 </LinearLayout>
 
@@ -418,7 +418,7 @@
                                 android:layout_weight="1"
                                 android:text="🥤 Beverages"
                                 android:textSize="14sp"
-                                android:textColor="@color/text_primary"
+                                android:textColor="#1B1B1B"
                                 android:fontFamily="sans-serif-medium" />
 
                             <TextView
@@ -460,7 +460,7 @@
                                 android:layout_weight="1"
                                 android:text="🍿 Snacks"
                                 android:textSize="14sp"
-                                android:textColor="@color/text_primary"
+                                android:textColor="#1B1B1B"
                                 android:fontFamily="sans-serif-medium" />
 
                             <TextView
@@ -502,7 +502,7 @@
                                 android:layout_weight="1"
                                 android:text="🥛 Dairy"
                                 android:textSize="14sp"
-                                android:textColor="@color/text_primary"
+                                android:textColor="#1B1B1B"
                                 android:fontFamily="sans-serif-medium" />
 
                             <TextView
@@ -543,7 +543,7 @@
                                 android:layout_weight="1"
                                 android:text="🥣 Cereals"
                                 android:textSize="14sp"
-                                android:textColor="@color/text_primary"
+                                android:textColor="#1B1B1B"
                                 android:fontFamily="sans-serif-medium" />
 
                             <TextView
@@ -613,7 +613,7 @@
                             android:text="Weekly Trends"
                             android:textSize="18sp"
                             android:textStyle="bold"
-                            android:textColor="@color/text_primary"
+                            android:textColor="#1B1B1B"
                             android:fontFamily="sans-serif-medium" />
 
                         <TextView
@@ -621,7 +621,7 @@
                             android:layout_height="wrap_content"
                             android:text="Scans per day"
                             android:textSize="12sp"
-                            android:textColor="@color/text_secondary"
+                            android:textColor="#999B96"
                             android:fontFamily="sans-serif"
                             android:layout_marginTop="2dp" />
                     </LinearLayout>
@@ -752,7 +752,7 @@
                     android:layout_height="wrap_content"
                     android:text="You've been making healthier choices this week! Your average health score improved by 15%. Keep scanning those nutritious products! 🌟"
                     android:textSize="14sp"
-                    android:textColor="@color/text_primary"
+                    android:textColor="#2E3630"
                     android:fontFamily="sans-serif"
                     android:lineSpacingMultiplier="1.4" />
 
