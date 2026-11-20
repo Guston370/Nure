@@ -44,7 +44,7 @@
                     android:layout_gravity="center"
                     android:src="@drawable/ic_arrow_back"
                     android:contentDescription="Back"
-                    app:tint="#1B1B1B" />
+                    app:tint="@color/text_primary" />
             </FrameLayout>
 
             <View
@@ -68,7 +68,7 @@
                     android:layout_gravity="center"
                     android:src="@drawable/ic_filter_list"
                     android:contentDescription="Filter History"
-                    app:tint="#1B1B1B" />
+                    app:tint="@color/text_primary" />
             </FrameLayout>
         </LinearLayout>
 
@@ -135,7 +135,7 @@
                 android:layout_weight="1"
                 android:hint="Search your scan history..."
                 android:textSize="15sp"
-                android:textColor="#1B1B1B"
+                android:textColor="@color/text_primary"
                 android:textColorHint="#999B96"
                 android:background="@android:color/transparent"
                 android:inputType="text"
@@ -249,7 +249,7 @@
                 android:layout_height="wrap_content"
                 android:text="Loading your scan history..."
                 android:textSize="15sp"
-                android:textColor="#999B96"
+                android:textColor="@color/text_secondary"
                 android:fontFamily="sans-serif"
                 android:gravity="center" />
         </LinearLayout>
@@ -285,7 +285,7 @@
                     android:text="No scans yet!"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="#1B1B1B"
+                    android:textColor="@color/text_primary"
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginTop="16dp" />
 
@@ -294,7 +294,7 @@
                     android:layout_height="wrap_content"
                     android:text="Start scanning to track your health journey"
                     android:textSize="14sp"
-                    android:textColor="#999B96"
+                    android:textColor="@color/text_secondary"
                     android:fontFamily="sans-serif"
                     android:gravity="center"
                     android:layout_marginTop="6dp"
@@ -358,7 +358,7 @@
                 android:text="Unable to load history"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="#1B1B1B"
+                android:textColor="@color/text_primary"
                 android:fontFamily="sans-serif-medium"
                 android:layout_marginBottom="6dp" />
 
@@ -367,7 +367,7 @@
                 android:layout_height="wrap_content"
                 android:text="Please check your connection and try again"
                 android:textSize="14sp"
-                android:textColor="#999B96"
+                android:textColor="@color/text_secondary"
                 android:fontFamily="sans-serif"
                 android:gravity="center"
                 android:layout_marginBottom="20dp" />
