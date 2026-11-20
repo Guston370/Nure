@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  OTP Login screen — phone number + OTP verification.
+  Keeps the same Material 3 theme as the rest of the app.
+  Background: #FAFBF9 (same as home_bg_clean).
+  Cards:      white, 24dp radius, 1dp #EAECE7 stroke.
+  Primary CTA: gradient from gradient_primary_start to gradient_primary_end.
+-->
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:overScrollMode="never"
+    android:background="#FAFBF9"
+    tools:context=".LoginActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="40dp">
+
+        <!-- ==================== TOP SPACE + LOGO ==================== -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingTop="48dp"
+            android:paddingBottom="36dp">
+
+            <!-- App icon circle -->
+            <FrameLayout
+                android:layout_width="88dp"
+                android:layout_height="88dp"
+                android:background="@drawable/bg_icon_circle_teal"
+                android:layout_marginBottom="20dp">
+
+                <ImageView
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_barcode_scan"
+                    android:contentDescription="Nure logo"
+                    app:tint="@color/white" />
+            </FrameLayout>
+
+            <!-- App name -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nure"
+                android:textSize="34sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary_light"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="-0.02" />
+
+            <!-- Tagline -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your health, simplified"
+                android:textSize="15sp"
+                android:textColor="@color/text_secondary_light"
+                android:fontFamily="sans-serif"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+
+        <!-- ==================== PHONE NUMBER SECTION ==================== -->
+        <LinearLayout
+            android:id="@+id/phone_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_recent_scan_card"
+            android:padding="24dp"
+            android:elevation="4dp"
+            android:visibility="visible">
+
+            <!-- Card headline -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Welcome"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary_light"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enter your phone number to get started"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary_light"
+                android:fontFamily="sans-serif"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Phone number field -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_phone"
+                style="@style/Widget.HealthScanner.TextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Phone number (e.g. +919876543210)"
+                android:layout_marginBottom="24dp"
+                app:startIconDrawable="@drawable/ic_phone_24"
+                app:startIconTint="@color/health_teal"
+                app:boxStrokeColor="@color/health_teal"
+                app:boxBackgroundColor="@color/md_theme_light_surface"
+                app:counterEnabled="true"
+                app:counterMaxLength="15">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone"
+                    android:maxLines="1"
+                    android:autofillHints="phone"
+                    android:textColor="@color/text_primary_light"
+                    android:textColorHint="@color/text_hint_light" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Send OTP button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_send_otp"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                style="@style/Widget.HealthScanner.Button.Gradient"
+                android:text="Send OTP"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.02" />
+
+            <!-- Progress indicator -->
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progress_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="12dp"
+                android:visibility="gone"
+                app:indicatorColor="@color/health_teal"
+                app:trackColor="@color/md_theme_light_surfaceVariant"
+                app:indicatorSize="36dp" />
+
+        </LinearLayout>
+
+        <!-- ==================== OTP VERIFICATION SECTION ==================== -->
+        <LinearLayout
+            android:id="@+id/otp_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_recent_scan_card"
+            android:padding="24dp"
+            android:elevation="4dp"
+            android:visibility="gone">
+
+            <!-- Card headline -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Verify OTP"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary_light"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tv_otp_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enter the 6-digit code sent to your phone"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary_light"
+                android:fontFamily="sans-serif"
+                android:layout_marginBottom="24dp" />
+
+            <!-- OTP code field -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_otp"
+                style="@style/Widget.HealthScanner.TextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="6-digit OTP code"
+                android:layout_marginBottom="24dp"
+                app:startIconDrawable="@drawable/ic_lock"
+                app:startIconTint="@color/health_teal"
+                app:boxStrokeColor="@color/health_teal"
+                app:boxBackgroundColor="@color/md_theme_light_surface"
+                app:counterEnabled="true"
+                app:counterMaxLength="6">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_otp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:maxLines="1"
+                    android:textColor="@color/text_primary_light"
+                    android:textColorHint="@color/text_hint_light"
+                    android:letterSpacing="0.3"
+                    android:textSize="20sp"
+                    android:gravity="center" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Verify button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_verify_otp"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                style="@style/Widget.HealthScanner.Button.Gradient"
+                android:text="Verify \u0026 Sign In"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.02" />
+
+            <!-- Progress indicator -->
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progress_otp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="12dp"
+                android:visibility="gone"
+                app:indicatorColor="@color/health_teal"
+                app:trackColor="@color/md_theme_light_surfaceVariant"
+                app:indicatorSize="36dp" />
+
+            <!-- Resend row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="20dp">
+
+                <TextView
+                    android:id="@+id/tv_resend_timer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Resend in 60s"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_secondary_light"
+                    android:fontFamily="sans-serif" />
+
+                <TextView
+                    android:id="@+id/btn_resend_otp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Resend OTP"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/health_teal"
+                    android:fontFamily="sans-serif-medium"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- Change number link -->
+            <TextView
+                android:id="@+id/btn_change_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Change phone number"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="@color/health_teal"
+                android:fontFamily="sans-serif-medium"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:layout_marginTop="12dp"
+                android:contentDescription="Go back and change phone number" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

@@ -76,52 +76,23 @@ public class MainActivity extends BaseActivity {
             darkModeManager = DarkModeManager.getInstance(this);
             darkModeManager.applyUserPreference();
 
-            // Check if coming from Google Sign-In or other authenticated source
+            // Check if coming from authenticated login
             Intent intent = getIntent();
-            boolean fromGoogleSignIn = intent != null && intent.getBooleanExtra("from_google_signin", false);
-            boolean bypassAuthCheck = intent != null && intent.getBooleanExtra("bypass_auth_check", false);
-            boolean userAuthenticated = intent != null && intent.getBooleanExtra("user_authenticated", false);
             boolean fromNavigation = intent != null && intent.getBooleanExtra("from_navigation", false);
 
-            if (fromGoogleSignIn || bypassAuthCheck || userAuthenticated) {
-                Log.d(TAG, "=== ENTERING MAIN APP FROM AUTHENTICATED SOURCE ===");
-                Log.d(TAG, "User successfully authenticated, loading main app interface...");
-
-                // Immediately sync data after successful authentication
-                if (syncManager != null) {
-                    syncManager.syncImmediately(new SyncManager.SyncCallback() {
-                        @Override
-                        public void onSuccess() {
-                            Log.d(TAG, "Initial sync completed after authentication");
-
-                            // Check if this is a Google user and ensure Firebase profile exists
-                            ensureGoogleUserInFirebase();
-                        }
-
-                        @Override
-                        public void onFailure(String error) {
-                            Log.w(TAG, "Initial sync failed after authentication: " + error);
-                        }
-                    });
-                }
-            } else if (fromNavigation) {
+            if (fromNavigation) {
                 // Coming from bottom navigation - check auth but do not redirect if failed
-                // This prevents redirect loops during navigation
                 if (!authManager.isUserAuthenticated()) {
                     Log.d(TAG, "User not authenticated during navigation, showing login prompt");
                     showAuthenticationRequiredDialog();
                     return;
                 }
             } else {
-                // Check authentication state normally for direct app launches
+                // Check authentication state for direct app launches
                 if (!authManager.isUserAuthenticated()) {
-                    Log.d(TAG, "User not authenticated, enabling test mode for development");
-                    authManager.enableTestMode();
-                    // Continue with app initialization
-
-                    // Also create test data immediately
-                    android.os.Handler handler = new android.os.Handler();
-                    handler.postDelayed(() -> createTestDataInFirebase(), 1000);
+                    Log.d(TAG, "User not authenticated, redirecting to login");
+                    authManager.navigateToLogin(this);
+                    return;
                 }
             }
 
@@ -129,9 +100,6 @@ public class MainActivity extends BaseActivity {
 
             // Check and restore Firebase authentication state
             checkFirebaseAuthState();
-
-            // Check if this is a new user from Google Sign-In or successful login
-            checkAndWelcomeUser();
 
             // Initialize all main app components
             initializeComponents();
@@ -225,28 +193,21 @@ public class MainActivity extends BaseActivity {
     }
 
     /**
-     * Get real user name from Google Sign-In data stored in SharedPreferences
+     * Get user display name from SharedPreferences.
      */
     private String getRealUserName() {
         try {
             SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
-            // Try display name first
             String displayName = prefs.getString("current_user_name", "");
             if (!displayName.isEmpty()) {
                 return displayName;
             }
 
-            // Try first name
-            String firstName = prefs.getString("current_user_first_name", "");
-            if (!firstName.isEmpty()) {
-                return firstName;
-            }
-
-            // Fallback to email prefix
-            String email = prefs.getString("current_user_email", "");
-            if (!email.isEmpty() && email.contains("@")) {
-                return email.split("@")[0];
+            // Fallback to phone number
+            String phone = prefs.getString("current_user_phone", "");
+            if (!phone.isEmpty()) {
+                return phone;
             }
 
             return null;
@@ -455,43 +416,6 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    /**
-     * Check if this is a new user or successful login and show appropriate welcome
-     * message
-     */
-    private void checkAndWelcomeUser() {
-        try {
-            SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-            boolean isFirstLaunch = prefs.getBoolean("is_first_launch_after_signin", true);
-
-            if (isFirstLaunch) {
-                String userName = getRealUserName();
-                if (userName != null && !userName.isEmpty()) {
-                    // Log welcome for new user (no toast)
-                    Log.d(TAG, "New user signed up: " + userName);
-                }
-
-                // Mark as no longer first launch
-                prefs.edit().putBoolean("is_first_launch_after_signin", false).apply();
-            }
-
-            // Check if coming from successful login
-            Intent intent = getIntent();
-            boolean loginSuccess = intent != null && intent.getBooleanExtra("login_success", false);
-            boolean showWelcome = intent != null && intent.getBooleanExtra("show_welcome", false);
-
-            if (loginSuccess && showWelcome) {
-                String userName = getRealUserName();
-                if (userName != null && !userName.isEmpty()) {
-                    // Log successful login (no toast)
-                    Log.d(TAG, "User successfully logged in: " + userName);
-                }
-            }
-
-        } catch (Exception e) {
-            Log.e(TAG, "Error checking user welcome status", e);
-        }
-    }
 
     private void initializeHapticFeedback() {
         try {
@@ -1026,9 +950,6 @@ public class MainActivity extends BaseActivity {
                 Intent syncIntent = new Intent(this, AutoSyncService.class);
                 startService(syncIntent);
                 Log.d(TAG, "Auto-sync service started");
-
-                // Create test data to verify Firebase connection
-                createTestDataInFirebase();
             }
         } catch (Exception e) {
             Log.e(TAG, "Error starting auto-sync service: " + e.getMessage(), e);

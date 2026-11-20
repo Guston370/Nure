@@ -45,14 +45,6 @@
             </intent-filter>
         </activity>
 
-        <!-- SignUpActivity - THIS WAS MISSING! -->
-        <activity
-            android:name=".SignUpActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".LoginActivity"
-            android:theme="@style/Theme.HealthScanner" />
-
         <!-- HistoryActivity -->
         <activity
             android:name=".HistoryActivity"
