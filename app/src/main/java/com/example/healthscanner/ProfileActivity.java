@@ -180,31 +180,24 @@ public class ProfileActivity extends BaseActivity {
     private void loadUserProfileFromLocal() {
         String name = authManager.getCurrentUserName();
         String email = authManager.getCurrentUserEmail();
-        String firstName = preferences.getString("current_user_first_name", "");
-        String lastName = preferences.getString("current_user_last_name", "");
         String authProvider = preferences.getString("auth_provider", "");
         String photoUrl = preferences.getString("current_user_photo", "");
-        boolean freshSignIn = preferences.getBoolean("fresh_google_signin", false);
+        String phone = preferences.getString("current_user_phone", "");
 
-        // Create personalized greeting
-        String displayName = name;
-        if (!firstName.isEmpty()) {
-            displayName = firstName; // Use first name for more personal feel
-        }
-
-        // Set user information with personalized touch
+        // Set user name
         if (userName != null) {
-            if (freshSignIn && !firstName.isEmpty()) {
-                userName.setText("Welcome back, " + firstName + "! 👋");
-                // Clear the fresh sign-in flag
-                preferences.edit().putBoolean("fresh_google_signin", false).apply();
-            } else {
-                userName.setText(displayName != null ? displayName : "Health Explorer");
-            }
+            userName.setText(name != null && !name.isEmpty() ? name : "Health Explorer");
         }
 
+        // Show phone number or email
         if (userEmail != null) {
-            userEmail.setText(email != null ? email : "guest@healthscanner.com");
+            if (phone != null && !phone.isEmpty()) {
+                userEmail.setText(phone);
+            } else if (email != null && !email.isEmpty()) {
+                userEmail.setText(email);
+            } else {
+                userEmail.setText("Phone Account");
+            }
         }
 
         // Set member since date with account type info
@@ -214,8 +207,8 @@ public class ProfileActivity extends BaseActivity {
             String joinDate = sdf.format(new java.util.Date(joinTimestamp));
 
             String memberText = "Member since " + joinDate;
-            if ("google.com".equals(authProvider)) {
-                memberText += " • Google Account";
+            if ("phone".equals(authProvider)) {
+                memberText += " • Phone Account";
             }
             memberSince.setText(memberText);
         }
@@ -223,12 +216,7 @@ public class ProfileActivity extends BaseActivity {
         // Load profile photo if available
         loadProfilePhoto(photoUrl);
 
-        // Show special message for Google users
-        if ("google.com".equals(authProvider) && freshSignIn) {
-            showWelcomeMessage(firstName.isEmpty() ? name : firstName);
-        }
-
-        Log.d(TAG, "Enhanced user profile loaded: " + displayName + " (" + authProvider + ")");
+        Log.d(TAG, "User profile loaded: " + name + " (" + authProvider + ")");
     }
 
     /**
@@ -247,29 +235,7 @@ public class ProfileActivity extends BaseActivity {
         }
     }
 
-    /**
-     * Show special welcome message for Google users
-     */
-    private void showWelcomeMessage(String firstName) {
-        try {
-            String welcomeMessage = "Welcome to Health Scanner, " + firstName + "! 🎉\n\n" +
-                    "Your Google account has been connected successfully. " +
-                    "All your health data will be synced across your devices.";
 
-            new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                    .setTitle("Welcome! 👋")
-                    .setMessage(welcomeMessage)
-                    .setPositiveButton("Let's Start!", (dialog, which) -> {
-                        // Maybe show a quick tour or highlight key features
-                        dialog.dismiss();
-                    })
-                    .setIcon(R.drawable.ic_person)
-                    .show();
-
-        } catch (Exception e) {
-            Log.e(TAG, "Error showing welcome message: " + e.getMessage());
-        }
-    }
 
     private void updateUIWithUserData(com.example.healthscanner.models.User user) {
         // Update user information

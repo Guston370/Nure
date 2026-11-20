@@ -84,13 +84,10 @@ public class DataResetManager {
             editor.remove("current_user_first_name");
             editor.remove("current_user_last_name");
             
-            // Clear Google account data
-            editor.remove("google_account_type");
+            // Clear account data
             editor.remove("join_date_timestamp");
             editor.remove("account_source");
-            editor.remove("fresh_google_signin");
-            editor.remove("google_id_token");
-            editor.remove("is_google_account");
+            editor.remove("current_user_phone");
             editor.remove("firebase_profile_created");
             editor.remove("firebase_profile_timestamp");
             

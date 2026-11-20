@@ -133,12 +133,6 @@
 
         <!-- Firebase Test Activity for debugging -->
         <activity
-            android:name=".FirebaseTestActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.HealthScanner" />
-
-        <activity
             android:name=".ProductSelectionActivity"
             android:exported="false"
             android:screenOrientation="portrait"
