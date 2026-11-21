@@ -487,9 +487,14 @@ public class VerticalScannerActivity extends BaseActivity {
         scan.setSugar(resolution.nutrition.sugar);
         scan.setSodium(resolution.nutrition.sodium);
         scan.setFiber(resolution.nutrition.fiber);
-        scan.setScanMethod(recognition != null && recognition.method == FoodRecognizer.Method.OCR_TEXT
-                ? "photo_ocr"
-                : (recognition == null ? "manual_entry" : "photo_label"));
+        String scanMethod = recognition == null
+                ? "manual_entry"
+                : recognition.method == FoodRecognizer.Method.OCR_TEXT
+                        ? "photo_ocr"
+                        : recognition.method == FoodRecognizer.Method.CUSTOM_MODEL
+                                ? "photo_custom_model"
+                                : "photo_label";
+        scan.setScanMethod(scanMethod);
 
         ScanHistoryStore.getInstance(this).addScan(scan);
 

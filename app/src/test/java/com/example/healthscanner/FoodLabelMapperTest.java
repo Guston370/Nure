@@ -20,8 +20,10 @@ public class FoodLabelMapperTest {
     private static final String LABEL_JSON = "{"
             + "\"specific\": {\"Pizza\": \"pizza\", \"Apple\": \"apple\", "
             + "\"Corn\": \"sweetcorn\", \"Frozen dessert\": \"ice cream\", "
-            + "\"Ice cream\": \"ice cream\"},"
-            + "\"generic\": [\"Food\", \"Dessert\", \"Tableware\"]"
+            + "\"Ice cream\": \"ice cream\", \"Grape Blue\": \"grapes\", "
+            + "\"Potato Sweet\": \"sweetpotato\"},"
+            + "\"generic\": [\"Food\", \"Dessert\", \"Tableware\", "
+            + "\"Fruit\", \"Vegetable\", \"Produce\", \"Nut\", \"Seed\"]"
             + "}";
 
     private FoodLabelMapper mapper;
@@ -48,6 +50,8 @@ public class FoodLabelMapperTest {
     public void labelsAreMappedOntoDatasetNames() {
         // ML Kit says "Corn", the nutrition dataset calls it "sweetcorn".
         assertEquals("sweetcorn", mapper.canonicalNameFor("Corn"));
+        assertEquals("grapes", mapper.canonicalNameFor("Grape Blue"));
+        assertEquals("sweetpotato", mapper.canonicalNameFor("Potato Sweet"));
     }
 
     @Test
@@ -85,6 +89,19 @@ public class FoodLabelMapperTest {
         assertTrue(outcome.looksLikeFood);
         assertTrue(outcome.candidates.isEmpty());
         assertFalse(outcome.hasIdentifiedFood());
+        assertFalse(outcome.looksLikeProduce);
+    }
+
+    @Test
+    public void produceLabelsEnableTheProduceClassifier() {
+        FoodLabelMapper.Outcome outcome = mapper.rank(
+                Arrays.asList("Vegetable", "Fruit", "Nut", "Food"),
+                Arrays.asList(0.8f, 0.7f, 0.6f, 0.9f),
+                5);
+
+        assertTrue(outcome.looksLikeFood);
+        assertTrue(outcome.looksLikeProduce);
+        assertTrue(outcome.candidates.isEmpty());
     }
 
     @Test

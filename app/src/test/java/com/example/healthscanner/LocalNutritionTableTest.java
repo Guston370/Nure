@@ -86,6 +86,15 @@ public class LocalNutritionTableTest {
     }
 
     @Test
+    public void fruits360VarietyLabelsResolveToBaseNutritionEntries() {
+        LocalNutritionTable table = table();
+
+        assertEquals("apple", table.matchedLabel("Apple Golden 1"));
+        assertEquals("banana", table.matchedLabel("Banana Red"));
+        assertEquals("grapes", table.matchedLabel("Grape Blue"));
+    }
+
+    @Test
     public void unknownFoodsReturnNull() {
         LocalNutritionTable table = table();
 

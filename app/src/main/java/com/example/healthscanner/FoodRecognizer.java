@@ -49,6 +49,7 @@ public class FoodRecognizer {
     private final ImageLabeler labeler;
     private final FoodLabelMapper labelMapper;
     private final com.google.mlkit.vision.text.TextRecognizer textRecognizer;
+    private final ProduceClassifier produceClassifier;
 
     public FoodRecognizer(Context context) {
         // The confidence floor is applied in FoodLabelMapper so a weak-but-specific label
@@ -59,6 +60,7 @@ public class FoodRecognizer {
         this.labeler = ImageLabeling.getClient(options);
         this.textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
         this.labelMapper = loadLabelMapper(context);
+        this.produceClassifier = new ProduceClassifier(context);
     }
 
     private static FoodLabelMapper loadLabelMapper(Context context) {
@@ -81,6 +83,8 @@ public class FoodRecognizer {
     public enum Method {
         /** ML Kit named a specific food. */
         IMAGE_LABEL,
+        /** The bundled produce model identified a specific produce class. */
+        CUSTOM_MODEL,
         /** The name was read off the packaging. */
         OCR_TEXT,
         /** Nothing could be identified. */
@@ -134,14 +138,15 @@ public class FoodRecognizer {
         InputImage image = InputImage.fromBitmap(bitmap, 0);
 
         labeler.process(image)
-                .addOnSuccessListener(labels -> onLabelsReady(labels, image, callback))
+                .addOnSuccessListener(labels -> onLabelsReady(labels, bitmap, image, callback))
                 .addOnFailureListener(e -> {
                     Log.w(TAG, "Image labelling failed, trying OCR: " + e.getMessage());
                     runOcr(image, false, new ArrayList<>(), callback);
                 });
     }
 
-    private void onLabelsReady(List<ImageLabel> labels, InputImage image, Callback callback) {
+    private void onLabelsReady(List<ImageLabel> labels, Bitmap bitmap, InputImage image,
+            Callback callback) {
         List<String> texts = new ArrayList<>();
         List<Float> confidences = new ArrayList<>();
         for (ImageLabel label : labels) {
@@ -162,6 +167,38 @@ public class FoodRecognizer {
             FoodLabelMapper.Candidate best = outcome.candidates.get(0);
             callback.onResult(new Recognition(
                     best.foodName, best.confidence, Method.IMAGE_LABEL, alternatives, true));
+            return;
+        }
+
+        if (outcome.looksLikeProduce && produceClassifier.isAvailable()) {
+            produceClassifier.classify(bitmap, new ProduceClassifier.Callback() {
+                @Override
+                public void onSuccess(List<ProduceClassifier.Prediction> predictions) {
+                    if (predictions.isEmpty() || predictions.get(0).confidence < 0.55f) {
+                        runOcr(image, outcome.looksLikeFood, new ArrayList<>(), callback);
+                        return;
+                    }
+
+                    ProduceClassifier.Prediction best = predictions.get(0);
+                    List<String> alternatives = new ArrayList<>();
+                    for (int i = 1; i < predictions.size(); i++) {
+                        alternatives.add(labelMapper.canonicalNameFor(predictions.get(i).label)
+                                .toLowerCase(Locale.US));
+                    }
+                    callback.onResult(new Recognition(
+                            labelMapper.canonicalNameFor(best.label).toLowerCase(Locale.US),
+                            best.confidence,
+                            Method.CUSTOM_MODEL,
+                            alternatives,
+                            true));
+                }
+
+                @Override
+                public void onFailure(Exception error) {
+                    Log.w(TAG, "Custom produce model failed; trying OCR", error);
+                    runOcr(image, outcome.looksLikeFood, new ArrayList<>(), callback);
+                }
+            });
             return;
         }
 
@@ -256,5 +293,6 @@ public class FoodRecognizer {
         } catch (Exception e) {
             Log.w(TAG, "Error closing text recognizer: " + e.getMessage());
         }
+        produceClassifier.close();
     }
 }

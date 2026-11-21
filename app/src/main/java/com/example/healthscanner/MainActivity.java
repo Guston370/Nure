@@ -186,9 +186,6 @@ public class MainActivity extends BaseActivity {
             // Start automatic sync service
             startAutoSync();
 
-            // Populate initial nutrition dataset in Firestore if needed
-            checkAndPopulateNutritionDataset();
-
         } catch (Exception e) {
             Log.e(TAG, "Error initializing components: " + e.getMessage(), e);
         }

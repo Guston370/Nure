@@ -156,10 +156,13 @@ public final class FoodLabelMapper {
          * identified. Lets the UI distinguish "that isn't food" from "I can't name it".
          */
         public final boolean looksLikeFood;
+        /** True when a generic label suggests produce, the domain of the custom classifier. */
+        public final boolean looksLikeProduce;
 
-        Outcome(List<Candidate> candidates, boolean looksLikeFood) {
+        Outcome(List<Candidate> candidates, boolean looksLikeFood, boolean looksLikeProduce) {
             this.candidates = candidates;
             this.looksLikeFood = looksLikeFood;
+            this.looksLikeProduce = looksLikeProduce;
         }
 
         public boolean hasIdentifiedFood() {
@@ -181,6 +184,7 @@ public final class FoodLabelMapper {
     public Outcome rank(List<String> labels, List<Float> confidences, int limit) {
         List<Candidate> candidates = new ArrayList<>();
         boolean looksLikeFood = false;
+        boolean looksLikeProduce = false;
 
         int count = Math.min(
                 labels == null ? 0 : labels.size(),
@@ -197,6 +201,14 @@ public final class FoodLabelMapper {
             Kind kind = kindOf(label);
             if (kind == Kind.GENERIC) {
                 looksLikeFood = true;
+                String normalized = normalise(label);
+                looksLikeProduce |= normalized.equals("fruit")
+                        || normalized.equals("vegetable")
+                        || normalized.equals("produce")
+                        || normalized.equals("nut")
+                        || normalized.equals("nuts")
+                        || normalized.equals("seed")
+                        || normalized.equals("seeds");
                 continue;
             }
             if (kind == Kind.SPECIFIC) {
@@ -224,7 +236,7 @@ public final class FoodLabelMapper {
             }
         }
 
-        return new Outcome(deduped, looksLikeFood);
+        return new Outcome(deduped, looksLikeFood, looksLikeProduce);
     }
 
     private static String normalise(String value) {

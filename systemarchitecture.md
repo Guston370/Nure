@@ -341,17 +341,17 @@ sequenceDiagram
 | Step | How it works | Verdict |
 |------|-------------|---------|
 | Image capture | CameraX `ImageCapture` | ✅ |
-| Food recognition | ML Kit on-device image labelling | ✅ Works offline, decent for common foods |
+| Food recognition | ML Kit labels first; bundled Fruits-360 LiteRT classifier refines generic produce labels | ✅ On-device; ML Kit/OCR remains the fallback |
 | Label mapping | `food_labels.json` asset maps ML Kit labels → food names | ✅ Extensible without code changes |
 | OCR fallback | ML Kit text recognition on the same image | ✅ Good for packaged food |
 | Manual entry fallback | AlertDialog when nothing is identified | ✅ Good UX recovery |
-| Offline nutrition | `nutrition_dataset.csv` (bundled) | ✅ Instant, covers ~100+ common foods |
+| Offline nutrition | `nutrition_dataset.csv` (bundled) | ✅ Instant, covers 36 common whole foods |
 | Online nutrition | OpenFoodFacts free-text search | ✅ No API key needed, broad coverage |
 | Plausibility filter | Rejects impossible nutrition (>900 kcal/100g, etc.) | ✅ Prevents showing garbage data |
 | Relevance filter | Token overlap check between query and result | ✅ Prevents "banana" → "Blue Bird Chips" |
 
 > [!NOTE]
-> **What happened to the Python backend?** The `FoodRecognizer` class comment explicitly says it *"replaces the previous bundled 28 MB `food_classifier.onnx`, which was an untrained network whose 100-class output was compared against label indices in the 924-963 range and therefore never produced a match."* The on-device ML Kit approach is now the actual working path.
+> The Python backend is not part of the production scan path. Android uses ML Kit for general food recognition and a bundled MobileNetV2 LiteRT model trained on Fruits-360 for ambiguous fruit/vegetable/produce images. The custom model classifies one produce item; ML Kit and OCR remain the fallback for meals and packaged products. The old untrained ONNX model is not used.
 
 ---
 
@@ -485,7 +485,7 @@ The Android app was rewritten to use on-device ML Kit instead of calling this se
 1. **The Custom CNN has no pre-trained weights** — `food_classifier.pth` doesn't ship, so the model starts with random initialization and predicts randomly
 2. **The ImageNet fallback mapping is arbitrary** — `IMAGENET_FOOD_MAP` maps class 924 (guacamole) → "gulab_jamun", class 951 (fig) → "mango", class 954 (strawberry) → "grapes"
 3. **The backend IP is hardcoded** to a local network address (`10.126.145.199:5000`) in `ApiConfig.java` — not reachable outside the developer's WiFi
-4. **`nutrition_db.py` only covers ~30 foods** — the app now uses a 100+ row CSV dataset + OpenFoodFacts search instead
+4. **`nutrition_db.py` only covers ~30 foods** — the app now uses a 36-row offline CSV, USDA when configured, and Open Food Facts search
 
 The backend exists for:
 - Presentation/demo purposes (the RLHF story)
@@ -554,8 +554,11 @@ One document per scan. Used by `AnalyticsActivity` to query category breakdowns.
 
 | Asset | Size | Purpose |
 |-------|------|---------|
-| `nutrition_dataset.csv` | ~100+ rows | Offline nutrition for common foods (Tier 1 lookup) |
+| `nutrition_dataset.csv` | 36 rows | Offline nutrition for common whole foods (Tier 1 lookup) |
 | `food_labels.json` | Small | Maps ML Kit label text → canonical food names |
+| `produce_model.tflite` | Generated model | 278-class Fruits-360 produce classifier used on-device |
+| `produce_labels.txt` | Generated labels | Output index-to-class names for the produce model |
+| `produce_model_attribution.txt` | Small | Dataset attribution and model license |
 | `food_categories.json` | Small | 100 food categories for the backend classifier (not used by app) |
 | `food_classifier.onnx` | ~28 MB | **Dead weight** — untrained ONNX model, never loaded |
 | `imagenet_food_map.json` | Small | ImageNet class → food name mapping for backend (not used by app) |

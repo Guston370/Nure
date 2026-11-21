@@ -83,9 +83,15 @@ dependencies {
     // On-device general image labelling: names the food in a photo. Replaces the previously
     // bundled food_classifier.onnx, which shipped untrained weights.
     implementation("com.google.android.gms:play-services-mlkit-image-labeling:16.0.8")
+<<<<<<< Updated upstream
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
     implementation(libs.googleid)
+=======
+    // LiteRT runs the custom produce model through Google Play services without bundling native
+    // libraries in the APK.
+    implementation("com.google.android.gms:play-services-tflite-java:16.5.0")
+>>>>>>> Stashed changes
 
     // CameraX — 1.4.x ships 16 KB-aligned libimage_processing_util_jni.so
     val camerax_version = "1.4.2"

@@ -112,9 +112,9 @@ public final class LocalNutritionTable {
      * Look a food name up, tolerating the naming differences between the recognition
      * vocabulary and the dataset.
      *
-     * <p>Tried in order: exact match, simple plural/singular variants, then a containment
-     * match in either direction so "green apple" finds "apple" and "corn" finds
-     * "sweetcorn". Returns {@code null} when nothing matches.</p>
+     * <p>Tried in order: exact match, simple plural/singular variants, compacted spelling,
+     * containment, then a token match so "green apple" finds "apple" and "Grape Blue"
+     * finds "grapes". Returns {@code null} when nothing matches.</p>
      */
     public HealthScoreCalculator.Nutrition lookup(String foodName) {
         String key = matchKey(foodName);
@@ -143,6 +143,13 @@ public final class LocalNutritionTable {
             }
         }
 
+        String compactKey = key.replace(" ", "");
+        for (String candidate : byLabel.keySet()) {
+            if (candidate.replace(" ", "").equals(compactKey)) {
+                return candidate;
+            }
+        }
+
         // Containment, longest dataset label first so "sweet potato" beats "potato".
         String best = null;
         for (String candidate : byLabel.keySet()) {
@@ -152,7 +159,25 @@ public final class LocalNutritionTable {
                 }
             }
         }
-        return best;
+        if (best != null) {
+            return best;
+        }
+
+        // Classifiers may return a cultivar such as "Grape Blue". Match whole tokens only.
+        for (String token : key.split(" ")) {
+            if (token.length() < 4) {
+                continue;
+            }
+            if (byLabel.containsKey(token)) {
+                return token;
+            }
+            for (String variant : variantsOf(token)) {
+                if (byLabel.containsKey(variant)) {
+                    return variant;
+                }
+            }
+        }
+        return null;
     }
 
     /** Cheap plural/singular variants; deliberately not a full stemmer. */

@@ -36,7 +36,16 @@ import com.example.healthscanner.database.FirebaseManager;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
+<<<<<<< Updated upstream
     private static final int RC_SIGN_IN = 9001; // Request code for Google Sign-In
+=======
+    private static final long OTP_TIMEOUT_SECONDS = 60L;
+    private static final long RESEND_COOLDOWN_MS = 60_000L;
+    private static final long SESSION_TIMEOUT_MS = 30L * 24 * 60 * 60 * 1000;
+    private static final String STATE_VERIFICATION_ID = "verification_id";
+    private static final String STATE_RESEND_TOKEN = "resend_token";
+    private static final String STATE_PENDING_PHONE = "pending_phone";
+>>>>>>> Stashed changes
 
     // UI Elements
     private TextInputLayout tilEmail, tilPassword;
@@ -53,6 +62,61 @@ public class LoginActivity extends AppCompatActivity {
 
     // SharedPreferences
     private SharedPreferences healthScannerPrefs;
+<<<<<<< Updated upstream
+=======
+    private CountDownTimer resendCountdown;
+    private String pendingPhoneNumber;
+    private int verificationRequestId;
+    private boolean signInInProgress;
+
+    private PhoneAuthProvider.OnVerificationStateChangedCallbacks createPhoneAuthCallbacks(
+            int requestId) {
+        return new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+                @Override
+                public void onVerificationCompleted(@NonNull PhoneAuthCredential credential) {
+                    if (!isCurrentVerificationRequest(requestId)) {
+                        return;
+                    }
+                    // Auto-verification (e.g. instant verification or auto-retrieval).
+                    Log.d(TAG, "Phone auto-verified, signing in automatically");
+                    signInWithPhoneCredential(credential);
+                }
+
+                @Override
+                public void onVerificationFailed(@NonNull FirebaseException e) {
+                    if (!isCurrentVerificationRequest(requestId)) {
+                        return;
+                    }
+                    Log.e(TAG, "Phone verification failed", e);
+                    setPhoneLoading(false);
+                    showError(getFriendlyPhoneError(e));
+                }
+
+                @Override
+                public void onCodeSent(@NonNull String id,
+                                       @NonNull PhoneAuthProvider.ForceResendingToken token) {
+                    if (!isCurrentVerificationRequest(requestId)) {
+                        return;
+                    }
+                    Log.d(TAG, "OTP code sent successfully");
+                    verificationId = id;
+                    resendToken = token;
+                    setPhoneLoading(false);
+                    showOtpSection();
+                    startResendCountdown();
+                }
+            };
+    }
+
+    private boolean isCurrentVerificationRequest(int requestId) {
+        return requestId == verificationRequestId && !isFinishing() && !isDestroyed();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    //  Lifecycle
+    // ─────────────────────────────────────────────────────────────────────
+>>>>>>> Stashed changes
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +153,7 @@ public class LoginActivity extends AppCompatActivity {
         // Initialize views and listeners
         initializeViews();
         setupClickListeners();
+<<<<<<< Updated upstream
         
         // Load saved email if remember me was checked
         loadSavedCredentials();
@@ -131,6 +196,57 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+=======
+        restoreVerificationState(savedInstanceState);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (!isFinishing() && isUserAlreadyLoggedIn()) {
+            navigateToMain();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (verificationId != null && pendingPhoneNumber != null) {
+            outState.putString(STATE_VERIFICATION_ID, verificationId);
+            outState.putString(STATE_PENDING_PHONE, pendingPhoneNumber);
+            if (resendToken != null) {
+                outState.putParcelable(STATE_RESEND_TOKEN, resendToken);
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (resendCountdown != null) {
+            resendCountdown.cancel();
+        }
+    }
+
+    private void restoreVerificationState(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            return;
+        }
+        verificationId = savedInstanceState.getString(STATE_VERIFICATION_ID);
+        pendingPhoneNumber = savedInstanceState.getString(STATE_PENDING_PHONE);
+        resendToken = savedInstanceState.getParcelable(STATE_RESEND_TOKEN);
+        if (verificationId != null && pendingPhoneNumber != null) {
+            etPhone.setText(pendingPhoneNumber);
+            showOtpSection();
+            startResendCountdown();
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    //  View init
+    // ─────────────────────────────────────────────────────────────────────
+
+>>>>>>> Stashed changes
     private void initializeViews() {
         // TextInputLayouts
         tilEmail = findViewById(R.id.til_email);
@@ -175,6 +291,7 @@ public class LoginActivity extends AppCompatActivity {
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
+<<<<<<< Updated upstream
         // Validate input
         if (!validateLoginInput(email, password)) {
             return;
@@ -198,6 +315,84 @@ public class LoginActivity extends AppCompatActivity {
             tilEmail.setError("Please enter a valid email address");
             isValid = false;
         }
+=======
+    private void showPhoneSection() {
+        otpSection.setVisibility(View.GONE);
+        phoneSection.setVisibility(View.VISIBLE);
+        verificationRequestId++;
+        verificationId = null;
+        resendToken = null;
+        pendingPhoneNumber = null;
+        if (resendCountdown != null) {
+            resendCountdown.cancel();
+        }
+        tvResendTimer.setVisibility(View.GONE);
+        btnResendOtp.setVisibility(View.GONE);
+        etPhone.requestFocus();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    //  Send OTP
+    // ─────────────────────────────────────────────────────────────────────
+
+    private String formatToE164(String inputPhone) {
+        if (inputPhone == null) {
+            return "";
+        }
+        String normalized = inputPhone.trim().replaceAll("[\\s().-]", "");
+        if (normalized.isEmpty()) {
+            return "";
+        }
+        if (normalized.startsWith("+")) {
+            String internationalDigits = normalized.substring(1);
+            return internationalDigits.matches("[1-9][0-9]{7,14}")
+                    ? "+" + internationalDigits : "";
+        }
+        if (!normalized.matches("[0-9]+")) {
+            return "";
+        }
+        if (normalized.startsWith("0")) {
+            normalized = normalized.substring(1);
+        } else if (normalized.length() == 12 && normalized.startsWith("91")) {
+            return "+91" + normalized.substring(2);
+        }
+        // Bare national numbers default to India.
+        return normalized.matches("[0-9]{10}") ? "+91" + normalized : "";
+    }
+
+    private void handleSendOtp() {
+        tilPhone.setError(null);
+        String rawPhone = etPhone.getText().toString().trim();
+
+        if (TextUtils.isEmpty(rawPhone)) {
+            tilPhone.setError("Phone number is required");
+            return;
+        }
+
+        String phone = formatToE164(rawPhone);
+
+        if (phone.isEmpty()) {
+            tilPhone.setError("Enter a valid phone number with country code (e.g. +919876543210)");
+            return;
+        }
+
+        etPhone.setText(phone);
+        pendingPhoneNumber = phone;
+        setPhoneLoading(true);
+        sendVerificationCode(phone);
+    }
+
+    private void sendVerificationCode(String phoneNumber) {
+        Log.d(TAG, "Sending OTP");
+        int requestId = ++verificationRequestId;
+
+        PhoneAuthOptions options = PhoneAuthOptions.newBuilder(mAuth)
+                .setPhoneNumber(phoneNumber)
+                .setTimeout(OTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .setActivity(this)
+                .setCallbacks(createPhoneAuthCallbacks(requestId))
+                .build();
+>>>>>>> Stashed changes
 
         // Validate Password
         if (TextUtils.isEmpty(password)) {
@@ -227,6 +422,7 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
         }
+<<<<<<< Updated upstream
         
         // Show loading state
         setGoogleSignInLoading(true);
@@ -255,9 +451,36 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+=======
+        if (!code.matches("[0-9]{6}")) {
+            tilOtp.setError("OTP must be 6 digits");
+            return;
+        }
+        if (verificationId == null) {
+            showError("Verification session expired. Please request a new OTP.");
+            showPhoneSection();
+            return;
+        }
+
+        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
+        signInWithPhoneCredential(credential);
+    }
+
+    private void signInWithPhoneCredential(PhoneAuthCredential credential) {
+        if (signInInProgress || isFinishing() || isDestroyed()) {
+            return;
+        }
+        signInInProgress = true;
+        setOtpLoading(true);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, task -> {
+                    signInInProgress = false;
+                    setOtpLoading(false);
+>>>>>>> Stashed changes
 
         Log.d(TAG, "onActivityResult called - requestCode: " + requestCode + ", resultCode: " + resultCode);
 
+<<<<<<< Updated upstream
         // Check if the result is from Google Sign-In
         if (requestCode == RC_SIGN_IN) {
             Log.d(TAG, "Processing Google Sign-In result...");
@@ -737,6 +960,29 @@ public class LoginActivity extends AppCompatActivity {
                             if (task.getException() != null) {
                                 Log.w(TAG, "Login failure for " + email + ": " + task.getException().getMessage());
                             }
+=======
+                        if (user != null) {
+                            saveLoginState(user);
+                            createOrUpdateFirebaseProfile(user);
+                            showSuccess("Welcome!");
+                            navigateToMain();
+                        } else {
+                            Log.e(TAG, "Phone authentication succeeded without a current user");
+                            showError("Sign-in completed, but the account could not be loaded. Please try again.");
+                        }
+                    } else {
+                        Log.e(TAG, "Phone sign-in failed", task.getException());
+                        String msg = task.getException() != null
+                                ? task.getException().getMessage()
+                                : "";
+                        String lower = msg == null ? "" : msg.toLowerCase();
+                        if (lower.contains("invalid")) {
+                            tilOtp.setError("Invalid OTP code. Please try again.");
+                        } else if (lower.contains("expired")) {
+                            showError("This OTP has expired. Request a new code and try again.");
+                        } else {
+                            showError("Could not verify the code. Check your connection and try again.");
+>>>>>>> Stashed changes
                         }
                     }
                 });
@@ -893,6 +1139,7 @@ public class LoginActivity extends AppCompatActivity {
             Log.e(TAG, "GoogleSignInClient is null - initialization failed");
             return;
         }
+<<<<<<< Updated upstream
         
         // Test silent sign-in
         mGoogleSignInClient.silentSignIn()
@@ -904,6 +1151,25 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d(TAG, "Silent sign-in failed (normal if no previous sign-in): " + task.getException());
                     }
                 });
+=======
+
+        btnResendOtp.setVisibility(View.GONE);
+        tvResendTimer.setVisibility(View.VISIBLE);
+
+        Log.d(TAG, "Resending OTP");
+        int requestId = ++verificationRequestId;
+
+        PhoneAuthOptions options = PhoneAuthOptions.newBuilder(mAuth)
+                .setPhoneNumber(pendingPhoneNumber)
+                .setTimeout(OTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .setActivity(this)
+                .setCallbacks(createPhoneAuthCallbacks(requestId))
+                .setForceResendingToken(resendToken)
+                .build();
+
+        PhoneAuthProvider.verifyPhoneNumber(options);
+        startResendCountdown();
+>>>>>>> Stashed changes
     }
 
     /**
@@ -1087,6 +1353,7 @@ public class LoginActivity extends AppCompatActivity {
         Log.d(TAG, "Offline Google login state saved for: " + email);
     }
 
+<<<<<<< Updated upstream
     /**
      * Get user-friendly error message for Google Sign-In errors
      * @param statusCode The error status code from Google Sign-In
@@ -1134,8 +1401,12 @@ public class LoginActivity extends AppCompatActivity {
         }
         
         // Save profile photo URL if available
+=======
+>>>>>>> Stashed changes
         if (user.getPhotoUrl() != null) {
             editor.putString("current_user_photo", user.getPhotoUrl().toString());
+        } else {
+            editor.remove("current_user_photo");
         }
 
         // Handle remember me preference (only for email/password login)
@@ -1150,8 +1421,12 @@ public class LoginActivity extends AppCompatActivity {
 
         // Apply changes
         editor.apply();
+<<<<<<< Updated upstream
         
         Log.d(TAG, "Login state saved successfully for user: " + user.getEmail());
+=======
+        Log.d(TAG, "Login state saved");
+>>>>>>> Stashed changes
     }
 
     /**
@@ -1390,6 +1665,7 @@ public class LoginActivity extends AppCompatActivity {
     private boolean isUserAlreadyLoggedIn() {
         // Check SharedPreferences login state first
         boolean isLoggedIn = healthScannerPrefs.getBoolean("is_logged_in", false);
+<<<<<<< Updated upstream
         if (!isLoggedIn) {
             return false;
         }
@@ -1418,6 +1694,26 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Clear login state from SharedPreferences
      */
+=======
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        String savedUserId = healthScannerPrefs.getString("current_user_id", "");
+        if (!isLoggedIn || currentUser == null || !isSessionValid()
+                || !currentUser.getUid().equals(savedUserId)) {
+            if (isLoggedIn || !savedUserId.isEmpty()) {
+                clearLoginState();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isSessionValid() {
+        long loginTime = healthScannerPrefs.getLong("login_timestamp", 0);
+        long now = System.currentTimeMillis();
+        return loginTime > 0 && loginTime <= now && now - loginTime < SESSION_TIMEOUT_MS;
+    }
+
+>>>>>>> Stashed changes
     private void clearLoginState() {
         SharedPreferences.Editor editor = healthScannerPrefs.edit();
         editor.putBoolean("is_logged_in", false);
@@ -1446,6 +1742,7 @@ public class LoginActivity extends AppCompatActivity {
      * Show/hide loading state for Google Sign-In button with enhanced UX
      * @param loading true to show loading, false to hide
      */
+<<<<<<< Updated upstream
     private void setGoogleSignInLoading(boolean loading) {
         runOnUiThread(() -> {
             try {
@@ -1464,6 +1761,47 @@ public class LoginActivity extends AppCompatActivity {
                 Log.e(TAG, "Error updating Google Sign-In loading state", e);
             }
         });
+=======
+    public static void performSignOut(AppCompatActivity activity) {
+        FirebaseAuth.getInstance().signOut();
+
+        SharedPreferences prefs = activity.getSharedPreferences("HealthScannerPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("is_logged_in", false);
+        editor.remove("login_timestamp");
+        editor.remove("current_user_email");
+        editor.remove("current_user_name");
+        editor.remove("current_user_id");
+        editor.remove("current_user_phone");
+        editor.remove("auth_provider");
+        editor.remove("current_user_photo");
+        editor.apply();
+
+        Intent loginIntent = new Intent(activity, LoginActivity.class);
+        loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        activity.startActivity(loginIntent);
+        activity.finish();
+
+        Log.d("LoginActivity", "User signed out successfully");
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    //  UI helpers
+    // ─────────────────────────────────────────────────────────────────────
+
+    private void setPhoneLoading(boolean loading) {
+        btnSendOtp.setAlpha(loading ? 0.6f : 1.0f);
+        btnSendOtp.setEnabled(!loading);
+        btnSendOtp.setClickable(!loading);
+        progressPhone.setVisibility(loading ? View.VISIBLE : View.GONE);
+    }
+
+    private void setOtpLoading(boolean loading) {
+        btnVerifyOtp.setAlpha(loading ? 0.6f : 1.0f);
+        btnVerifyOtp.setEnabled(!loading);
+        btnVerifyOtp.setClickable(!loading);
+        progressOtp.setVisibility(loading ? View.VISIBLE : View.GONE);
+>>>>>>> Stashed changes
     }
 
     private void showError(String message) {
@@ -1480,6 +1818,7 @@ public class LoginActivity extends AppCompatActivity {
                 .show();
     }
 
+<<<<<<< Updated upstream
     private String getFirebaseErrorMessage(Exception exception) {
         if (exception == null) return "An unknown error occurred";
         
@@ -1507,6 +1846,23 @@ public class LoginActivity extends AppCompatActivity {
             return "Network error. Please check your internet connection.";
         } else if (messageLower.contains("operation_not_allowed") || messageLower.contains("not enabled")) {
             return "Email/password sign-in is not enabled. Please contact support.";
+=======
+    private String getFriendlyPhoneError(FirebaseException e) {
+        String msg = e.getMessage();
+        if (msg == null) return "Phone verification failed. Please try again.";
+
+        String lower = msg.toLowerCase();
+        if (lower.contains("invalid format") || lower.contains("invalid phone")) {
+            return "Invalid phone number format. Use country code (e.g. +919876543210).";
+        } else if (lower.contains("too many requests") || lower.contains("quota")) {
+            return "Too many OTP requests or SMS quota reached. Try again later or use Firebase test numbers.";
+        } else if (lower.contains("network")) {
+            return "Network error. Please check your internet connection.";
+        } else if (lower.contains("app not authorized") || lower.contains("not authorized") || lower.contains("safetynet") || lower.contains("play integrity") || lower.contains("app verification")) {
+            return "App not authorized for Phone Auth. Ensure SHA-1 & SHA-256 are added to Firebase Console.";
+        } else if (lower.contains("missing client identifier") || lower.contains("recaptcha")) {
+            return "Phone verification setup incomplete. Add SHA-256 fingerprint to Firebase Console.";
+>>>>>>> Stashed changes
         } else {
             // Show the actual error for debugging instead of a generic message
             return "Login failed: " + message;

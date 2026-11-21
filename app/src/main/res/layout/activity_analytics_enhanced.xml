@@ -133,7 +133,7 @@
 
                 <!-- Total Scans Card -->
                 <LinearLayout
-                    android:id="@+id/dailyCaloriesCard"
+                    android:id="@+id/totalScansCard"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -161,7 +161,7 @@
                     </FrameLayout>
 
                     <TextView
-                        android:id="@+id/dailyCaloriesNumber"
+                        android:id="@+id/totalScansNumber"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
@@ -254,6 +254,7 @@
 
                 <!-- Weekly Scans Card -->
                 <LinearLayout
+                    android:id="@+id/weeklyScansCard"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -281,6 +282,7 @@
                     </FrameLayout>
 
                     <TextView
+                        android:id="@+id/weeklyScansNumber"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="--"
@@ -299,8 +301,9 @@
                         android:layout_marginTop="2dp" />
                 </LinearLayout>
 
-                <!-- Daily Calories Card -->
+                <!-- Avg Calories Card -->
                 <LinearLayout
+                    android:id="@+id/avgCaloriesCard"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -328,6 +331,7 @@
                     </FrameLayout>
 
                     <TextView
+                        android:id="@+id/avgCaloriesNumber"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="--"
@@ -392,8 +396,23 @@
                         android:fontFamily="sans-serif-medium" />
                 </LinearLayout>
 
+                <!-- Empty State Message -->
+                <TextView
+                    android:id="@+id/categoriesEmptyText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/analytics_no_categories"
+                    android:textSize="14sp"
+                    android:textColor="#999B96"
+                    android:fontFamily="sans-serif"
+                    android:gravity="center"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:visibility="gone" />
+
                 <!-- Category Bars -->
                 <LinearLayout
+                    android:id="@+id/categoryBarsContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
@@ -629,6 +648,7 @@
 
                 <!-- Chart Bars with improved styling -->
                 <LinearLayout
+                    android:id="@+id/trendBarsContainer"
                     android:layout_width="match_parent"
                     android:layout_height="130dp"
                     android:orientation="horizontal"
@@ -694,6 +714,7 @@
 
                 <!-- Chart Labels -->
                 <LinearLayout
+                    android:id="@+id/trendLabelsContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -779,6 +800,7 @@
                         android:fontFamily="sans-serif-medium" />
 
                     <TextView
+                        android:id="@+id/goalProgressText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="3/5"
